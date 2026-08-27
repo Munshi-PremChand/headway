@@ -108,7 +108,51 @@ Specialised task models (not gated by the 3.5 rule, since they are not the core 
 | `trip_coverage_not_active_for_next7_days` | WARNING | feed_start must be ≤ today |
 | non-boardable stop mis-tagged | **nothing at all** | pure rider-harm error no validator catches |
 
+## ✅ LIVE CALL VERIFIED — 2026-08-27
+
+The model ID was a hardcoded string that had never touched an endpoint. It has now.
+
+```
+POST https://aiplatform.googleapis.com/v1/projects/headway-atah-2026/locations/global
+     /publishers/google/models/gemini-3.7-flash:generateContent
+  -> HTTP 200
+  -> "HEADWAY GATE OK"
+  -> modelVersion: gemini-3.7-flash
+  -> thinkingConfig {"thinkingLevel": "low"} ACCEPTED
+  -> usage: prompt 8 / candidates 4 / total 12, trafficType ON_DEMAND
+```
+
+**Location is `global`, not `us-central1`.** The host is `aiplatform.googleapis.com` with
+`locations/global` in the path. Regional hosts are a separate endpoint; do not assume `us-central1`.
+
+Viability gate status:
+
+| Requirement | Status |
+|---|---|
+| Gemini 3.5 or newer | ✅ `gemini-3.7-flash` live on Vertex, verified |
+| A Google agent framework | ⬜ ADK not yet imported |
+| A Google Cloud service | ✅ project on billing, 12 APIs enabled, Vertex responding |
+
 ## Google Cloud
+
+### Project `headway-atah-2026` — provisioned 2026-08-27
+
+Created under organization `anshulmalik3024-org` (id `520136476995`), linked to billing account
+`01CE9A-4C8786-A3E22E` → **`billingEnabled: true`**.
+
+APIs enabled: `aiplatform` · `run` · `firestore` · `pubsub` · `storage` · `secretmanager` · `cloudbuild` ·
+`artifactregistry` · `cloudtrace` · `logging` · `generativelanguage` · `bigquerystorage`.
+
+```bash
+gcloud config set project headway-atah-2026
+```
+
+**Still required for client libraries:** `gcloud auth application-default login`. The gcloud CLI is
+authenticated, but there is no ADC file, and `google-genai` / `google-cloud-firestore` / `google-cloud-storage`
+read ADC, not the CLI session. A raw REST call with `gcloud auth print-access-token` works without ADC — that
+is how the live call above was made — but the SDKs will not.
+
+### Earlier state (superseded)
 
 `gcloud` authed as `anshulmalik3024@gmail.com`. SDK 569.0.0.
 
