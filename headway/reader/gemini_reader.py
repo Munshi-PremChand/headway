@@ -97,12 +97,10 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                     "kind": {"type": "string",
                              "enum": [k.value for k in ClaimKind]},
                     "field": {"type": "string", "maxLength": 40},
-                    "value": {"type": "string", "maxLength": 120,
-                              "description": f"the literal cell text, or {ILLEGIBLE}"},
+                    "value": {"type": "string", "maxLength": 120},
                     "confidence": {"type": "number"},
                     "bbox": {"type": "array", "items": {"type": "number"},
-                             "minItems": 4, "maxItems": 4,
-                             "description": "normalised [x0,y0,x1,y1] in 0..1"},
+                             "minItems": 4, "maxItems": 4},
                     # The binding is FLAT, deliberately. Two measured reasons:
                     #
                     #  * A bare {"type":"object"} scope came back as {} on every
@@ -116,14 +114,25 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                     #
                     # Flat scalar fields round-trip reliably. `parse_claims`
                     # reassembles them into SourceClaim.scope.
-                    "trip": {"type": "string",
-                             "description": "trip/column id exactly as printed, e.g. T1"},
-                    "stop": {"type": "string",
-                             "description": "stop name for this cell's ROW, verbatim"},
-                    "seq": {"type": "integer",
-                            "description": "1-based row position within the trip"},
-                    "boardable": {"type": "boolean",
-                                  "description": "false for a depot/garage/layover"},
+                    # The binding (trip / stop / seq) is DELIBERATELY ABSENT.
+                    #
+                    # Three measured failures taught this. Asking the model for
+                    # the binding produced, in turn: empty scope objects; a
+                    # collapsed nested object with everything crammed into one
+                    # string; and finally raw reasoning leaking into the field —
+                    #   trip = "T1 Cruz? no T1, headings: T1, T2, T3, T4.
+                    #           Stop: Kempegowda Bus Stn, seq: 1, boardable: true"
+                    # Enumeration also collapsed from 20 cells to 1 as the field
+                    # count grew.
+                    #
+                    # A cell's row and column are GEOMETRY. `reader/grid.py`
+                    # recovers them by clustering the bounding boxes, which has
+                    # exactly one correct answer and cannot hallucinate. The
+                    # model is asked only for what it is uniquely good at:
+                    # what the cell says, and where it is.
+                    #
+                    # Minimal schema is also minimal leak surface.
+                    "trip": {"type": "string"},
                     "alternatives": {
                         "type": "array",
                         "items": {
@@ -173,13 +182,12 @@ agency_phone), route (route_long_name), stop (stop_name), service (days),
 exception (added | removed — these two spellings only), trip (trip_headsign),
 stop_time (departure).
 
-For EVERY stop_time claim you MUST set all four binding fields as TOP-LEVEL
-fields on the claim (not nested):
-  trip  — the column heading exactly as printed, e.g. "T1"
-  stop  — the row's stop name, verbatim, e.g. "City Hospital"
-  seq   — the 1-based row number of that stop, e.g. 3
-  boardable — false for a depot, garage or layover; true otherwise
-Emit one stop claim per row label as well, with its own bbox.
+Set `trip` to the column heading for that cell (e.g. T1) and nothing else.
+Emit one stop claim per row label as well, with its own bbox. Row and column
+positions are recovered downstream from your bounding boxes, so do not describe
+them.
+
+Put ONLY transcribed data in a field. Never put reasoning or commentary in one.
 """
 
 
