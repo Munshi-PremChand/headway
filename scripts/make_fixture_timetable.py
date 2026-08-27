@@ -33,11 +33,16 @@ STOPS = ["Kempegowda Bus Stn", "Majestic Metro", "City Hospital",
          "Dialysis Centre", "Depot (no boarding)"]
 TRIPS = [
     {"trip": "T1", "times": ["06:15", "06:28", "06:47", "07:05", "07:20"]},
-    {"trip": "T2", "times": ["09:40", "09:53", "10:12", "10:30", "10:45"]},
+    {"trip": "T2", "times": ["09:40", "09:53", "10:12", "10:37", "10:45"]},
     {"trip": "T3", "times": ["14:05", "14:18", "—", "14:55", "15:10"]},
     {"trip": "T4", "times": ["23:30", "23:43", "00:02", "00:20", "00:35"]},
 ]
-SMUDGE_CELL = (1, 3)   # trip index 1, stop index 3 -> the 10:30 at Dialysis
+# The smudged cell is DELIBERATELY OFF-PATTERN. Its neighbours (10:12, 10:45)
+# imply ~10:30, but the truth is 10:37. A model that interpolates rather than
+# reads is therefore detectably WRONG, not luckily right. Without this the
+# confident-wrong metric saturates at zero and cannot discriminate between
+# thinking levels at all — which is exactly what happened on the first fixture.
+SMUDGE_CELL = (1, 3)   # trip index 1, stop index 3 -> the 10:37 at Dialysis
 
 
 def _font(size: int, bold: bool = False):

@@ -2,6 +2,40 @@
 
 Every entry records what was **measured**, not what was intended.
 
+## 2026-08-27 — thinking-level calibration, and a degenerate metric
+
+**The question:** the reader's `thinkingLevel` was set to `low` because that was the parameter on a
+connectivity smoke test. It was never justified. Rather than argue for a value, it was measured.
+
+**Pre-stated hypothesis:** thinking level affects *abstention calibration* — how often the model asserts a
+value it cannot actually read — more than it affects raw accuracy.
+**Pre-committed read:** use `high` if it yields ≥2 fewer confident-wrong cells than `low`.
+
+**Result on fixture v1 (n=3 per level, 20 cells, one illegible):**
+
+| level | correct | confident-wrong | handled illegible honestly | secs | thoughts |
+|---|---:|---:|---:|---:|---:|
+| low | 20.0 | 0.0 | **0/3** | 11.1 | 0 |
+| medium | 20.0 | 0.0 | 2/3 | 24.7 | 2,032 |
+| high | 19.3 | 0.0 | 2/3 | 52.4 | 7,369 |
+
+**The pre-committed read was NOT met**, and the metric is the reason. The illegible cell's true value was
+`10:30`, sitting on a regular interval between the legible `10:12` and `10:45`. A model that *interpolates
+instead of reading* lands on the right answer, so `confident-wrong` saturated at **0 across all three
+levels** and had no dynamic range. It could not discriminate.
+
+The discriminating signal was visible in a different column: `low` guessed the unreadable cell **3/3 times**
+(`LUCKY-GUESS`, confidence 0.65–0.75) while `medium` and `high` abstained or hedged 2/3.
+
+**Note the trap:** `low` scores *better* on naive accuracy (20.0 vs 19.3) while being *worse* at the thing
+that matters. Selecting on "correct cells" would have chosen the setting that guesses.
+
+**Correction, not a metric swap.** Changing the metric after seeing the data is exactly the sin this
+project exists to avoid. Instead the *fixture* was fixed so the original metric can work: the smudged
+cell's true value moved to **`10:37`**, deliberately off the interval its neighbours imply. A model that
+interpolates now lands on `10:30` and is detectably **wrong**, not luckily right. Re-running the same
+pre-committed read against that fixture is the honest test.
+
 ## 2026-08-27 — the reader schema was breaking the reader
 
 Three defects in `CLAIM_RESPONSE_SCHEMA`, all found by trying to measure something else. None would have

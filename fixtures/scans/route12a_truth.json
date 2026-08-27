@@ -3,7 +3,7 @@
   "smudged_cell": {
     "trip": "T2",
     "stop": "Dialysis Centre",
-    "true_value": "10:30"
+    "true_value": "10:37"
   },
   "cells": [
     {
@@ -205,7 +205,7 @@
       "trip": "T2",
       "stop": "Dialysis Centre",
       "seq": 4,
-      "value": "10:30",
+      "value": "10:37",
       "bbox": [
         0.5,
         0.4488888888888889,
