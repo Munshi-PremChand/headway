@@ -92,7 +92,7 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                 # tokens until finishReason=MAX_TOKENS. Identifiers are a
                 # deterministic function of the binding; asking a model to
                 # invent them buys nothing and can hang the whole read.
-                "required": ["kind", "field", "value", "confidence", "bbox", "scope"],
+                "required": ["kind", "field", "value", "confidence", "bbox"],
                 "properties": {
                     "kind": {"type": "string",
                              "enum": [k.value for k in ClaimKind]},
@@ -103,28 +103,27 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                     "bbox": {"type": "array", "items": {"type": "number"},
                              "minItems": 4, "maxItems": 4,
                              "description": "normalised [x0,y0,x1,y1] in 0..1"},
-                    # MEASURED 2026-08-27: declaring this as a bare
-                    # {"type": "object"} makes Vertex structured output return
-                    # scope = {} on EVERY claim. The model knows the binding
-                    # (its own claim_ids read "claim_st_t1_s1") but has nowhere
-                    # to put it, so the Composer sees no trip/stop and refuses
-                    # everything. Properties must be declared explicitly.
-                    "scope": {
-                        "type": "object",
-                        "description": "entity binding — REQUIRED for stop_time",
-                        "properties": {
-                            "trip": {"type": "string", "maxLength": 40,
-                                     "description": "trip/column id, e.g. T1"},
-                            "stop": {"type": "string", "maxLength": 80,
-                                     "description": "stop name or key this cell sits on"},
-                            "seq": {"type": "integer",
-                                    "description": "1-based row order within the trip"},
-                            "route": {"type": "string"},
-                            "service": {"type": "string"},
-                            "boardable": {"type": "boolean",
-                                          "description": "false for depots/garages/layovers"},
-                        },
-                    },
+                    # The binding is FLAT, deliberately. Two measured reasons:
+                    #
+                    #  * A bare {"type":"object"} scope came back as {} on every
+                    #    claim — the model had nowhere to write the binding.
+                    #  * Declaring nested `properties` under scope was WORSE:
+                    #    Vertex collapsed the object to its first property and
+                    #    the model crammed everything into that one string —
+                    #    trip = "T1 Cruz / T1 stop seq 1 / stop Kempegowda Bus
+                    #    Stn / seq 1 / boardable true / route ROUTE 12A / ..."
+                    #    `maxLength` on the nested field was ignored too.
+                    #
+                    # Flat scalar fields round-trip reliably. `parse_claims`
+                    # reassembles them into SourceClaim.scope.
+                    "trip": {"type": "string",
+                             "description": "trip/column id exactly as printed, e.g. T1"},
+                    "stop": {"type": "string",
+                             "description": "stop name for this cell's ROW, verbatim"},
+                    "seq": {"type": "integer",
+                            "description": "1-based row position within the trip"},
+                    "boardable": {"type": "boolean",
+                                  "description": "false for a depot/garage/layover"},
                     "alternatives": {
                         "type": "array",
                         "items": {
@@ -174,9 +173,13 @@ agency_phone), route (route_long_name), stop (stop_name), service (days),
 exception (added | removed — these two spellings only), trip (trip_headsign),
 stop_time (departure).
 
-Bind every stop_time with scope {"trip": ..., "stop": ..., "seq": N}. Use
-scope {"boardable": false} for garages, layovers and other timing points a
-passenger cannot board.
+For EVERY stop_time claim you MUST set all four binding fields as TOP-LEVEL
+fields on the claim (not nested):
+  trip  — the column heading exactly as printed, e.g. "T1"
+  stop  — the row's stop name, verbatim, e.g. "City Hospital"
+  seq   — the 1-based row number of that stop, e.g. 3
+  boardable — false for a depot, garage or layover; true otherwise
+Emit one stop claim per row label as well, with its own bbox.
 """
 
 
@@ -275,6 +278,25 @@ def _coerce_bbox(raw: Any) -> tuple[float, float, float, float] | None:
     return (clamp(x0), clamp(y0), clamp(x1), clamp(y1))
 
 
+def _scope_from_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Reassemble the flat binding fields into a scope dict.
+
+    Vertex collapses nested response-schema objects to their first property,
+    so the binding is transmitted flat and rebuilt here (measured 2026-08-27).
+    A legacy nested `scope` is still honoured if present.
+    """
+    scope: dict[str, Any] = dict(row.get("scope") or {})
+    for key in ("trip", "stop", "route", "service"):
+        v = row.get(key)
+        if isinstance(v, str) and v.strip():
+            scope.setdefault(key, v.strip())
+    if isinstance(row.get("seq"), int):
+        scope.setdefault("seq", row["seq"])
+    if isinstance(row.get("boardable"), bool):
+        scope.setdefault("boardable", row["boardable"])
+    return scope
+
+
 def _mint_claim_id(row: dict[str, Any], index: int) -> str:
     """Derive a stable id from the binding rather than asking the model.
 
@@ -287,7 +309,7 @@ def _mint_claim_id(row: dict[str, Any], index: int) -> str:
         response (measured 2026-08-27).
     """
     kind = str(row.get("kind", "x"))
-    scope = row.get("scope") or {}
+    scope = _scope_from_row(row)
     parts = [kind]
     for key in ("route", "trip", "stop", "service"):
         v = scope.get(key)
@@ -340,7 +362,7 @@ def parse_claims(payload: str, *, agency_id: str, source_file: str,
             provenance=Provenance(source_file=source_file, page=page,
                                   bbox=_coerce_bbox(row.get("bbox"))),
             alternatives=alts,
-            scope=dict(row.get("scope") or {}),
+            scope=_scope_from_row(row),
         ))
     return ClaimSet(agency_id=agency_id, claims=claims)
 
