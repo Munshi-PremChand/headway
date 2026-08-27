@@ -209,6 +209,28 @@ class GenAIClient:
                 "billing, no card) and export GOOGLE_API_KEY.")
         return genai.Client(api_key=key)
 
+    @staticmethod
+    def answer_text(resp: Any) -> str:
+        """Extract ONLY the answer, never the reasoning.
+
+        MEASURED 2026-08-27: with thinking enabled, a candidate's `parts` holds
+        a THOUGHT part alongside the answer part. Concatenating both glues the
+        reasoning summary onto the JSON and every parse fails with
+        "Unterminated string" at an inconsistent offset — which reads like
+        truncation and is not. Thought parts carry `thought=True`.
+        """
+        cand = (getattr(resp, "candidates", None) or [None])[0]
+        if cand is None or not getattr(cand, "content", None):
+            return ""
+        finish = getattr(cand, "finish_reason", None)
+        if finish is not None and str(finish).upper().endswith("MAX_TOKENS"):
+            raise RuntimeError(
+                "response hit MAX_TOKENS — incomplete, must not be parsed as "
+                "a result")
+        return "".join(
+            (p.text or "") for p in (cand.content.parts or [])
+            if not getattr(p, "thought", False) and getattr(p, "text", None))
+
     def generate(self, *, model: str, system: str, parts: list[Any],
                  schema: dict[str, Any]) -> str:
         from google.genai import types
@@ -225,7 +247,7 @@ class GenAIClient:
                 # from sampling parameters.
             ),
         )
-        return resp.text or "{}"
+        return self.answer_text(resp) or "{}"
 
 
 def _coerce_bbox(raw: Any) -> tuple[float, float, float, float] | None:

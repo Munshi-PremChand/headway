@@ -176,3 +176,43 @@ def test_thinking_levels_exclude_minimal():
     from headway.reader.gemini_reader import THINKING_LEVELS
     assert "minimal" not in THINKING_LEVELS
     assert set(THINKING_LEVELS) == {"low", "medium", "high"}
+
+
+# ---------------------------- thought-part separation (measured 2026-08-27)
+
+class _P:
+    def __init__(self, text, thought=False):
+        self.text, self.thought = text, thought
+
+
+class _C:
+    def __init__(self, parts, finish=None):
+        self.content = type("X", (), {"parts": parts})()
+        self.finish_reason = finish
+
+
+class _R:
+    def __init__(self, parts, finish=None):
+        self.candidates = [_C(parts, finish)]
+
+
+def test_thought_parts_are_excluded_from_the_answer():
+    """With thinking on, a candidate carries a THOUGHT part beside the answer.
+    Concatenating both glues reasoning prose onto the JSON and every parse
+    fails with 'Unterminated string' at an inconsistent offset."""
+    from headway.reader.gemini_reader import GenAIClient
+    resp = _R([_P("Let me examine the grid...\nRow 3 looks blurred.", thought=True),
+               _P('{"claims": []}')])
+    assert GenAIClient.answer_text(resp) == '{"claims": []}'
+
+
+def test_max_tokens_response_is_refused_not_parsed():
+    from headway.reader.gemini_reader import GenAIClient
+    resp = _R([_P('{"claims": [{"kind"')], finish="MAX_TOKENS")
+    with pytest.raises(RuntimeError, match="MAX_TOKENS"):
+        GenAIClient.answer_text(resp)
+
+
+def test_empty_candidate_returns_empty_not_crash():
+    from headway.reader.gemini_reader import GenAIClient
+    assert GenAIClient.answer_text(_R([])) == ""

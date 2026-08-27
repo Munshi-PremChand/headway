@@ -73,8 +73,16 @@ def call(img_b64: str, level: str, tok: str) -> tuple[dict, float, dict]:
     with urllib.request.urlopen(req, timeout=300) as r:
         data = json.loads(r.read())
     elapsed = time.time() - t0
-    text = "".join(p.get("text", "")
-                   for p in data["candidates"][0]["content"]["parts"])
+    cand = data["candidates"][0]
+    # MEASURED 2026-08-27: with thinking enabled, `parts` contains a THOUGHT
+    # part alongside the answer part. Concatenating both glues the reasoning
+    # summary onto the JSON and every parse fails with "Unterminated string"
+    # at an inconsistent offset. Thought parts carry `"thought": true`.
+    text = "".join(p.get("text", "") for p in cand["content"]["parts"]
+                   if not p.get("thought"))
+    if cand.get("finishReason") not in (None, "STOP"):
+        raise RuntimeError(f"finishReason={cand.get('finishReason')} — "
+                           f"response incomplete, not a measurement")
     return json.loads(text), elapsed, data.get("usageMetadata", {})
 
 
@@ -200,12 +208,50 @@ def main() -> int:
               f"{statistics.mean(r['secs'] for r in rs):>7.1f} "
               f"{statistics.mean(r['thoughts'] for r in rs):>9.0f}")
 
-    if "low" in summary and "high" in summary:
-        delta = summary["low"] - summary["high"]
-        print(f"\nPRE-COMMITTED READ: high yields {delta:+.1f} fewer "
-              f"confident-wrong cells than low.")
-        print("VERDICT:", "USE HIGH" if delta >= 2 else
-              "TIE -> USE LOW (cheaper); spend the budget elsewhere")
+    # ------------------------------------------------------------------
+    # A HARNESS THAT SCORED NOTHING MUST NOT EMIT A VERDICT.
+    # This guard exists because two earlier runs of this script printed a
+    # clean summary table and the confident conclusion "TIE -> USE LOW" while
+    # every single cell had gone unmatched. A broken measurement that reports
+    # a result is worse than one that crashes: it is quotable.
+    # ------------------------------------------------------------------
+    total_runs = sum(len(results[l]) for l in LEVELS)
+    total_scored = sum(r["correct"] + r["wrong"] + r["abstained"]
+                       for l in LEVELS for r in results[l])
+    expected = len(truth["cells"])
+    complete = {l: [r for r in results[l]
+                    if r["correct"] + r["wrong"] + r["abstained"] >= expected]
+                for l in LEVELS}
+
+    if total_runs < runs * len(LEVELS):
+        print(f"\n!! {runs * len(LEVELS) - total_runs} of {runs * len(LEVELS)} "
+              f"calls FAILED. Verdict withheld.")
+        return 1
+    if total_scored == 0:
+        print("\n!! NOTHING SCORED across every run. The harness is broken, "
+              "not the model. Verdict withheld.")
+        return 1
+    thin = [l for l in LEVELS if len(complete[l]) < 2]
+    if thin:
+        print(f"\n!! Levels with fewer than 2 complete runs ({expected} cells "
+              f"each): {thin}. Verdict withheld — this is not enough evidence.")
+        return 1
+
+    lo = statistics.mean(len(r["confident_wrong"]) for r in complete["low"])
+    hi = statistics.mean(len(r["confident_wrong"]) for r in complete["high"])
+    lo_honest = sum(1 for r in complete["low"]
+                    if r["smudge"].startswith(("ABSTAINED", "HEDGED")))
+    hi_honest = sum(1 for r in complete["high"]
+                    if r["smudge"].startswith(("ABSTAINED", "HEDGED")))
+    delta = lo - hi
+    print(f"\nPRE-COMMITTED READ: high yields {delta:+.1f} fewer confident-wrong "
+          f"cells than low (n={len(complete['low'])} vs {len(complete['high'])} "
+          f"complete runs).")
+    print(f"Honest handling of the illegible cell: "
+          f"low {lo_honest}/{len(complete['low'])}, "
+          f"high {hi_honest}/{len(complete['high'])}.")
+    print("VERDICT:", "USE HIGH" if delta >= 2 else
+          "no separation on confident-wrong -> USE LOW (cheaper, ~6x faster)")
     return 0
 
 
