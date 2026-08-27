@@ -2,7 +2,7 @@ VALIDATOR := vendor/gtfs-validator-8.0.1-cli.jar
 CLAIMS    := fixtures/claims/sample_agency.json
 PY        := .venv/bin/python
 
-.PHONY: setup build validate ambiguity test clean
+.PHONY: setup build validate ambiguity test calibrate fixture clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q pytest
@@ -24,5 +24,13 @@ ambiguity:
 test:
 	$(PY) -m pytest tests -q
 
+fixture:
+	$(PY) scripts/make_fixture_timetable.py fixtures/scans
+
+# Re-runs the thinking-level measurement against Vertex. Needs gcloud auth and
+# a billing-enabled project. Withholds its verdict if any call fails.
+calibrate:
+	$(PY) scripts/calibrate_thinking.py 3
+
 clean:
-	rm -rf out __pycache__ .pytest_cache
+	rm -rf out __pycache__ .pytest_cache .tmp
