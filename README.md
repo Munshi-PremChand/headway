@@ -4,12 +4,34 @@
 cannot read.**
 
 India has **20 transit feeds** in the Mobility Database — the catalogue Google Maps, Transit and
-OpenTripPlanner draw from. France has **1,127**. That is one catalogued feed per **71,400,000** Indians
-against one per **60,337** French people, and the reason is not technology: Indian timetables exist as
-photocopies, board notices and painted boards, not CSVs.
+OpenTripPlanner draw from. **Nine of them are still active.** France has 1,127, of which 859 are active.
 
-*(Counts measured 2026-08-27 from `files.mobilitydatabase.org/feeds_v2.csv`, 6,496 feeds total. Reproduce
-in thirty seconds: filter `location.country_code == IN`.)*
+> **One active catalogued transit feed per 161 million Indians.
+> In France, one per 79,359. A 2,031-fold gap.**
+
+The reason is not technology. Indian timetables exist as photocopies, board notices and painted boards,
+not CSVs.
+
+Reproduce it in thirty seconds:
+
+```bash
+curl -sO https://files.mobilitydatabase.org/feeds_v2.csv
+python3 -c "
+import csv,collections
+r=[x for x in csv.DictReader(open('feeds_v2.csv')) if x['location.country_code']=='IN']
+print(len(r), collections.Counter(x['status'] for x in r))"
+# 20 Counter({'active': 9, 'inactive': 8, 'deprecated': 3})
+```
+
+*(Measured 2026-08-27, 6,496 feeds total. Population: World Bank `SP.POP.TOTL`, 2024.)*
+
+**India's feeds are not merely missing — they are lapsing.** A liveness check of all 20 download URLs on
+2026-08-27 found **8 working**. Kochi Metro, India's *first* GTFS agency, is deprecated with a dead DNS
+name. Delhi's DTC and Maharashtra's MSRTC both 404. Hyderabad Metro Rail — the only official active metro
+feed — returns an HTML interstitial instead of a ZIP. India has **zero** GTFS-Realtime feeds catalogued.
+
+That is the thesis in one sentence: *a feed is not a one-time artifact, it is a build that has to keep
+passing.*
 
 HEADWAY reads those artifacts and produces a standards-valid GTFS feed — or refuses, loudly, with the
 reason attached.
