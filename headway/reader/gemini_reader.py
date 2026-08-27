@@ -85,14 +85,19 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
             "type": "array",
             "items": {
                 "type": "object",
-                "required": ["claim_id", "kind", "field", "value",
-                             "confidence", "bbox", "scope"],
+                # NOTE: claim_id is deliberately ABSENT. See _mint_claim_id.
+                # MEASURED 2026-08-27: with an unbounded `claim_id` string in a
+                # grammar-constrained schema, gemini-3.7-flash fell into a
+                # degenerate repetition loop — "_t1_t1_t1_t1..." for 32,754
+                # tokens until finishReason=MAX_TOKENS. Identifiers are a
+                # deterministic function of the binding; asking a model to
+                # invent them buys nothing and can hang the whole read.
+                "required": ["kind", "field", "value", "confidence", "bbox", "scope"],
                 "properties": {
-                    "claim_id": {"type": "string"},
                     "kind": {"type": "string",
                              "enum": [k.value for k in ClaimKind]},
-                    "field": {"type": "string"},
-                    "value": {"type": "string",
+                    "field": {"type": "string", "maxLength": 40},
+                    "value": {"type": "string", "maxLength": 120,
                               "description": f"the literal cell text, or {ILLEGIBLE}"},
                     "confidence": {"type": "number"},
                     "bbox": {"type": "array", "items": {"type": "number"},
@@ -108,9 +113,9 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                         "type": "object",
                         "description": "entity binding — REQUIRED for stop_time",
                         "properties": {
-                            "trip": {"type": "string",
+                            "trip": {"type": "string", "maxLength": 40,
                                      "description": "trip/column id, e.g. T1"},
-                            "stop": {"type": "string",
+                            "stop": {"type": "string", "maxLength": 80,
                                      "description": "stop name or key this cell sits on"},
                             "seq": {"type": "integer",
                                     "description": "1-based row order within the trip"},
@@ -248,6 +253,34 @@ def _coerce_bbox(raw: Any) -> tuple[float, float, float, float] | None:
     return (clamp(x0), clamp(y0), clamp(x1), clamp(y1))
 
 
+def _mint_claim_id(row: dict[str, Any], index: int) -> str:
+    """Derive a stable id from the binding rather than asking the model.
+
+    Two reasons, one of them measured the hard way:
+      * A claim's identity IS its binding — kind plus trip plus sequence.
+        A model inventing a label adds nondeterminism to something that has a
+        correct deterministic answer.
+      * With an unbounded `claim_id` in the response schema, gemini-3.7-flash
+        looped on that field for 32,754 tokens and never produced a parseable
+        response (measured 2026-08-27).
+    """
+    kind = str(row.get("kind", "x"))
+    scope = row.get("scope") or {}
+    parts = [kind]
+    for key in ("route", "trip", "stop", "service"):
+        v = scope.get(key)
+        if v:
+            parts.append(str(v))
+    if scope.get("seq") is not None:
+        parts.append(f"s{scope['seq']}")
+    if len(parts) == 1:                      # nothing to bind to — fall back
+        parts.append(str(row.get("field", "")) or f"i{index}")
+    slug = "_".join(
+        "".join(ch if ch.isalnum() else "-" for ch in p).strip("-").lower()
+        for p in parts if p)
+    return slug or f"claim_{index}"
+
+
 def parse_claims(payload: str, *, agency_id: str, source_file: str,
                  page: int = 1) -> ClaimSet:
     """Turn a model JSON response into a validated ClaimSet. Never trusts it."""
@@ -256,6 +289,7 @@ def parse_claims(payload: str, *, agency_id: str, source_file: str,
     except json.JSONDecodeError as exc:
         raise ValueError(f"reader returned non-JSON: {exc}") from exc
 
+    seen_ids: dict[str, int] = {}
     claims: list[SourceClaim] = []
     for i, row in enumerate(data.get("claims", [])):
         try:
@@ -269,8 +303,14 @@ def parse_claims(payload: str, *, agency_id: str, source_file: str,
             for a in (row.get("alternatives") or [])
             if a.get("value") not in (None, "", value)
         ]
+        cid = _mint_claim_id(row, i)
+        if cid in seen_ids:                  # same binding twice -> disambiguate
+            seen_ids[cid] += 1
+            cid = f"{cid}_{seen_ids[cid]}"
+        else:
+            seen_ids[cid] = 1
         claims.append(SourceClaim(
-            claim_id=str(row.get("claim_id") or f"r{i}"),
+            claim_id=cid,
             kind=kind,
             field=str(row.get("field", "")),
             value=value,

@@ -2,6 +2,57 @@
 
 Every entry records what was **measured**, not what was intended.
 
+## 2026-08-27 — the reader schema was breaking the reader
+
+Three defects in `CLAIM_RESPONSE_SCHEMA`, all found by trying to measure something else. None would have
+been visible without a live call.
+
+**1. `scope` came back empty on every claim.** Declared as a bare `{"type": "object"}` with no properties,
+Vertex structured output returned `scope: {}` for all 20 cells. The model *knew* the binding — its own
+generated ids read `claim_st_t1_s1` — but the schema gave it nowhere to write it. In production the
+Composer, which requires `scope.trip`, would have refused every claim. Fixed by declaring the properties
+explicitly.
+
+**2. An unbounded `claim_id` sent the model into a repetition loop.** With `claim_id` as a free string
+inside a grammar-constrained schema:
+
+```
+finishReason: MAX_TOKENS
+candidatesTokenCount: 32754
+text tail: "_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1_t1..."
+```
+
+32,754 output tokens spent repeating one id fragment, never producing parseable JSON. *Fixed by removing
+`claim_id` from the schema entirely* — an identifier is a deterministic function of the binding, so
+`_mint_claim_id` derives it in code. String fields also got `maxLength` bounds. Result on the same fixture:
+`finishReason: STOP`, **1,320 output tokens (a 25× reduction), 9.3s**.
+
+**3. Row/column bookkeeping was being asked of the model.** Added `headway/reader/grid.py`, which
+reconstructs the timetable grid by **clustering bounding-box coordinates**. A printed timetable is a
+matrix; which row and column a cell occupies is geometry with one correct answer, not judgement. The model
+reads a cell and locates it; deterministic code decides what that location *means*.
+
+```
+grid report: rows_detected=5 cols_detected=4 stops_labelled=5 trips_labelled=4
+SCORED against frozen ground truth: correct=20 wrong=0 abstained=0 unmatched=0
+```
+
+Clustering also degrades gracefully on a skewed scan, where exact-coordinate matching would not.
+
+### A near-miss worth recording
+
+The calibration run that found defect 1 printed a clean summary table and the verdict
+**"TIE → USE LOW"**. It looked like a measurement. It was `0/0/0` across all three thinking levels, which
+is impossible if anything were being scored — a broken harness producing a confident, quotable, entirely
+false conclusion. It was caught only because all-zeros was too implausible to believe. This is precisely
+the failure class in `_shared/OPERATING_DOCTRINE.md`: *fluency is not evidence.*
+
+### Scoring correction
+
+The scorer counted a correct reading of the **deliberately illegible** cell as a success. It is not — the
+model had no way to read it, so a right answer there is an unearned guess. Now scored as
+`ABSTAINED` / `HEDGED` (both honest) versus `LUCKY-GUESS` / `WRONG-GUESS` (both failures).
+
 ## 2026-08-27 — ADK pipeline and a publish gate that fails closed
 
 **Added.** ADK 2.8 pipeline in `headway/pipeline/agents.py`:

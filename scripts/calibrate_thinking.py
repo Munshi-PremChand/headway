@@ -31,8 +31,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from headway.reader.gemini_reader import (  # noqa: E402
-    CLAIM_RESPONSE_SCHEMA, DEFAULT_MODEL, SYSTEM_PROMPT,
+    CLAIM_RESPONSE_SCHEMA, DEFAULT_MODEL, SYSTEM_PROMPT, parse_claims,
 )
+from headway.reader.grid import bind_grid, rebind_claim_ids  # noqa: E402
 
 PROJECT = "headway-atah-2026"
 LOCATION = "global"          # verified: NOT us-central1
@@ -92,7 +93,19 @@ def norm(v: str) -> str:
     return s
 
 
-def score(claims: list[dict], truth: dict) -> dict:
+def score(raw_text: str, truth: dict) -> dict:
+    """Grid-bind first, then score. Geometry decides row/column, not the model."""
+    cs = parse_claims(raw_text, agency_id="route12a",
+                      source_file="route12a_timetable.png")
+    bound, _report = bind_grid(cs)
+    claims = [{"kind": c.kind.value, "value": c.value, "scope": c.scope,
+               "confidence": c.confidence,
+               "alternatives": [{"value": a.value} for a in c.alternatives]}
+              for c in rebind_claim_ids(bound).active()]
+    return _score_claims(claims, truth)
+
+
+def _score_claims(claims: list[dict], truth: dict) -> dict:
     cells = {(c["trip"], c["seq"]): c for c in truth["cells"]}
     smudged = truth["smudged_cell"]
 
@@ -111,7 +124,16 @@ def score(claims: list[dict], truth: dict) -> dict:
             continue
         got, want = norm(cl.get("value", "")), norm(cell["value"])
         if cell["is_smudged"]:
-            smudge_answer = "ABSTAINED" if got == ILLEGIBLE else f"GUESSED {got}"
+            # A "correct" reading of an ILLEGIBLE cell is an unearned guess,
+            # not a success. The model had no way to read it. Score honestly.
+            if got == ILLEGIBLE:
+                smudge_answer = "ABSTAINED"
+            elif cl.get("alternatives"):
+                smudge_answer = f"HEDGED {got}(+alt) conf={cl.get('confidence')}"
+            elif got == want:
+                smudge_answer = f"LUCKY-GUESS {got} conf={cl.get('confidence')}"
+            else:
+                smudge_answer = f"WRONG-GUESS {got} conf={cl.get('confidence')}"
         if got == ILLEGIBLE:
             abstained += 1
         elif got == want:
@@ -135,8 +157,8 @@ def main() -> int:
 
     print(f"model={DEFAULT_MODEL}  location={LOCATION}  runs/level={runs}")
     print(f"fixture={img.name}  cells={len(truth['cells'])}  "
-          f"smudged={truth['smudge d_cell']['trip'] if False else truth['smudged_cell']['trip']}"
-          f"@seq4 truth={truth['smudged_cell']['true_value']}\n")
+          f"smudged={truth['smudged_cell']['trip']}@seq4 "
+          f"truth={truth['smudged_cell']['true_value']} (must ABSTAIN or HEDGE)\n")
 
     results: dict[str, list[dict]] = {}
     for level in LEVELS:
@@ -144,14 +166,14 @@ def main() -> int:
         for i in range(runs):
             try:
                 payload, secs, usage = call(b64, level, tok)
-                s = score(payload.get("claims", []), truth)
+                s = score(json.dumps(payload), truth)
                 s["secs"] = secs
                 s["thoughts"] = usage.get("thoughtsTokenCount", 0)
                 s["out_tokens"] = usage.get("candidatesTokenCount", 0)
                 results[level].append(s)
                 print(f"  {level:>6} run{i+1}: correct={s['correct']:>2} "
                       f"wrong={s['wrong']} abstained={s['abstained']} "
-                      f"smudge={s['smudge']:<16} {secs:5.1f}s "
+                      f"smudge={s['smudge']:<34} {secs:5.1f}s "
                       f"thoughts={s['thoughts']}")
                 for cw in s["confident_wrong"]:
                     print(f"          WRONG  {cw}")
@@ -161,7 +183,7 @@ def main() -> int:
 
     print("\n" + "=" * 72)
     print(f"{'level':>8} {'correct':>8} {'CONF-WRONG':>11} {'abstain':>8} "
-          f"{'smudge OK':>10} {'secs':>7} {'thoughts':>9}")
+          f"{'honest?':>10} {'secs':>7} {'thoughts':>9}")
     print("=" * 72)
     summary = {}
     for level in LEVELS:
@@ -174,7 +196,7 @@ def main() -> int:
         print(f"{level:>8} {statistics.mean(r['correct'] for r in rs):>8.1f} "
               f"{cw:>11.1f} "
               f"{statistics.mean(r['abstained'] for r in rs):>8.1f} "
-              f"{sum(1 for r in rs if r['smudge'] == 'ABSTAINED'):>6}/{len(rs)}   "
+              f"{sum(1 for r in rs if r['smudge'].startswith(('ABSTAINED','HEDGED'))):>6}/{len(rs)}   "
               f"{statistics.mean(r['secs'] for r in rs):>7.1f} "
               f"{statistics.mean(r['thoughts'] for r in rs):>9.0f}")
 
