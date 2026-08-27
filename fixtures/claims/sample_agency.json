@@ -1,0 +1,525 @@
+{
+  "agency_id": "cliffside_transit",
+  "_note": "Hand-authored claim set standing in for the reader agent's output. Deliberately exercises the hard paths: a trip crossing midnight, an ILLEGIBLE cell, an ambiguous cell with two bounded alternatives, a non-boardable garage timing point, an em-dash 'no service' cell, and school-day service expressed only in calendar_dates.",
+  "claims": [
+    {
+      "claim_id": "a1",
+      "kind": "agency",
+      "field": "agency_name",
+      "value": "Cliffside County Transit",
+      "confidence": 1.0,
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.03,
+          0.55,
+          0.09
+        ]
+      }
+    },
+    {
+      "claim_id": "a2",
+      "kind": "agency",
+      "field": "agency_timezone",
+      "value": "America/New_York",
+      "confidence": 1.0,
+      "provenance": {
+        "source_file": "board_notice.pdf",
+        "page": 1
+      }
+    },
+    {
+      "claim_id": "a3",
+      "kind": "agency",
+      "field": "agency_url",
+      "value": "https://cliffsidecountytransit.org",
+      "confidence": 0.9,
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.92,
+          0.48,
+          0.96
+        ]
+      }
+    },
+    {
+      "claim_id": "a4",
+      "kind": "agency",
+      "field": "agency_phone",
+      "value": "555-0142",
+      "confidence": 0.95,
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.6,
+          0.92,
+          0.9,
+          0.96
+        ]
+      }
+    },
+    {
+      "claim_id": "r1",
+      "kind": "route",
+      "field": "route_long_name",
+      "value": "Ridge Loop",
+      "confidence": 1.0,
+      "scope": {
+        "route": "RIDGE",
+        "short_name": "R",
+        "route_type": 3
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.12,
+          0.4,
+          0.17
+        ]
+      }
+    },
+    {
+      "claim_id": "r2",
+      "kind": "route",
+      "field": "route_long_name",
+      "value": "Clinic Shuttle",
+      "confidence": 1.0,
+      "scope": {
+        "route": "CLINIC",
+        "short_name": "C",
+        "route_type": 3
+      },
+      "provenance": {
+        "source_file": "timetable_p2.jpg",
+        "page": 2,
+        "bbox": [
+          0.06,
+          0.12,
+          0.44,
+          0.17
+        ]
+      }
+    },
+    {
+      "claim_id": "s1",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Courthouse Square",
+      "confidence": 1.0,
+      "scope": {
+        "stop": "courthouse",
+        "lat": 39.2841,
+        "lon": -80.4012,
+        "wheelchair_boarding": 1
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.22,
+          0.28,
+          0.26
+        ]
+      }
+    },
+    {
+      "claim_id": "s2",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Ridge Road at Mill",
+      "confidence": 0.92,
+      "scope": {
+        "stop": "ridge_mill",
+        "lat": 39.2955,
+        "lon": -80.3874
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.27,
+          0.3,
+          0.31
+        ]
+      }
+    },
+    {
+      "claim_id": "s3",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Regional Dialysis Center",
+      "confidence": 1.0,
+      "scope": {
+        "stop": "dialysis",
+        "lat": 39.3102,
+        "lon": -80.3661,
+        "wheelchair_boarding": 1
+      },
+      "provenance": {
+        "source_file": "timetable_p2.jpg",
+        "page": 2,
+        "bbox": [
+          0.06,
+          0.27,
+          0.36,
+          0.31
+        ]
+      }
+    },
+    {
+      "claim_id": "s4",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Maintenance Garage",
+      "confidence": 1.0,
+      "scope": {
+        "stop": "garage",
+        "lat": 39.279,
+        "lon": -80.413
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.06,
+          0.32,
+          0.3,
+          0.36
+        ]
+      }
+    },
+    {
+      "claim_id": "sv1",
+      "kind": "service",
+      "field": "days",
+      "value": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "confidence": 1.0,
+      "scope": {
+        "service": "WEEKDAY"
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.62,
+          0.12,
+          0.94,
+          0.17
+        ]
+      }
+    },
+    {
+      "claim_id": "sv2",
+      "kind": "service",
+      "field": "days",
+      "value": [
+        "saturday"
+      ],
+      "confidence": 0.9,
+      "scope": {
+        "service": "SATURDAY"
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.62,
+          0.18,
+          0.94,
+          0.22
+        ]
+      }
+    },
+    {
+      "claim_id": "ex1",
+      "kind": "exception",
+      "field": "removed",
+      "value": [
+        "2026-11-26",
+        "2026-12-25",
+        "2027-01-01"
+      ],
+      "confidence": 1.0,
+      "scope": {
+        "service": "WEEKDAY"
+      },
+      "provenance": {
+        "source_file": "board_notice.pdf",
+        "page": 1,
+        "bbox": [
+          0.1,
+          0.44,
+          0.86,
+          0.52
+        ]
+      }
+    },
+    {
+      "claim_id": "t1",
+      "kind": "trip",
+      "field": "trip_headsign",
+      "value": "Dialysis Center",
+      "confidence": 1.0,
+      "scope": {
+        "trip": "CLINIC-AM",
+        "route": "CLINIC",
+        "service": "WEEKDAY",
+        "wheelchair_accessible": 1
+      }
+    },
+    {
+      "claim_id": "t2",
+      "kind": "trip",
+      "field": "trip_headsign",
+      "value": "Courthouse Square",
+      "confidence": 1.0,
+      "scope": {
+        "trip": "RIDGE-EVE",
+        "route": "RIDGE",
+        "service": "WEEKDAY"
+      }
+    },
+    {
+      "claim_id": "t3",
+      "kind": "trip",
+      "field": "trip_headsign",
+      "value": "Ridge Loop",
+      "confidence": 1.0,
+      "scope": {
+        "trip": "RIDGE-SAT",
+        "route": "RIDGE",
+        "service": "SATURDAY"
+      }
+    },
+    {
+      "claim_id": "c1",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "7:15a",
+      "confidence": 0.98,
+      "scope": {
+        "trip": "CLINIC-AM",
+        "stop": "courthouse",
+        "seq": 1
+      },
+      "provenance": {
+        "source_file": "timetable_p2.jpg",
+        "page": 2,
+        "bbox": [
+          0.4,
+          0.27,
+          0.5,
+          0.31
+        ]
+      }
+    },
+    {
+      "claim_id": "c2",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "8:35",
+      "confidence": 0.71,
+      "scope": {
+        "trip": "CLINIC-AM",
+        "stop": "dialysis",
+        "seq": 2
+      },
+      "alternatives": [
+        {
+          "value": "8:55",
+          "confidence": 0.29,
+          "rationale": "the third glyph is a smudged 3 or 5; the column pitch is consistent with either"
+        }
+      ],
+      "provenance": {
+        "source_file": "timetable_p2.jpg",
+        "page": 2,
+        "bbox": [
+          0.4,
+          0.32,
+          0.5,
+          0.36
+        ]
+      }
+    },
+    {
+      "claim_id": "c3",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "23:45",
+      "confidence": 0.96,
+      "scope": {
+        "trip": "RIDGE-EVE",
+        "stop": "courthouse",
+        "seq": 1
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.4,
+          0.62,
+          0.5,
+          0.66
+        ]
+      }
+    },
+    {
+      "claim_id": "c4",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "00:15",
+      "confidence": 0.94,
+      "scope": {
+        "trip": "RIDGE-EVE",
+        "stop": "ridge_mill",
+        "seq": 2
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.52,
+          0.62,
+          0.62,
+          0.66
+        ]
+      }
+    },
+    {
+      "claim_id": "c5",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "00:40",
+      "confidence": 0.68,
+      "scope": {
+        "trip": "RIDGE-EVE",
+        "stop": "garage",
+        "seq": 3,
+        "boardable": false
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.64,
+          0.62,
+          0.74,
+          0.66
+        ]
+      },
+      "alternatives": [
+        {
+          "value": "00:10",
+          "confidence": 0.32,
+          "rationale": "the leading digit is a smudged 4 or 1; both are consistent with the column"
+        }
+      ]
+    },
+    {
+      "claim_id": "c6",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "9:05a",
+      "confidence": 0.97,
+      "scope": {
+        "trip": "RIDGE-SAT",
+        "stop": "courthouse",
+        "seq": 1
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.4,
+          0.72,
+          0.5,
+          0.76
+        ]
+      }
+    },
+    {
+      "claim_id": "c7",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "__ILLEGIBLE__",
+      "confidence": 0.0,
+      "scope": {
+        "trip": "RIDGE-SAT",
+        "stop": "ridge_mill",
+        "seq": 2
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.52,
+          0.72,
+          0.62,
+          0.76
+        ]
+      }
+    },
+    {
+      "claim_id": "c8",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "10:20a",
+      "confidence": 0.95,
+      "scope": {
+        "trip": "RIDGE-SAT",
+        "stop": "dialysis",
+        "seq": 3
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.64,
+          0.72,
+          0.74,
+          0.76
+        ]
+      }
+    },
+    {
+      "claim_id": "c9",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "\u2014",
+      "confidence": 1.0,
+      "scope": {
+        "trip": "RIDGE-SAT",
+        "stop": "garage",
+        "seq": 4
+      },
+      "provenance": {
+        "source_file": "timetable_p1.jpg",
+        "page": 1,
+        "bbox": [
+          0.76,
+          0.72,
+          0.86,
+          0.76
+        ]
+      }
+    }
+  ],
+  "feed_start": "2026-08-24"
+}
