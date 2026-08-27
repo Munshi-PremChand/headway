@@ -1,0 +1,310 @@
+{
+  "note": "Ground truth for a RENDERED timetable. Easier than a real photocopy; use for setting-vs-setting comparison only.",
+  "smudged_cell": {
+    "trip": "T2",
+    "stop": "Dialysis Centre",
+    "true_value": "10:30"
+  },
+  "cells": [
+    {
+      "trip": "T1",
+      "stop": "Kempegowda Bus Stn",
+      "seq": 1,
+      "value": "06:15",
+      "bbox": [
+        0.3790322580645161,
+        0.24222222222222223,
+        0.45161290322580644,
+        0.2777777777777778
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T2",
+      "stop": "Kempegowda Bus Stn",
+      "seq": 1,
+      "value": "09:40",
+      "bbox": [
+        0.5,
+        0.24222222222222223,
+        0.5725806451612904,
+        0.2777777777777778
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T3",
+      "stop": "Kempegowda Bus Stn",
+      "seq": 1,
+      "value": "14:05",
+      "bbox": [
+        0.6209677419354839,
+        0.24222222222222223,
+        0.6935483870967742,
+        0.2777777777777778
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T4",
+      "stop": "Kempegowda Bus Stn",
+      "seq": 1,
+      "value": "23:30",
+      "bbox": [
+        0.7419354838709677,
+        0.24222222222222223,
+        0.8145161290322581,
+        0.2777777777777778
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T1",
+      "stop": "Majestic Metro",
+      "seq": 2,
+      "value": "06:28",
+      "bbox": [
+        0.3790322580645161,
+        0.3111111111111111,
+        0.45161290322580644,
+        0.3466666666666667
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T2",
+      "stop": "Majestic Metro",
+      "seq": 2,
+      "value": "09:53",
+      "bbox": [
+        0.5,
+        0.3111111111111111,
+        0.5725806451612904,
+        0.3466666666666667
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T3",
+      "stop": "Majestic Metro",
+      "seq": 2,
+      "value": "14:18",
+      "bbox": [
+        0.6209677419354839,
+        0.3111111111111111,
+        0.6935483870967742,
+        0.3466666666666667
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T4",
+      "stop": "Majestic Metro",
+      "seq": 2,
+      "value": "23:43",
+      "bbox": [
+        0.7419354838709677,
+        0.3111111111111111,
+        0.8145161290322581,
+        0.3466666666666667
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T1",
+      "stop": "City Hospital",
+      "seq": 3,
+      "value": "06:47",
+      "bbox": [
+        0.3790322580645161,
+        0.38,
+        0.45161290322580644,
+        0.41555555555555557
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T2",
+      "stop": "City Hospital",
+      "seq": 3,
+      "value": "10:12",
+      "bbox": [
+        0.5,
+        0.38,
+        0.5725806451612904,
+        0.41555555555555557
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T3",
+      "stop": "City Hospital",
+      "seq": 3,
+      "value": "\u2014",
+      "bbox": [
+        0.6209677419354839,
+        0.38,
+        0.6935483870967742,
+        0.41555555555555557
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": true
+    },
+    {
+      "trip": "T4",
+      "stop": "City Hospital",
+      "seq": 3,
+      "value": "00:02",
+      "bbox": [
+        0.7419354838709677,
+        0.38,
+        0.8145161290322581,
+        0.41555555555555557
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T1",
+      "stop": "Dialysis Centre",
+      "seq": 4,
+      "value": "07:05",
+      "bbox": [
+        0.3790322580645161,
+        0.4488888888888889,
+        0.45161290322580644,
+        0.48444444444444446
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T2",
+      "stop": "Dialysis Centre",
+      "seq": 4,
+      "value": "10:30",
+      "bbox": [
+        0.5,
+        0.4488888888888889,
+        0.5725806451612904,
+        0.48444444444444446
+      ],
+      "boardable": true,
+      "is_smudged": true,
+      "no_service": false
+    },
+    {
+      "trip": "T3",
+      "stop": "Dialysis Centre",
+      "seq": 4,
+      "value": "14:55",
+      "bbox": [
+        0.6209677419354839,
+        0.4488888888888889,
+        0.6935483870967742,
+        0.48444444444444446
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T4",
+      "stop": "Dialysis Centre",
+      "seq": 4,
+      "value": "00:20",
+      "bbox": [
+        0.7419354838709677,
+        0.4488888888888889,
+        0.8145161290322581,
+        0.48444444444444446
+      ],
+      "boardable": true,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T1",
+      "stop": "Depot (no boarding)",
+      "seq": 5,
+      "value": "07:20",
+      "bbox": [
+        0.3790322580645161,
+        0.5177777777777778,
+        0.45161290322580644,
+        0.5533333333333333
+      ],
+      "boardable": false,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T2",
+      "stop": "Depot (no boarding)",
+      "seq": 5,
+      "value": "10:45",
+      "bbox": [
+        0.5,
+        0.5177777777777778,
+        0.5725806451612904,
+        0.5533333333333333
+      ],
+      "boardable": false,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T3",
+      "stop": "Depot (no boarding)",
+      "seq": 5,
+      "value": "15:10",
+      "bbox": [
+        0.6209677419354839,
+        0.5177777777777778,
+        0.6935483870967742,
+        0.5533333333333333
+      ],
+      "boardable": false,
+      "is_smudged": false,
+      "no_service": false
+    },
+    {
+      "trip": "T4",
+      "stop": "Depot (no boarding)",
+      "seq": 5,
+      "value": "00:35",
+      "bbox": [
+        0.7419354838709677,
+        0.5177777777777778,
+        0.8145161290322581,
+        0.5533333333333333
+      ],
+      "boardable": false,
+      "is_smudged": false,
+      "no_service": false
+    }
+  ]
+}

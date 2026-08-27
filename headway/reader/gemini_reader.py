@@ -98,8 +98,28 @@ CLAIM_RESPONSE_SCHEMA: dict[str, Any] = {
                     "bbox": {"type": "array", "items": {"type": "number"},
                              "minItems": 4, "maxItems": 4,
                              "description": "normalised [x0,y0,x1,y1] in 0..1"},
-                    "scope": {"type": "object",
-                              "description": "entity binding: route/trip/stop/seq/service"},
+                    # MEASURED 2026-08-27: declaring this as a bare
+                    # {"type": "object"} makes Vertex structured output return
+                    # scope = {} on EVERY claim. The model knows the binding
+                    # (its own claim_ids read "claim_st_t1_s1") but has nowhere
+                    # to put it, so the Composer sees no trip/stop and refuses
+                    # everything. Properties must be declared explicitly.
+                    "scope": {
+                        "type": "object",
+                        "description": "entity binding — REQUIRED for stop_time",
+                        "properties": {
+                            "trip": {"type": "string",
+                                     "description": "trip/column id, e.g. T1"},
+                            "stop": {"type": "string",
+                                     "description": "stop name or key this cell sits on"},
+                            "seq": {"type": "integer",
+                                    "description": "1-based row order within the trip"},
+                            "route": {"type": "string"},
+                            "service": {"type": "string"},
+                            "boardable": {"type": "boolean",
+                                          "description": "false for depots/garages/layovers"},
+                        },
+                    },
                     "alternatives": {
                         "type": "array",
                         "items": {
