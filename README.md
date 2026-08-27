@@ -49,13 +49,18 @@ photo / PDF / voice memo
 └───────────────────┘   zero tools · zero write permissions
         │  typed SourceClaims: what the cell says, and where it is
         ▼
-┌───────────────────┐   NO MODEL. Row/column recovered by clustering
-│   Grid binding    │   bounding boxes. Geometry has one correct answer.
+┌───────────────────┐   NO MODEL. Rows, columns and page-truncation recovered
+│   Grid binding    │   from bounding boxes. Geometry has one correct answer.
 └───────────────────┘
         │
         ▼
 ┌───────────────────┐   NO MODEL. Disagreement between readers WITHHOLDS
 │ Disagreement gate │   the claim. Agreement is never treated as proof.
+└───────────────────┘
+        │
+        ▼
+┌───────────────────┐   NO MODEL. OpenStreetMap, then the timetable's own km
+│    Geocoding      │   column audits the answer. Refuses rather than guess.
 └───────────────────┘
         │
         ▼
@@ -69,9 +74,48 @@ photo / PDF / voice memo
 └───────────────────┘
 ```
 
-**One model stage. Four deterministic stages.** That asymmetry is the whole design.
+**One model stage. Five deterministic stages.** That asymmetry is the whole design.
 
-## The three claims, and the evidence for each
+## It has been run, on a real Indian timetable
+
+Not a fixture. Page 1 of Assam State Transport Corporation's Guwahati division timetable — a 2020 Word
+document printed to PDF, ten A4 pages of numbered service blocks:
+
+```bash
+python3 scripts/run_pipeline.py \
+    --pdf https://st.redbus.in/Images/WL/ASTC/schedules_new/Guwahati_division.pdf --page 1
+```
+
+```
+98 claims read by each of two models, independently
+ → 91 bound by geometry · 2 complete service blocks · 1 WITHHELD for running off the page edge
+ → 0 escalated on reader disagreement
+ → 12 of 14 stop names located · 2 REFUSED rather than guessed
+ → 15 segments audited against the printed km column: PASS, tightest margin 6.5 km
+ → 2 trips · 12 stops · 17 stop_times
+ → gtfs-validator 8.0.1: ERROR=0 WARNING=0
+```
+
+**25 of 25 rows transcribed exactly**, scored against the PDF's embedded text layer — extracted but never
+shown to the reader, so it is an independent oracle rather than a hint. Three consecutive live runs
+produced the byte-identical feed `70224a64…`.
+
+**The two things it refused to do are the point.**
+
+*Service 3 was withheld.* "Guwahati to Bihpuria" runs off the bottom of page 1, and its last visible row
+still carries a departure time — so the bus does not terminate there. Publishing it would have asserted
+that a 409 km coach service ends at a village halfway along. A completed run ends with an arrival and no
+departure; that is structure, not a guess.
+
+*Laluk and Jagiroad got no coordinates.* OpenStreetMap has no place node for either. The best match for
+"Jagiroad" is **Jagiroad Hardware Stores in Guwahati, 60 km away**. Both were refused, both stops were
+omitted from their trips, and both are named on screen. A missing stop is visible to a rider; a stop in
+the wrong town is not.
+
+And the arrival/departure distinction survives, which is why this artifact was chosen: Khanapara is
+`07:30 → 07:35`, a real five-minute dwell, not one instant repeated into two columns.
+
+## The claims, and the evidence for each
 
 ### 1. It refuses rather than guesses
 
@@ -93,7 +137,25 @@ Measured on a 20-cell fixture with one genuinely destroyed cell, n=3 per thinkin
 integrity and id uniqueness hold by construction. Monotonic times are enforced by *normalisation*
 (`23:45 → 24:15`), which is stated honestly because it is not the same guarantee.
 
-### 3. A hallucination cannot reach the outside world
+### 3. The timetable audits the geocoder
+
+A wrong coordinate is the one error the publish gate cannot see: `gtfs-validator` checks that a stop
+**has** a latitude, never that it is the right one. A stop placed in the wrong town passes every
+conformance check and sends a rider 200 km astray.
+
+The ASTC page prints a `km` column — distance along the road from the origin — and road distance is never
+shorter than a straight line. So if the crow-flies distance between two consecutively geocoded stops
+exceeds the road distance printed between them, a coordinate is wrong by arithmetic rather than by
+suspicion.
+
+On the real page: **15 segments checked, all pass, tightest margin 6.5 km.**
+
+And it catches the case it was built for. Accepting the hardware store as "Jagiroad" puts it 95.5 km in a
+straight line from Nagaon, on a leg the timetable prints as **68 km of road** — 27.5 km further than the
+road itself, which no route between two points can be. The check fails it with 5.7 km to spare after the
+slack allowed for coordinate imprecision.
+
+### 4. A hallucination cannot reach the outside world
 
 Enforced by IAM, not by a prompt:
 
@@ -109,15 +171,23 @@ shows nothing landed. See [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md).
 
 ```bash
 make setup        # venv, pytest, and the gtfs-validator jar (sha256-pinned)
-make test         # 82 tests
+make test         # 167 tests
+make pipeline     # the whole thing, live, on a real ASTC page
 make build        # claims -> 8 GTFS files -> zip
 make validate     # runs the real validator; exits non-zero on any ERROR
 make ambiguity    # shows which ambiguities escalate and which are suppressed
 make calibrate    # re-runs the thinking-level measurement against Vertex
 ```
 
-`make validate` needs Docker (there is no Java runtime on the dev machine; the validator runs in
-`eclipse-temurin:21-jre`). `make calibrate` needs `gcloud` auth and a billing-enabled project.
+`make validate` runs the validator in `eclipse-temurin:21-jre` when no local Java runtime is present, so
+it needs Docker or a JRE. `make pipeline` needs `poppler` for `pdftoppm`, and any ONE of these
+credentials — an ADC file is **not** required:
+
+```bash
+export GOOGLE_API_KEY=...                  # free AI Studio key: no GCP project, no card
+gcloud auth application-default login      # Vertex, ADC
+gcloud auth login                          # Vertex, access token — this is enough
+```
 
 ## The demo beat
 
@@ -141,8 +211,15 @@ readings and compares what a *rider* would experience. That is why the agent is 
 
 ## Honest limits
 
-* The calibration fixture is **rendered**, not a real photocopy. Those numbers choose between settings;
-  they are not a claim about field accuracy.
+* The calibration fixture is **rendered**, not a real photocopy — and so is the ASTC PDF, which is a Word
+  document printed to PDF rather than a scan. Neither set of numbers is a claim about performance on a
+  genuine photocopy or a phone photo. That is the next test, not a solved one.
+* Two of the fourteen stops on the demonstrated page have **no coordinates at all**, because
+  OpenStreetMap does not hold them. The feed is correct about the twelve it publishes and silent about
+  the two it cannot place; it is not a complete representation of the service.
+* ASTC's operating days are **assumed daily**. The PDF does not state them. The assumption is declared in
+  the operator profile, printed as an assumption on every run, and must be confirmed by the operator
+  before this feed is published anywhere.
 * A generated feed is an **unofficial development feed** until an operator adopts it. It is labelled that
   way in `feed_info.txt` and is never submitted to a catalogue without consent.
 * Zero ERROR notices from the validator proves **conformance, not correctness**. A completely false

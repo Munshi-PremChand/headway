@@ -184,5 +184,16 @@ class ClaimSet:
                 ),
                 alternatives=[Alternative(**a) for a in r.get("alternatives", [])],
                 scope=r.get("scope", {}) or {},
+                # MEASURED 2026-08-27, first end-to-end run: `as_dict` wrote
+                # these two fields and `from_dicts` silently dropped them, so
+                # EVERY retraction was lost the moment a ClaimSet crossed a
+                # pipeline stage through its canonical JSON. A service block
+                # withheld for running off the bottom of the page came back
+                # from the round trip fully active and was composed into the
+                # feed — the truncated stump of a 409 km coach service,
+                # published as if the bus terminated halfway along. Withholding
+                # that does not survive serialisation is not withholding.
+                retracted=bool(r.get("retracted", False)),
+                retraction_reason=str(r.get("retraction_reason", "")),
             ))
         return ClaimSet(agency_id=agency_id, claims=claims)

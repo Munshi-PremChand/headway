@@ -2,6 +2,122 @@
 
 Every entry records what was **measured**, not what was intended.
 
+## 2026-08-27 (later) — FIRST END-TO-END RUN ON A REAL INDIAN ARTIFACT
+
+Everything upstream had been verified in isolation. The pipeline had never executed as a whole against a
+real page. Running it found **nine defects**, five of which were invisible without the run, and two of
+which were silently corrupting the output.
+
+### The result
+
+One page of ASTC's Guwahati division timetable
+(`st.redbus.in/Images/WL/ASTC/schedules_new/Guwahati_division.pdf`, page 1, source sha256 `ce513365…`,
+rendered at 200 dpi to a PNG with sha256 `1f9d10b4…`):
+
+```
+98 claims read by each of two models, independently
+ → 91 bound by geometry · 2 complete service blocks · 1 withheld for running off the page edge
+ → 0 escalated on reader disagreement
+ → 12 of 14 stop names located · 2 REFUSED rather than guessed
+ → 15 segments audited against the printed km column: PASS, tightest margin 6.5 km
+ → 2 trips · 12 stops · 17 stop_times · 2,114 bytes
+ → gtfs-validator 8.0.1: ERROR=0 WARNING=0 · gate open
+```
+
+**Transcription fidelity: 25 of 25 rows exact**, scored against the PDF's embedded text layer — which is
+extracted but never shown to the reader, so it is an independent oracle rather than a hint. Every stop
+name, every km value, every arrival and every departure matched, including `12.00 Noon`.
+
+**Reproducible:** three consecutive live runs produced the byte-identical feed `70224a64…`.
+
+### What the run refused to do, and why that is the result
+
+* **Service 3 was withheld.** "Guwahati to Bihpuria" runs off the bottom of page 1. Its last visible row
+  still has a departure time, so the bus does not terminate there. Composing it would have published a
+  409 km coach service as though it ended at Jamugurihat. The rule is structural, not statistical: a
+  completed run ends with an arrival and no departure.
+* **Laluk and Jagiroad got no coordinates.** OpenStreetMap's gazetteer has no place node for either. The
+  best match for "Jagiroad" is *Jagiroad Hardware Stores* in Guwahati, 60 km away; for "Laluk" it is a
+  road named after the village. Both were refused, both stops were omitted from their trips, and both
+  are named in the ledger. A missing stop is visible; a stop in the wrong town is not.
+
+### The nine defects
+
+1. **The pipeline could not be constructed at all.** ADK 2.8 rejects a schema passed as
+   `generate_content_config.response_schema` and requires `LlmAgent(output_schema=...)`. The unit tests
+   built the pieces but never the `SequentialAgent`, so this had never fired.
+2. **Retractions did not survive serialisation.** `SourceClaim.as_dict` wrote `retracted` and
+   `ClaimSet.from_dicts` dropped it. Every claim a stage withheld came back active at the next stage —
+   the truncated service block was composed into the feed despite being withheld. Withholding that does
+   not survive serialisation is not withholding.
+3. **State never reached the session service.** Custom `BaseAgent`s wrote to `ctx.session.state`
+   directly, which updates the live object but persists nothing. The final report read an empty session
+   and printed `CLOSED` seconds after the validator had printed `ERROR=0` and `OPEN`. Fixed by carrying
+   an `EventActions(state_delta=…)` on each event, which also puts every value on the replayable event
+   stream.
+4. **The two readers use different bounding-box conventions, and neither is stable.**
+   `gemini-3.7-flash` emitted `[x0, y0, x1, y1]` normalised 0..1; `gemini-3.5-flash-lite` emitted
+   `[ymin, xmin, ymax, xmax]` scaled 0..1000 — and both flipped between runs. Read with the wrong
+   convention the second reader's boxes land on nothing, and because the binder recovers row and column
+   FROM the box, the whole read binds to the wrong cells while the gate reports zero disagreements.
+   Detection now uses two independent signals that must agree: printed text is wider than it is tall,
+   and a timetable has more rows than columns.
+5. **Nearest-band row matching manufactured disagreements.** The readers disagree about absolute
+   coordinates by up to two row heights on the same page — one put Paltanbazar at y=0.2615 and the
+   other at 0.2445, drifting to 0.4635 versus 0.4800 by the bottom of the block. Matching cells to
+   coordinate bands turned that drift into 8–12 phantom escalations per run, each claiming the two
+   models had read different stop names. Rows are now the stop column in **rank order**, and cells are
+   matched to the nearest stop row *within the same read*, so each reader's drift cancels against itself.
+6. **One malformed heading box swallowed its own block.** flash-lite returned a heading box spanning
+   y 0.200 to 0.617. Its centre landed below eight of its own stops, dropping them from the binding
+   entirely. Block boundaries now use the heading's top edge, and block membership follows the printed
+   block number — which is transcription, not bookkeeping — with geometry only as the fallback.
+7. **A thin second read manufactured escalations.** On one run in five flash-lite returned 10 claims for
+   a page it had transcribed fully in the other four. Comparing 98 claims against a 10-claim stub is not
+   a second opinion. A second read covering under 60% of the primary's claims is now reported as a
+   FAILED read — "no corroboration was available" — rather than as a disagreement count.
+8. **A misread departure became a 24-hour dwell.** `normalise_trip_times` rolls a backwards time forward
+   a day, which is right for a run crossing midnight and catastrophic inside a single stop. A departure
+   of 07:00 against an 07:30 arrival produced a valid, validator-clean stop_time saying the bus parks at
+   Beta overnight. Dwells over six hours are now refused; genuine midnight rollovers still compose.
+9. **The feed version moved when the timetable had not.** It was hashed from the claim set, which
+   carries reader confidences that vary between runs (`1.0` on one, `0.99` on the next), so identical
+   transcriptions produced different zips. It is now hashed from the seven other GTFS files, so the
+   version changes exactly when the published service changes.
+
+### Also fixed by the run
+
+* `parse_hhmm` raised on `12.00 Noon`, losing a legitimate midday departure.
+* `feed_contact_url` was absent, producing the run's only WARNING.
+* `trip_headsign` was empty; it is now the last stop the trip actually serves — read from the stops that
+  survived composition, so an omitted terminus cannot put a place the feed never mentions on the bus.
+
+### New in this build
+
+* `pipeline/credentials.py` — three ways to reach Gemini, in preference order. **The ADC blocker was not
+  real**: `google-genai` accepts an explicit `credentials=` object, so a bearer token from
+  `gcloud auth print-access-token` authenticates Vertex without `application-default login`. Verified
+  live, and again through an ADK `LlmAgent` under `InMemoryRunner`.
+* `pipeline/render.py` — PDF to PNG at a fixed dpi, with the source and page hashed into the ledger. The
+  embedded text layer is extracted and **never** sent to the model; it exists only to score the read.
+* `profiles/` — the facts a sheet of paper does not carry (timezone, calendar, publisher), declared by
+  hand and tagged `origin: operator-profile` so *read* and *declared* stay distinguishable. ASTC's
+  operating days are marked an **assumption** and printed as one on every run.
+* `geo/geocode.py` — OpenStreetMap lookups ranked by category tier rather than by Nominatim's own
+  `importance`, which ranks a hardware store above the town it is named after. Refuses on no match, on a
+  non-place, on ambiguity, and outside the operator's declared region. Cached to a committed file so a
+  demo does not depend on a third-party service being up. Aliases map a printed name to a gazetteer
+  QUERY, never to a coordinate — a spelling claim can be checked by eye, a latitude cannot.
+* `geo/plausibility.py` — **the timetable audits the geocoder.** Road distance is never shorter than a
+  straight line, so a straight line longer than the printed km between two stops proves a coordinate is
+  wrong. This is the only check in the stack that catches a stop placed in the wrong town, which no
+  conformance validator can see.
+* `reader/blocks.py` — binding for the service-block layout, including the page-truncation rule.
+* `scripts/run_pipeline.py` — the whole run, with a ledger where every number is printed by the code
+  that computed it.
+
+Tests: **82 → 167**.
+
 ## 2026-08-27 — RESOLVED: thinking level, and the abstention claim verified
 
 ### The claim that had never been tested

@@ -6,8 +6,8 @@
 
 | Tier | Meaning |
 |---|---|
-| **[A]** | Retrieved *and* re-derived by running code against the bytes this session. Reproducible from the command given. |
-| **[B]** | Retrieved this session (HTTP status + byte count recorded), inspected but not exhaustively parsed. |
+| **[A]** | Retrieved *and* re-derived by running code against the bytes on 2026-08-27. Reproducible from the command given. |
+| **[B]** | Retrieved on 2026-08-27 (HTTP status + byte count recorded), inspected but not exhaustively parsed. |
 | **[C]** | Located only — a URL exists and is cited, but the content was not successfully retrieved. |
 | **UNVERIFIED** | Could not be checked. Do not put on camera. |
 
@@ -118,7 +118,9 @@ A liveness test was run against all 20 `direct_download` URLs (ranged GET, 2026-
 - `.../schedules_new/Sivasagar_Division.pdf` — 379,350 B, 7 pp
 - `https://st.redbus.in/Images/WL/ASTC/schedule/Tinsukia_division.pdf` — 131,431 B, 10 pp — **note the path differs**: `/schedule/`, not `/schedules_new/`. **[A]**
 
-All nine were **retrieved** (not merely located) and text-extracted. Local copies: `/tmp/-Users-anshulmalik-Code-Projects-2026-Kaggle/5a97dc00-798f-4340-8443-b2a3edca8fc3/scratchpad/probe/astc_*.pdf` and `.txt`.
+All nine were **retrieved** (not merely located) and text-extracted. `scripts/run_pipeline.py` re-fetches any of
+them by URL and caches the bytes under `.tmp/sources/`, keyed by the sha256 of the URL, so a rerun costs no
+bandwidth and the sha256 of the exact PDF that was read is printed in the run ledger.
 
 **What the artifact contains.** Each numbered service is a stop-by-stop table:
 
@@ -134,7 +136,7 @@ Sl.No   Station          km    Arrival time   Departure time
 ```
 (verbatim from `astc_Guwahati_division.txt`, re-parsed this run)
 
-**Route counts, re-derived this session [A]:**
+**Route counts, re-derived on 2026-08-27 [A]:**
 
 | Measure | Guwahati division | Corpus (9 files) |
 |---|---:|---:|
@@ -633,16 +635,14 @@ Note for calibration: the catalogue tolerates unvalidated geometry — `in-gujar
 
 ### Step 5 — Pre-flight, without GDAL
 
-The six integration assertions can be reproduced with `jsonschema` alone. Script already written and validated this session:
+The six integration assertions can be reproduced with `jsonschema` alone — no GDAL, no catalogue tooling.
+A standalone `preflight.py` implementing all six was written and validated against a real checkout:
 
-```
-/tmp/-Users-anshulmalik-Code-Projects-2026-Kaggle/5a97dc00-798f-4340-8443-b2a3edca8fc3/scratchpad/preflight.py
-```
 ```bash
 python preflight.py <checkout>
 # PASS  schedule=2475 realtime=1032 next_free_mdb_source_id=3508
 ```
-A candidate India file at id 3508 was generated and re-run through preflight this session: **PASS** (then deleted). **The write path is proven end to end.** **[A]**
+A candidate India file at id 3508 was generated and re-run through preflight on 2026-08-27: **PASS** (then deleted). **The write path is proven end to end.** **[A]**
 
 Then let CI run the canonical suite:
 ```bash
@@ -877,15 +877,15 @@ It is a **browser GUI for humans to hand-type schedules into GTFS**. It requires
 
 ### Reproduction artifacts on disk
 
-| Path | What |
-|---|---|
-| `…/scratchpad/probe/astc_*.pdf` and `.txt` | All 9 ASTC division PDFs + extracted text |
-| `…/scratchpad/ctu/` and `…/scratchpad/probe/1785232444_*.pdf` | The 4 CTU PDFs, SHA-256 recorded |
-| `…/scratchpad/wbtc/routes.html`, `routes.pdf`, `routes.txt` | WBTC (eliminated — no times) |
-| `…/scratchpad/probe/kl_*.pdf`, `jctsl_routes.pdf` | Kerala raster PDFs, JCTSL |
-| `…/scratchpad/preflight.py` | GDAL-free reimplementation of all 6 MobilityData integration assertions (`python preflight.py <checkout>`; needs only `jsonschema`) |
-| `…/scratchpad/mdc` | Clone of `mobility-database-catalogs` for re-checks |
-| `…/scratchpad/godl.pdf`, `rules.pdf`, `rules.txt` | GODL Gazette notification; Copyright Act 1957 |
-| `/tmp/IN.zip` | GeoNames India dump, 15,747,002 bytes, 660,026 records, CC BY 4.0 |
+Every artifact below is fetched from a public URL, so the table names the SOURCE rather than a path on one
+machine. `headway.pipeline.render.fetch()` caches each into `.tmp/sources/` and records its sha256.
 
-*(Scratchpad root: `/tmp/-Users-anshulmalik-Code-Projects-2026-Kaggle/5a97dc00-798f-4340-8443-b2a3edca8fc3/scratchpad`)*
+| Source | What |
+|---|---|
+| `st.redbus.in/Images/WL/ASTC/schedules_new/*.pdf` (+ `/schedule/` for Tinsukia) | All 9 ASTC division PDFs; §3 lists each URL with its byte count and page count |
+| `chdctu.gov.in` route PDFs | The 4 CTU Chandigarh PDFs, SHA-256 recorded in §4 |
+| `wbtconline.in` route listing | WBTC — eliminated, no times published |
+| Kerala RTC and JCTSL route PDFs | Raster-only; no text layer |
+| `github.com/MobilityData/mobility-database-catalogs` | Cloned for the pre-flight re-checks in §5 |
+| `egazette.gov.in` GODL notification; Copyright Act 1957 | Licence basis, §7 |
+| `download.geonames.org/export/dump/IN.zip` | GeoNames India, 15,747,002 bytes, 660,026 records, CC BY 4.0 |

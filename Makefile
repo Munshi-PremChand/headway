@@ -2,7 +2,9 @@ VALIDATOR := vendor/gtfs-validator-8.0.1-cli.jar
 CLAIMS    := fixtures/claims/sample_agency.json
 PY        := .venv/bin/python
 
-.PHONY: setup build validate ambiguity test calibrate fixture clean
+ASTC := https://st.redbus.in/Images/WL/ASTC/schedules_new/Guwahati_division.pdf
+
+.PHONY: setup build validate ambiguity test calibrate fixture pipeline clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q pytest
@@ -31,6 +33,14 @@ fixture:
 # a billing-enabled project. Withholds its verdict if any call fails.
 calibrate:
 	$(PY) scripts/calibrate_thinking.py 3
+
+# The whole pipeline, live, against a real ASTC division page. Needs poppler
+# (pdftoppm) and any one Gemini credential; an ADC file is NOT required — a
+# `gcloud auth login` access token or a free AI Studio key both work.
+# Exits non-zero unless the validator returns zero ERROR notices.
+pipeline:
+	$(PY) scripts/run_pipeline.py --pdf $(ASTC) --page 1 \
+	    --profile astc_guwahati --json out/astc_ledger.json
 
 clean:
 	rm -rf out __pycache__ .pytest_cache .tmp

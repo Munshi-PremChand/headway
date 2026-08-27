@@ -1,0 +1,140 @@
+{
+  "Balipara": {
+    "display_name": "Balipara, NH15, Balipara, Chariduar, Sonitpur, Assam, 784101, India",
+    "importance": 4e-05,
+    "lat": 26.8194446,
+    "lon": 92.7721009,
+    "osm_id": 831340862,
+    "osm_type": "node",
+    "precision": "transport-node",
+    "query": "Balipara, Sonitpur, Assam, India"
+  },
+  "Bandordowa": {
+    "display_name": "Banderdewa Circle, Papum Pare, Arunachal Pradesh, India",
+    "importance": 0.240053,
+    "lat": 27.0479049,
+    "lon": 93.7102287,
+    "osm_id": 10061220,
+    "osm_type": "relation",
+    "precision": "administrative-area-centroid",
+    "query": "Banderdewa, Arunachal Pradesh, India"
+  },
+  "Bihpuria": {
+    "display_name": "Bihpuria, Lakhimpur, Assam, 784161, India",
+    "importance": 0.160032,
+    "lat": 27.019264,
+    "lon": 93.9167974,
+    "osm_id": 10303891377,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Bihpuria, Lakhimpur, Assam, India"
+  },
+  "Biswanath Chariali": {
+    "display_name": "Bishwanath Chariali, Biswanath, Assam, India",
+    "importance": 0.16004,
+    "lat": 26.7203673,
+    "lon": 93.1428974,
+    "osm_id": 121409665,
+    "osm_type": "way",
+    "precision": "settlement-node",
+    "query": "Bishwanath Chariali, Assam, India"
+  },
+  "Gohpur": {
+    "display_name": "Gohpur, Helem, Biswanath, Assam, 784168, India",
+    "importance": 0.160033,
+    "lat": 26.8814942,
+    "lon": 93.6138414,
+    "osm_id": 245753972,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Gohpur, Biswanath, Assam, India"
+  },
+  "Jagiroad": {
+    "query": "Jagiroad, Assam, India",
+    "reason": "no result is a place or a transport node; the best match is 'shop'/'hardware' (Jagiroad Hardware Stores, A T Road, Pan Bazar, Guwahati, Kam)"
+  },
+  "Jamugurihat": {
+    "display_name": "Jamugurihat, Na-Duar, Sonitpur, Assam, 784180, India",
+    "importance": 0.146704,
+    "lat": 26.7230372,
+    "lon": 92.930826,
+    "osm_id": 245751784,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Jamugurihat, Sonitpur, Assam, India"
+  },
+  "Kaliabor": {
+    "display_name": "Kaliabor, Nagaon, Assam, 782137, India",
+    "importance": 0.146704,
+    "lat": 26.5387146,
+    "lon": 92.9292061,
+    "osm_id": 1495483768,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Kaliabor, Nagaon, Assam, India"
+  },
+  "Khanapara": {
+    "display_name": "Khanapara, Dispur, Kamrup Metropolitan, Assam, 781005, India",
+    "importance": 0.14672,
+    "lat": 26.125094,
+    "lon": 91.810908,
+    "osm_id": 6163776904,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Khanapara, Assam, India"
+  },
+  "Laluk": {
+    "query": "Laluk, Assam, India",
+    "reason": "no result is a place or a transport node; the best match is 'highway'/'primary' (Narayanpur-Bihpuria-Laluk Road, Naryanpur, Narayanpur, Lakhi)"
+  },
+  "Nagaon": {
+    "display_name": "Nagaon, Assam, 782001, India",
+    "importance": 0.428376,
+    "lat": 26.3482238,
+    "lon": 92.6858215,
+    "osm_id": 245747060,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Nagaon, Assam, India"
+  },
+  "Narayanpur": {
+    "display_name": "Narayanpur, Lakhimpur, Assam, India",
+    "importance": 0.240038,
+    "lat": 26.9639234,
+    "lon": 93.8255857,
+    "osm_id": 10054861,
+    "osm_type": "relation",
+    "precision": "administrative-area-centroid",
+    "query": "Narayanpur, Lakhimpur, Assam, India"
+  },
+  "North Lakhimpur": {
+    "display_name": "North Lakhimpur, Station Road, North Lakhimpur, Lakhimpur, Assam, 787001, India",
+    "importance": 0.270288,
+    "lat": 27.254431,
+    "lon": 94.1120339,
+    "osm_id": 828999092,
+    "osm_type": "node",
+    "precision": "transport-node",
+    "query": "North Lakhimpur, Assam, India"
+  },
+  "Paltanbazar": {
+    "display_name": "Paltan Bazar, A T Road, Pan Bazar, Guwahati, Kamrup Metropolitan, Assam, 781015, India",
+    "importance": 5.3e-05,
+    "lat": 26.1804411,
+    "lon": 91.7461872,
+    "osm_id": 11766165292,
+    "osm_type": "node",
+    "precision": "transport-node",
+    "query": "Paltan Bazar, Guwahati, Assam, India"
+  },
+  "Tezpur": {
+    "display_name": "Tezpur, Sonitpur, Assam, 784001, India",
+    "importance": 0.437451,
+    "lat": 26.6229928,
+    "lon": 92.7976082,
+    "osm_id": 245750977,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Tezpur, Assam, India"
+  }
+}

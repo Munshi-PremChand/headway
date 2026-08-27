@@ -1,0 +1,35 @@
+{
+  "agency_id": "ASTC",
+  "agency_name": "Assam State Transport Corporation",
+  "agency_url": "https://astc.assam.gov.in/",
+  "agency_timezone": "Asia/Kolkata",
+  "agency_lang": "en",
+  "agency_phone": "",
+  "service_id": "ASTC_DAILY",
+  "service_days": [
+    "monday", "tuesday", "wednesday", "thursday",
+    "friday", "saturday", "sunday"
+  ],
+  "layout": "service_blocks",
+  "geocode_region": "Assam, India",
+  "geocode_viewbox": [88.5, 22.5, 97.5, 29.0],
+  "source_note": "Timetable PDFs for the nine ASTC divisions are published at st.redbus.in/Images/WL/ASTC/schedules_new/. Guwahati_division.pdf is 10 A4 pages of numbered service blocks, each a single intercity coach run with per-stop arrival AND departure times. agency_timezone and agency_url are declared here because the page prints neither.",
+  "assumed": [
+    "service_days"
+  ],
+  "assumption_notes": {
+    "service_days": "The PDF does not state operating days. Daily operation is ASSUMED for these intercity Day Super services and is printed as an assumption in the run ledger. An operator must confirm it before this feed is published anywhere."
+  },
+  "stop_aliases_note": "A printed name to a GAZETTEER QUERY — never to a coordinate. Each line is a spelling claim any Assamese reader can check by eye; the latitude still comes from OpenStreetMap and carries its OSM id. Every query here was verified against the live gazetteer on 2026-08-27 and returns a settlement or transport node rather than a shop or a hospital that merely shares the name.",
+  "stop_aliases": {
+    "Paltanbazar": "Paltan Bazar, Guwahati, Assam, India",
+    "Biswanath Chariali": "Bishwanath Chariali, Assam, India",
+    "Bandordowa": "Banderdewa, Arunachal Pradesh, India",
+    "Balipara": "Balipara, Sonitpur, Assam, India",
+    "Jamugurihat": "Jamugurihat, Sonitpur, Assam, India",
+    "Gohpur": "Gohpur, Biswanath, Assam, India",
+    "Narayanpur": "Narayanpur, Lakhimpur, Assam, India",
+    "Bihpuria": "Bihpuria, Lakhimpur, Assam, India",
+    "Kaliabor": "Kaliabor, Nagaon, Assam, India"
+  }
+}
