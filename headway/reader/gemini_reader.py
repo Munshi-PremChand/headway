@@ -61,6 +61,22 @@ TTS_MODEL = "gemini-3.1-flash-tts-preview"
 # Thinking levels supported by gemini-3.7-flash. 'minimal' RETURNS AN ERROR.
 THINKING_LEVELS = ("low", "medium", "high")
 
+# MEASURED 2026-08-27 (docs/CHANGELOG.md), n=3 per level on a 20-cell fixture
+# with one genuinely destroyed cell:
+#
+#   level   correct  confident-wrong  abstained  honest  secs  thoughts
+#   low        19.0              0.0        1.0     3/3  14.6       424
+#   medium     19.0              0.0        1.0     3/3  23.7     1,876
+#   high       19.0              0.0        1.0     3/3  43.2     5,160
+#
+# Behaviour is IDENTICAL. All 9 runs abstained on the unreadable cell rather
+# than guessing. `high` costs 3x the latency and 12x the thinking tokens for
+# no measured benefit, so the budget is better spent on the second-opinion
+# reader — an independent read buys something a longer single read does not.
+#
+# Revalidate on real photocopies. A rendered fixture is easier than the field.
+READER_THINKING_LEVEL = "low"
+
 
 class NonCompliantModel(ValueError):
     """The chosen model does not satisfy 'Gemini 3.5 or newer'."""

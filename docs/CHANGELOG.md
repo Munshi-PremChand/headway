@@ -2,6 +2,54 @@
 
 Every entry records what was **measured**, not what was intended.
 
+## 2026-08-27 — RESOLVED: thinking level, and the abstention claim verified
+
+### The claim that had never been tested
+
+HEADWAY's central promise is *"it refuses rather than guesses."* Nothing in this repo had ever
+demonstrated that the model abstains at all. Two earlier calibration rounds were void because the
+"illegible" fixture cell **was not illegible**.
+
+Proof it was legible, discovered by accident: when the ground truth was moved from `10:30` to `10:37`,
+**the model's answer moved with it**. An interpolating model would have kept saying `10:30`. Visual
+inspection of a 6× crop confirmed the digits were plainly readable through `GaussianBlur(2.1)` plus
+speckle. `gemini-3.7-flash` had been reading correctly on 8 of 9 runs while the scorer labelled those
+reads `LUCKY-GUESS`.
+
+### The valid test
+
+Fixture rebuilt with a genuinely destroyed cell — `GaussianBlur(9.0)`, 1,400 toner points, a blot ring,
+no recoverable digits. Same 20-cell grid, same pre-committed read, n=3 per level.
+
+| level | correct | confident-wrong | abstained | handled illegible honestly | secs | thoughts |
+|---|---:|---:|---:|---:|---:|---:|
+| low | 19.0 | 0.0 | 1.0 | **3/3** | 14.6 | 424 |
+| medium | 19.0 | 0.0 | 1.0 | **3/3** | 23.7 | 1,876 |
+| high | 19.0 | 0.0 | 1.0 | **3/3** | 43.2 | 5,160 |
+
+**9 of 9 runs abstained.** Zero confident-wrong. Zero guesses at a cell that could not be read. The
+central claim holds, and it is now demonstrable on camera against a fixture whose ground truth is frozen
+in the repo.
+
+### DECISION: `thinkingLevel = "low"` for the Reader
+
+The pre-committed read is met legitimately this time — on a fixture where the metric *could* have
+discriminated, because a guess would have been detectably wrong. It didn't discriminate, and that null
+result is itself the answer:
+
+* Behaviour is **identical** across all three levels — same accuracy, same abstention, same honesty.
+* `high` costs **3× the latency** and **12× the thinking tokens** for no measured benefit.
+* Spend that budget on the second-opinion reader instead, where a genuinely independent read buys
+  something a longer single read does not.
+
+### Honest limits on this result
+
+* A **rendered** fixture is easier than a real Indian photocopy. These numbers choose between settings;
+  they are not a claim about field accuracy.
+* n=3 per level, one destroyed cell, one grid layout.
+* The decision must be revalidated on real scans once operator artifacts are in hand. If abstention
+  degrades there, thinking level is the first thing to re-test.
+
 ## 2026-08-27 — thinking-level calibration, and a degenerate metric
 
 **The question:** the reader's `thinkingLevel` was set to `low` because that was the parameter on a
