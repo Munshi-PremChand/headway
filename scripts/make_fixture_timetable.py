@@ -106,12 +106,21 @@ def render(out_dir: Path, seed: int = 7) -> tuple[Path, Path]:
     ti, si = SMUDGE_CELL
     sx, sy = col_x[ti + 1], y_head + 58 + si * 62
     box = (sx - 4, sy - 4, sx + 92, sy + 36)
-    patch = img.crop(box).filter(ImageFilter.GaussianBlur(2.1))
+    # MEASURED 2026-08-27: a GaussianBlur(2.1) + speckle "smudge" is STILL
+    # fully legible to gemini-3.7-flash. It read 10:37 correctly on 8 of 9
+    # runs. The proof it was reading rather than interpolating: when the truth
+    # was changed from 10:30 to 10:37 the model's answer changed with it.
+    # Testing abstention therefore requires a cell that is genuinely
+    # destroyed, not merely degraded.
+    patch = img.crop(box).filter(ImageFilter.GaussianBlur(9.0))
     img.paste(patch, box)
     pd = ImageDraw.Draw(img)
-    for _ in range(90):                      # toner speckle over the smudge
+    for _ in range(1400):                    # heavy toner damage
         px, py = random.randint(box[0], box[2]), random.randint(box[1], box[3])
-        pd.point((px, py), fill=random.randint(90, 190))
+        pd.point((px, py), fill=random.randint(40, 235))
+    # a coffee-ring style blot across the cell, as on a real counter copy
+    pd.ellipse((box[0] + 6, box[1] + 2, box[2] - 6, box[3] - 2),
+               outline=120, width=3)
 
     img = img.rotate(-0.7, resample=Image.BICUBIC, fillcolor=246)  # scanner skew
     img = img.filter(ImageFilter.GaussianBlur(0.45))               # soft copy

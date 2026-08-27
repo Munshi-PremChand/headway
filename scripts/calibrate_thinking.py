@@ -139,7 +139,12 @@ def _score_claims(claims: list[dict], truth: dict) -> dict:
             elif cl.get("alternatives"):
                 smudge_answer = f"HEDGED {got}(+alt) conf={cl.get('confidence')}"
             elif got == want:
-                smudge_answer = f"LUCKY-GUESS {got} conf={cl.get('confidence')}"
+                # NOT necessarily a guess. MEASURED 2026-08-27: a
+                # GaussianBlur(2.1) cell was still fully legible to the model —
+                # proven when the truth was moved 10:30 -> 10:37 and the
+                # model's answer moved with it. Only call this a guess when the
+                # cell is genuinely destroyed; otherwise it is a correct read.
+                smudge_answer = f"READ-CORRECTLY {got} conf={cl.get('confidence')}"
             else:
                 smudge_answer = f"WRONG-GUESS {got} conf={cl.get('confidence')}"
         if got == ILLEGIBLE:
