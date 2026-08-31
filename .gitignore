@@ -11,3 +11,7 @@ __pycache__/
 # Internal release governance: manifests, approvals and reports.
 # Not part of the published artifact — it describes the artifact.
 .munshi/
+
+# Build products: the frozen release tarball is derived from a commit, so it
+# must not be inside the tree whose hash it certifies.
+dist/
