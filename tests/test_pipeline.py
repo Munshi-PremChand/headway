@@ -516,3 +516,51 @@ def test_scope_and_provenance_also_survive_the_round_trip():
     assert again.scope["seq"] == 2 and again.scope["km"] == "10"
     assert again.provenance.page == 4
     assert again.provenance.bbox == (0.1, 0.2, 0.3, 0.4)
+
+
+def test_adc_is_detected_from_the_metadata_server_not_a_file(monkeypatch):
+    """The Cloud Run case: ADC exists, but there is no file anywhere.
+
+    Checking for `~/.config/gcloud/application_default_credentials.json` said
+    "no credential" on a service running as a service account with
+    aiplatform.user, which is precisely the environment the competition rules
+    require the backend to run in.
+    """
+    import google.auth
+    monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.setattr(google.auth, "default",
+                        lambda **kw: (object(), "some-project"))
+    assert C._adc_present() is True
+
+
+def test_no_adc_anywhere_is_reported_as_absent(monkeypatch):
+    import google.auth
+
+    def boom(**kw):
+        raise RuntimeError("could not automatically determine credentials")
+    monkeypatch.setattr(google.auth, "default", boom)
+    assert C._adc_present() is False
+
+
+def test_the_project_and_location_come_from_the_environment(monkeypatch):
+    """The same image has to run in another project without a rebuild."""
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "some-other-project")
+    monkeypatch.setenv("GOOGLE_CLOUD_LOCATION", "europe-west4")
+    monkeypatch.setattr(C, "_adc_present", lambda: True)
+    captured = {}
+
+    class FakeGenAI:
+        @staticmethod
+        def Client(**kw):
+            captured.update(kw)
+            return object()
+
+    import sys as _sys
+    import types as _types
+    fake = _types.ModuleType("google.genai")
+    fake.Client = FakeGenAI.Client
+    monkeypatch.setitem(_sys.modules, "google.genai", fake)
+
+    _client, cred = C.build_client()
+    assert cred.project == "some-other-project"
+    assert cred.location == "europe-west4"

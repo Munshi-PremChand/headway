@@ -72,18 +72,33 @@ def _gcloud_token() -> str | None:
 
 
 def _adc_present() -> bool:
-    if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        return True
-    home = os.path.expanduser("~")
-    return os.path.exists(
-        os.path.join(home, ".config", "gcloud",
-                     "application_default_credentials.json"))
+    """Is there a usable Application Default Credential, from ANY source?
+
+    MEASURED 2026-08-31, first Cloud Run deployment: checking for the ADC FILE
+    is wrong, and wrong in exactly the environment that matters. On Cloud Run,
+    Compute Engine and GKE there is no file — the credential comes from the
+    metadata server. The file check returned False, the gcloud-token path found
+    no `gcloud` binary in the container, and a service running as a service
+    account with `aiplatform.user` reported "no usable Gemini credential".
+
+    `google.auth.default()` is the one check that covers every source:
+    GOOGLE_APPLICATION_CREDENTIALS, the gcloud file, and the metadata server.
+    Asking the library the question it exists to answer beats guessing at where
+    it keeps its answer.
+    """
+    try:
+        import google.auth
+        creds, _project = google.auth.default(
+            scopes=["https://www.googleapis.com/auth/cloud-platform"])
+        return creds is not None
+    except Exception:                                          # noqa: BLE001
+        return False
 
 
 def build_client(
     *,
-    project: str = DEFAULT_PROJECT,
-    location: str = DEFAULT_LOCATION,
+    project: str | None = None,
+    location: str | None = None,
     prefer: str | None = None,
 ) -> tuple[Any, Credential]:
     """Return `(genai.Client, Credential)` using the first path that is usable.
@@ -93,6 +108,14 @@ def build_client(
     an easier one.
     """
     from google import genai
+
+    # Cloud Run injects these; a laptop usually has neither, so the pinned
+    # defaults stand in. Reading them means the same image runs in another
+    # project without a rebuild.
+    project = (project or os.environ.get("GOOGLE_CLOUD_PROJECT")
+               or DEFAULT_PROJECT)
+    location = (location or os.environ.get("GOOGLE_CLOUD_LOCATION")
+                or DEFAULT_LOCATION)
 
     order = ["vertex-adc", "vertex-token", "ai-studio"]
     if prefer:
@@ -104,8 +127,9 @@ def build_client(
     for backend in order:
         if backend == "vertex-adc":
             if not _adc_present():
-                tried.append("vertex-adc: no ADC file and "
-                             "GOOGLE_APPLICATION_CREDENTIALS unset")
+                tried.append("vertex-adc: google.auth.default() found no "
+                             "credential (no env var, no gcloud file, no "
+                             "metadata server)")
                 continue
             return (genai.Client(vertexai=True, project=project,
                                  location=location),
