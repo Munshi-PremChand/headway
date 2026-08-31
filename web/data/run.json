@@ -2021,5 +2021,45 @@
         "validation_seconds": 0.584860254
       }
     }
+  },
+  "photocopy": {
+    "2": {
+      "label": "photocopy of a photocopy",
+      "totals": {
+        "correct": 70,
+        "wrong": 0,
+        "abstained": 0,
+        "missing": 0
+      },
+      "graded": 70,
+      "baseline_rows": 0,
+      "config": {
+        "blur": 1.5,
+        "contrast": 0.72,
+        "jpeg": 32,
+        "label": "photocopy of a photocopy",
+        "skew": -1.1,
+        "speckle": 26000
+      }
+    },
+    "3": {
+      "label": "phone photo of a bad copy",
+      "totals": {
+        "correct": 65,
+        "wrong": 4,
+        "abstained": 0,
+        "missing": 1
+      },
+      "graded": 70,
+      "baseline_rows": 0,
+      "config": {
+        "blur": 2.3,
+        "contrast": 0.58,
+        "jpeg": 20,
+        "label": "phone photo of a bad copy",
+        "skew": -2.0,
+        "speckle": 52000
+      }
+    }
   }
 }

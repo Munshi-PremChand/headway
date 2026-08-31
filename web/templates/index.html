@@ -190,6 +190,33 @@ h2{font-family:var(--sign);font-weight:600;font-size:clamp(28px,3.6vw,44px);
 .punch p{margin:0;font-size:15px;line-height:1.65;color:#d5c2c2;max-width:88ch}
 .punch code{font-family:var(--mono);color:var(--amber);font-size:13.5px}
 
+/* photocopy test */
+.copytest{display:grid;grid-template-columns:minmax(0,.85fr) minmax(300px,1fr);
+  gap:24px;align-items:start}
+.copyimg{border:1px solid var(--line);background:#0a0b0e;max-height:520px;
+  overflow:hidden;position:relative}
+.copyimg img{width:100%;display:block}
+.copyimg::after{content:"degraded artifact · no text layer";position:absolute;
+  bottom:0;left:0;right:0;padding:7px 12px;background:rgba(7,8,10,.9);
+  font-family:var(--mono);font-size:11px;color:var(--amber);
+  border-top:1px solid var(--line)}
+.copyres{display:flex;flex-direction:column;gap:13px}
+.crow{border:1px solid var(--line);background:var(--panel);padding:15px 17px}
+.crow .cl{font-family:var(--sign);text-transform:uppercase;letter-spacing:.1em;
+  font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px}
+.crow .cc{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:11px}
+.cbars{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+  border:1px solid var(--line)}
+.cb{background:#0a0c0f;padding:10px 12px}
+.cb .k{font-family:var(--sign);text-transform:uppercase;letter-spacing:.11em;
+  font-size:10px;color:var(--muted)}
+.cb .v{font-family:var(--mono);font-size:20px;font-weight:600;margin-top:3px}
+.cb .v.good{color:var(--pass)} .cb .v.bad{color:var(--fail)}
+.cb .v.zero{color:var(--fail)}
+.cnote{font-size:12.5px;line-height:1.5;color:var(--muted);margin-top:10px}
+.cnote b{color:var(--text);font-weight:500}
+@media(max-width:1080px){.copytest{grid-template-columns:1fr}}
+
 /* live run — the on-camera proof that this executes on Cloud Run */
 .live{margin-top:26px;border:1px solid var(--line);background:var(--panel);
   padding:18px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
@@ -290,6 +317,16 @@ footer a{color:var(--amber);text-decoration:none;border-bottom:1px solid var(--a
         <code>ERROR=0</code> either way. It checks conformance, not whether the bus goes where
         the feed says. Structure catches what a schema cannot: a completed run ends with an
         arrival and no departure.</p>
+    </div>
+
+    <div class="beat" style="margin-top:56px">Beat 04 — the artifact this was built for</div>
+    <h2>Take the text layer away</h2>
+    <p class="sub">The page above has a text layer, so the baseline could compete. A photocopy has
+      none — and that is what most Indian timetables are. Same page, degraded the way a copier
+      degrades one: skew, blur, toner speckle, contrast loss, JPEG artifacts.</p>
+    <div class="copytest">
+      <div class="copyimg"><img src="data/photocopy.jpg" alt="the same page, degraded to a photocopy"></div>
+      <div class="copyres" id="copyres"></div>
     </div>
 
     <div class="live">
@@ -486,6 +523,51 @@ function render(d) {
   $("#duel").append(
     feedCard("Baseline", "Text layer + regex", d.baseline.approach, d.baseline, false),
     feedCard("Headway", "Two readers + geometry", "gemini-3.7-flash · gemini-3.5-flash-lite", d.headway, true));
+
+  // ── the photocopy test ───────────────────────────────────────────────────
+  const pc = d.photocopy || {};
+  const box = $("#copyres");
+  if (box) {
+    const base = el("div", "crow");
+    base.append(el("div", "cl", "Baseline — text layer + regex"),
+      el("div", "cc", "pdftotext -layout"));
+    const bb = el("div", "cbars");
+    [["rows parsed", "0", "zero"], ["cells read", "0", "zero"]].forEach(([k, v, cls]) => {
+      const c = el("div", "cb");
+      c.append(el("div", "k", k), el("div", "v " + cls, v));
+      bb.append(c);
+    });
+    base.append(bb, el("div", "cnote",
+      "A JPEG has no text layer. <b>There is nothing to read.</b> This is not a "
+      + "close call or a tuning problem — it is the situation HEADWAY was built for."));
+    box.append(base);
+
+    Object.entries(pc).forEach(([lvl, s]) => {
+      const t = s.totals, ok = t.wrong === 0;
+      const row = el("div", "crow");
+      if (!ok) row.style.borderColor = "rgba(255,180,0,.4)";
+      row.append(el("div", "cl", `HEADWAY — ${esc(s.label)}`),
+        el("div", "cc", `skew ${s.config.skew}° · blur ${s.config.blur} · `
+          + `${s.config.speckle.toLocaleString()} speckles · JPEG q${s.config.jpeg}`));
+      const bars = el("div", "cbars");
+      const pct = (100 * t.correct / s.graded).toFixed(0);
+      [["fidelity", `${t.correct}/${s.graded} · ${pct}%`, "good"],
+       ["confident-wrong", String(t.wrong), ok ? "good" : "bad"]].forEach(([k, v, cls]) => {
+        const c = el("div", "cb");
+        c.append(el("div", "k", k), el("div", "v " + cls, v));
+        bars.append(c);
+      });
+      row.append(bars);
+      row.append(el("div", "cnote", ok
+        ? "Every stop name, every arrival, every departure — through a copy of a copy."
+        : "Skew displaced the rightmost column by nearly a row height and four "
+          + "departures bound one row high. That puts a departure on the terminus "
+          + "row — and a completed run ends with an arrival and no departure. "
+          + "<b>The structural rule fired and the whole service was withheld.</b> "
+          + "Where the geometry fails, the system loses coverage, not correctness."));
+      box.append(row);
+    });
+  }
 }
 
 // ── live execution ─────────────────────────────────────────────────────────
