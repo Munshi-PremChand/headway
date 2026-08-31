@@ -9,17 +9,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#07080a; --panel:#0e1014; --line:#22262e; --amber:#ffb400;
-  --amber-dim:#7a5600; --pass:#3ddc84; --fail:#ff4d4d; --cool:#5ac8fa;
-  --text:#d9dce3; --muted:#767d8a;
+  /* Same paper palette as the demo, so a judge moving between them does not
+     have to re-orient. The accent darkens to a deep ochre because #ffb400 is
+     ~1.7:1 on off-white; every colour here clears 4.5:1 on --ink. */
+  --ink:#f4f2ec; --panel:#ffffff; --line:#ddd7cb; --amber:#9c5d0a;
+  --amber-dim:#b3873f; --pass:#15803d; --fail:#bb2a20; --cool:#0b6ba8;
+  --text:#1a1c21; --muted:#6a7079;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   --sign:"Barlow Condensed",Impact,sans-serif;
   --body:"IBM Plex Sans",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
-  background-image:radial-gradient(1200px 700px at 20% -10%,#16191f 0,transparent 60%),
-    radial-gradient(900px 500px at 92% 0%,#14120c 0,transparent 55%);}
+  background-image:radial-gradient(1200px 700px at 20% -10%,#ffffff 0,transparent 60%),
+    radial-gradient(900px 500px at 92% 0%,#fbf3e4 0,transparent 55%);}
 .sheet{width:1600px;margin:0 auto;padding:44px 52px 52px}
 .hdr{display:flex;align-items:baseline;gap:20px;flex-wrap:wrap;
   border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:30px}
@@ -49,17 +52,17 @@ body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
   margin-left:auto;text-align:right}
 .node .d{font-size:13px;line-height:1.5;color:var(--muted);margin:8px 0 0 36px;
   max-width:74ch}
-.node.model{border-color:rgba(255,180,0,.55);
-  background:linear-gradient(180deg,rgba(255,180,0,.09),rgba(255,180,0,.02))}
+.node.model{border-color:rgba(156,93,10,.5);
+  background:linear-gradient(180deg,rgba(156,93,10,.09),rgba(156,93,10,.03))}
 .node.model .nm{color:var(--amber)}
-.node.gate{border-color:rgba(61,220,132,.45);
-  background:linear-gradient(180deg,rgba(61,220,132,.07),transparent)}
+.node.gate{border-color:rgba(21,128,61,.5);
+  background:linear-gradient(180deg,rgba(21,128,61,.07),transparent)}
 .node.gate .nm{color:var(--pass)}
 .badge{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;padding:3px 7px;
   border-radius:2px;white-space:nowrap}
-.badge.nomodel{color:var(--pass);border:1px solid rgba(61,220,132,.4)}
-.badge.hasmodel{color:#0a0b0d;background:var(--amber);font-weight:600}
-.badge.third{color:var(--cool);border:1px solid rgba(90,200,250,.4)}
+.badge.nomodel{color:var(--pass);border:1px solid rgba(21,128,61,.45)}
+.badge.hasmodel{color:#ffffff;background:var(--amber);font-weight:600}
+.badge.third{color:var(--cool);border:1px solid rgba(11,107,168,.4)}
 
 .arrow{height:34px;display:flex;align-items:center;padding-left:29px;position:relative}
 .arrow::before{content:"";position:absolute;left:33px;top:0;bottom:0;width:1px;
@@ -68,22 +71,22 @@ body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
   margin-left:46px;background:var(--ink);padding:2px 9px;border:1px solid var(--line)}
 
 /* trust boundary around the model stage */
-.fence{border:1.5px dashed rgba(255,180,0,.42);padding:13px;margin:0 -13px;
+.fence{border:1.5px dashed rgba(156,93,10,.45);padding:13px;margin:0 -13px;
   position:relative;border-radius:3px}
 .fence::before{content:"UNTRUSTED ZONE · zero tools · zero write permissions";
   position:absolute;top:-9px;left:16px;background:var(--ink);padding:0 9px;
   font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--amber)}
 .parallel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.reader{border:1px solid rgba(255,180,0,.32);background:rgba(255,180,0,.05);
+.reader{border:1px solid rgba(156,93,10,.32);background:rgba(156,93,10,.05);
   padding:11px 13px}
 .reader .rn{font-family:var(--mono);font-size:12.5px;color:var(--amber);font-weight:600}
 .reader .rr{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
 
 /* outcomes */
 .outs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
-.out{border:1px solid var(--line);padding:14px 16px;background:#0a0c0f}
-.out.ok{border-color:rgba(61,220,132,.4)}
-.out.no{border-color:rgba(255,77,77,.4)}
+.out{border:1px solid var(--line);padding:14px 16px;background:var(--panel)}
+.out.ok{border-color:rgba(21,128,61,.45)}
+.out.no{border-color:rgba(187,42,32,.45)}
 .out .ot{font-family:var(--sign);text-transform:uppercase;letter-spacing:.1em;
   font-size:16px;font-weight:600}
 .out.ok .ot{color:var(--pass)} .out.no .ot{color:var(--fail)}
@@ -95,7 +98,7 @@ body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
 .card h3{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
   font-size:11.5px;color:var(--muted);margin:0 0 11px;font-weight:600}
 .iam{display:flex;flex-direction:column;gap:9px}
-.sa{border:1px solid var(--line);padding:9px 11px;background:#0a0c0f}
+.sa{border:1px solid var(--line);padding:9px 11px;background:var(--panel)}
 .sa .san{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:600}
 .sa .can{font-size:11.5px;color:var(--pass);margin-top:4px}
 .sa .cant{font-size:11.5px;color:var(--fail);margin-top:2px}
@@ -262,16 +265,17 @@ body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
           <dt>escalated</dt><dd>0</dd>
           <dt>rows exact vs text layer</dt><dd class="hot">25 / 25</dd>
           <dt>services withheld</dt><dd class="hot">1 of 3</dd>
+          <dt>whole division, 10 pages</dt><dd class="hot">34 trips</dd>
           <dt>stops located / refused</dt><dd>12 / 2</dd>
           <dt>km-vs-straight-line</dt><dd>15 seg · PASS</dd>
           <dt>validator</dt><dd>ERROR 0</dd>
-          <dt>live run on Cloud Run</dt><dd>62.6 s</dd>
-          <dt>tests</dt><dd>170</dd>
+          <dt>live run on Cloud Run</dt><dd>75.6 s</dd>
+          <dt>tests</dt><dd>192</dd>
         </dl>
       </div>
 
-      <div class="card" style="border-color:rgba(255,77,77,.35)">
-        <h3 style="color:#ff9b9b">Why the gate is not enough</h3>
+      <div class="card" style="border-color:rgba(187,42,32,.4)">
+        <h3 style="color:#8d2419">Why the gate is not enough</h3>
         <div class="note">The naive baseline — <code>pdftotext</code> plus regex through the
           <b>same</b> composer, geocoder and validator — also reaches <b>ERROR=0</b>. It publishes
           three services where HEADWAY publishes two, because the third runs off the page and it
