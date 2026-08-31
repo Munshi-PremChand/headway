@@ -4,7 +4,7 @@ PY        := .venv/bin/python
 
 ASTC := https://st.redbus.in/Images/WL/ASTC/schedules_new/Guwahati_division.pdf
 
-.PHONY: setup build validate ambiguity test calibrate fixture pipeline clean
+.PHONY: setup build validate ambiguity test calibrate fixture pipeline multipage photocopy clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q pytest
@@ -41,6 +41,14 @@ calibrate:
 pipeline:
 	$(PY) scripts/run_pipeline.py --pdf $(ASTC) --page 1 \
 	    --profile astc_guwahati --json out/astc_ledger.json
+
+# Pages 1-2, joining the service that spans the page break.
+multipage:
+	$(PY) scripts/run_multipage.py --pages 1-2 --json out/multipage.json
+
+# The claim the project rests on: no text layer at all.
+photocopy:
+	$(PY) scripts/photocopy_test.py --level 2
 
 clean:
 	rm -rf out __pycache__ .pytest_cache .tmp

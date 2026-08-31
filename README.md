@@ -149,6 +149,43 @@ Stated plainly: on a page *with* a clean text layer, the baseline extracts the s
 and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal — and
 working at all on a photocopy, a board notice or a phone photograph, where no text layer exists.
 
+### Services that span a page break
+
+A 369 km coach service does not fit on one sheet of A4. Page 1 ends mid-service and page 2 opens with the
+rest of it under no heading at all. Read per-page, that service is correctly withheld — correct, but lossy.
+
+```bash
+python3 scripts/run_multipage.py --pages 1-2
+# 6 trips · 13 stops · 53 stop_times · ERROR=0 · 1 of 1 joins accepted
+```
+
+A join is treated as a **claim**, and this format makes it checkable four ways. All four must hold or the
+join is refused and the service stays withheld:
+
+| check | page 1 tail | page 2 head |
+|---|---|---|
+| the printed `Sl.No` continues | `6` | `7` ✓ |
+| distance increases | `225 km` | `248 km` ✓ |
+| time does not run backwards | `1.05 PM` | `1.35 PM` ✓ |
+| the joined run terminates | — | `Bihpuria`, arrival and no departure ✓ |
+
+That is why the reader is asked for the `Sl.No` column at all: *within* a page the sequence is geometry,
+**across** pages it is not.
+
+### The page checked against itself
+
+Printed distance over printed time needs no coordinates, so an impossible speed cannot be blamed on a
+geocode — it is an error in the source. Three are present in ASTC's own published timetable:
+
+| service | leg | what the page prints |
+|---|---|---|
+| 1 | Biswanath Chariali → Gohpur | 60 km in 30 min — **120 km/h** |
+| 6 | Balipara → Tezpur | 18 km in 5 min — **216 km/h** |
+| 6 | Khanapara → Paltanbazar | departs **12.40 PM**, arrives **12.15 PM** |
+
+They are reported, never corrected. Substituting a plausible time for an implausible printed one is
+exactly the guessing this project refuses.
+
 ### And that second half is measured too
 
 `scripts/photocopy_test.py` degrades the same page the way a copier does — skew, blur, toner speckle,
@@ -228,8 +265,10 @@ shows nothing landed. See [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md).
 
 ```bash
 make setup        # venv, pytest, and the gtfs-validator jar (sha256-pinned)
-make test         # 175 tests
+make test         # 191 tests
 make pipeline     # the whole thing, live, on a real ASTC page
+make multipage    # pages 1-2, joining the service that spans the break
+make photocopy    # the same page with its text layer taken away
 make build        # claims -> 8 GTFS files -> zip
 make validate     # runs the real validator; exits non-zero on any ERROR
 make ambiguity    # shows which ambiguities escalate and which are suppressed
