@@ -1,0 +1,11 @@
+.venv/
+.git/
+.tmp/
+out/
+dist/
+.munshi/
+__pycache__/
+*.pyc
+.pytest_cache/
+vendor/*.jar
+.DS_Store

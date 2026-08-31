@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEADWAY — a timetable is not data until someone types it in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07080a; --panel:#0e1014; --panel-2:#14171c; --line:#22262e;
+  --amber:#ffb400; --amber-dim:#7a5600; --paper:#f2efe6;
+  --pass:#3ddc84; --fail:#ff4d4d; --cool:#5ac8fa;
+  --text:#d9dce3; --muted:#767d8a;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sign:"Barlow Condensed","Oswald",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body)}
+body{
+  background-image:
+    radial-gradient(1100px 600px at 15% -10%, #16191f 0%, transparent 60%),
+    radial-gradient(900px 500px at 95% 5%, #14120c 0%, transparent 55%);
+  background-attachment:fixed;
+}
+/* film grain so flat blacks don't band on camera */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:1500px;margin:0 auto;padding:0 28px}
+
+/* ───────────────────────── departure board header ───────────────────────── */
+.board{
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#0b0d10, #08090c);
+  position:relative;overflow:hidden;
+}
+.board::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.35) 3px 4px);
+  pointer-events:none;
+}
+.board .wrap{padding-top:26px;padding-bottom:22px}
+.brandline{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+h1{
+  font-family:var(--sign);font-weight:700;font-size:clamp(46px,7vw,88px);
+  letter-spacing:.055em;line-height:.86;margin:0;color:var(--amber);
+  text-transform:uppercase;text-shadow:0 0 34px rgba(255,180,0,.22);
+}
+.tagline{font-family:var(--sign);font-weight:500;text-transform:uppercase;
+  letter-spacing:.16em;font-size:14px;color:var(--muted)}
+.lede{margin:16px 0 0;max-width:74ch;font-size:15.5px;line-height:1.62;color:#aeb4bf}
+.lede b{color:var(--text);font-weight:500}
+
+.gapstrip{
+  margin-top:22px;display:grid;gap:1px;background:var(--line);
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));border:1px solid var(--line);
+}
+.gapcell{background:#0a0c0f;padding:13px 16px}
+.gapcell .k{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:11px;color:var(--muted)}
+.gapcell .v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);
+  margin-top:4px;font-variant-numeric:tabular-nums}
+.gapcell .v.hot{color:var(--amber)}
+
+/* ─────────────────────────────── sections ──────────────────────────────── */
+section{padding:64px 0 12px;border-top:1px solid var(--line)}
+.beat{font-family:var(--sign);text-transform:uppercase;letter-spacing:.2em;
+  font-size:12px;color:var(--amber);margin-bottom:10px}
+h2{font-family:var(--sign);font-weight:600;font-size:clamp(28px,3.6vw,44px);
+  letter-spacing:.03em;margin:0 0 10px;text-transform:uppercase;line-height:1}
+.sub{color:var(--muted);max-width:78ch;line-height:1.6;font-size:15px;margin:0 0 26px}
+
+/* ───────────────────────── the scan + overlay ──────────────────────────── */
+.evidence{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.72fr);
+  gap:26px;align-items:start}
+.scanframe{
+  position:relative;border:1px solid var(--line);background:#0a0b0e;
+  /* capped in px as well as vh: a filmed take must lay out the same way on
+     whatever screen it is recorded on, not stretch with the viewport. */
+  max-height:min(78vh,880px);overflow:auto;scrollbar-width:thin;
+}
+.scaninner{position:relative;line-height:0}
+.scaninner img{width:100%;display:block;filter:contrast(1.04) brightness(.97)}
+.bx{
+  position:absolute;border:1.5px solid var(--cool);background:rgba(90,200,250,.09);
+  cursor:pointer;transition:background .12s,border-color .12s,transform .12s;
+  opacity:0;animation:pop .32s ease-out forwards;
+}
+@keyframes pop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+.bx:hover,.bx.on{background:rgba(90,200,250,.28);transform:scale(1.06);z-index:5}
+.bx.withheld{border-color:var(--fail);background:rgba(255,77,77,.14)}
+.bx.withheld:hover,.bx.withheld.on{background:rgba(255,77,77,.36)}
+.bx.unplaced{border-color:var(--amber);background:rgba(255,180,0,.16)}
+.bx.unplaced:hover,.bx.unplaced.on{background:rgba(255,180,0,.38)}
+
+.rail{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px}
+.card{border:1px solid var(--line);background:var(--panel);padding:16px 18px}
+.card h3{font-family:var(--sign);text-transform:uppercase;letter-spacing:.15em;
+  font-size:12px;color:var(--muted);margin:0 0 12px;font-weight:600}
+.legend{display:flex;flex-direction:column;gap:9px}
+.lg{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.sw{width:15px;height:15px;flex:0 0 15px;margin-top:2px;border:1.5px solid var(--cool);
+  background:rgba(90,200,250,.18)}
+.sw.w{border-color:var(--fail);background:rgba(255,77,77,.2)}
+.sw.u{border-color:var(--amber);background:rgba(255,180,0,.2)}
+.lg b{font-weight:500;color:var(--text)}
+.lg span{color:var(--muted)}
+
+#detail{min-height:132px}
+#detail .empty{color:var(--muted);font-size:13.5px;line-height:1.55}
+.kv{display:grid;grid-template-columns:82px 1fr;gap:5px 12px;font-family:var(--mono);
+  font-size:12.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;color:var(--text);word-break:break-word}
+.val{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--amber);
+  margin:0 0 10px;line-height:1.1}
+.why{margin-top:11px;padding:10px 12px;border-left:2px solid var(--fail);
+  background:rgba(255,77,77,.07);font-size:13px;line-height:1.5;color:#f0c9c9}
+.why.amb{border-left-color:var(--amber);background:rgba(255,180,0,.07);color:#f0dcae}
+
+/* ─────────────────────────────── ledger ────────────────────────────────── */
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line)}
+.stage{background:#0b0d10;padding:16px 17px;position:relative}
+.stage .n{font-family:var(--mono);font-size:11px;color:var(--amber-dim)}
+.stage .t{font-family:var(--sign);text-transform:uppercase;letter-spacing:.11em;
+  font-size:15px;margin:5px 0 9px;color:var(--text);font-weight:600}
+.stage .d{font-size:12.8px;line-height:1.5;color:var(--muted)}
+.stage .m{font-family:var(--mono);font-size:12.5px;color:var(--cool);margin-top:9px;
+  font-variant-numeric:tabular-nums}
+.stage.nomodel::after{content:"NO MODEL";position:absolute;top:14px;right:15px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--pass);
+  border:1px solid rgba(61,220,132,.35);padding:2px 5px;border-radius:2px}
+
+.refusals{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.ref{border:1px solid rgba(255,180,0,.28);background:rgba(255,180,0,.045);padding:14px 16px}
+.ref .rn{font-family:var(--mono);font-size:14px;color:var(--amber);font-weight:600}
+.ref .rr{font-size:13px;line-height:1.5;color:#c8bfa4;margin-top:6px}
+
+/* ─────────────────────────────── verdict ───────────────────────────────── */
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px}
+.feed{border:1px solid var(--line);background:var(--panel);padding:20px 20px 16px;
+  position:relative;overflow:hidden}
+.feed.hw{border-color:rgba(61,220,132,.3)}
+.feed .who{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:12px;color:var(--muted)}
+.feed .what{font-family:var(--sign);font-size:27px;font-weight:600;margin:3px 0 2px;
+  letter-spacing:.02em;text-transform:uppercase}
+.feed .how{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:16px}
+.stamp{display:inline-flex;align-items:center;gap:9px;border:2px solid var(--pass);
+  color:var(--pass);font-family:var(--mono);font-weight:600;font-size:19px;
+  padding:7px 14px;letter-spacing:.05em;transform:rotate(-1.4deg);
+  box-shadow:0 0 22px rgba(61,220,132,.14);opacity:0;animation:thump .45s ease-out forwards}
+@keyframes thump{0%{opacity:0;transform:rotate(-1.4deg) scale(1.5)}
+  60%{opacity:1;transform:rotate(-1.4deg) scale(.95)}100%{opacity:1;transform:rotate(-1.4deg) scale(1)}}
+.figs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);margin:18px 0 16px}
+.fig{background:#0a0c0f;padding:11px 12px}
+.fig .fk{font-family:var(--sign);text-transform:uppercase;letter-spacing:.12em;
+  font-size:10px;color:var(--muted)}
+.fig .fv{font-family:var(--mono);font-size:21px;font-weight:600;margin-top:3px;
+  font-variant-numeric:tabular-nums}
+.triplist{display:flex;flex-direction:column;gap:7px}
+.trip{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;line-height:1.42;
+  padding:9px 11px;border:1px solid var(--line);background:#0a0c0f}
+.trip .tn{font-family:var(--mono);color:var(--amber);font-weight:600;flex:0 0 auto}
+.trip.ghost{border-color:rgba(255,77,77,.45);background:rgba(255,77,77,.07)}
+.trip.ghost .tn{color:var(--fail)}
+.trip.ghost .tt{color:#f0c9c9}
+.trip .tt{color:var(--text)}
+.missing{border:1px dashed var(--line);background:transparent;color:var(--muted);
+  font-style:italic;padding:9px 11px;font-size:13px}
+.punch{margin-top:26px;border:1px solid rgba(255,77,77,.4);
+  background:linear-gradient(180deg,rgba(255,77,77,.08),rgba(255,77,77,.02));
+  padding:24px 26px}
+.punch .pt{font-family:var(--sign);text-transform:uppercase;font-size:clamp(20px,2.6vw,31px);
+  letter-spacing:.03em;color:#ffd9d9;margin:0 0 10px;font-weight:600;line-height:1.12}
+.punch p{margin:0;font-size:15px;line-height:1.65;color:#d5c2c2;max-width:88ch}
+.punch code{font-family:var(--mono);color:var(--amber);font-size:13.5px}
+
+/* live run — the on-camera proof that this executes on Cloud Run */
+.live{margin-top:26px;border:1px solid var(--line);background:var(--panel);
+  padding:18px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.live .lt{flex:1 1 320px}
+.live .lt b{font-family:var(--sign);text-transform:uppercase;letter-spacing:.12em;
+  font-size:14px;color:var(--text);display:block;margin-bottom:4px;font-weight:600}
+.live .lt span{color:var(--muted);font-size:13.5px;line-height:1.5}
+button.go{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:15px;font-weight:600;color:#0a0b0d;background:var(--amber);border:0;
+  padding:13px 26px;cursor:pointer;transition:filter .15s,transform .1s}
+button.go:hover{filter:brightness(1.12)}
+button.go:active{transform:translateY(1px)}
+button.go[disabled]{background:#3a3d44;color:#8a8f99;cursor:progress}
+#liveout{font-family:var(--mono);font-size:12.5px;color:var(--cool);
+  white-space:pre-wrap;margin-top:14px;max-height:240px;overflow:auto;width:100%}
+.dl{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.dl a{font-family:var(--mono);font-size:12.5px;color:var(--amber);text-decoration:none;
+  border:1px solid var(--amber-dim);padding:8px 13px;transition:background .15s}
+.dl a:hover{background:rgba(255,180,0,.1)}
+
+footer{padding:44px 0 70px;border-top:1px solid var(--line);margin-top:56px;
+  color:var(--muted);font-size:13px;line-height:1.7}
+footer a{color:var(--amber);text-decoration:none;border-bottom:1px solid var(--amber-dim)}
+.limits{margin-top:14px;padding-left:18px}
+.limits li{margin-bottom:6px}
+@media(max-width:1080px){.evidence{grid-template-columns:1fr}.duel{grid-template-columns:1fr}
+  .rail{position:static}}
+</style>
+</head>
+<body>
+
+<div class="board">
+  <div class="wrap">
+    <div class="brandline">
+      <h1>Headway</h1>
+      <div class="tagline">Assam State Transport Corporation · Guwahati Division · Page 1</div>
+    </div>
+    <p class="lede">A bus timetable is not data until someone types it in. This reads the
+      page and <b>refuses when it cannot</b> — because a confident wrong departure time is the
+      one error class no validator on earth catches.</p>
+    <div class="gapstrip" id="gapstrip"></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="beat">Beat 01 — the artifact</div>
+    <h2>Every claim, boxed on the page it came from</h2>
+    <p class="sub">The model is asked two things only: what a cell says, and where it is.
+      Row, column and service block are recovered downstream by clustering these boxes —
+      arithmetic with one correct answer. Click any box.</p>
+    <div class="evidence">
+      <div class="scanframe"><div class="scaninner" id="scan">
+        <img id="pageimg" alt="ASTC Guwahati division timetable, page 1">
+      </div></div>
+      <div class="rail">
+        <div class="card">
+          <h3>Legend</h3>
+          <div class="legend">
+            <div class="lg"><i class="sw"></i><div><b>Composed</b><br><span>read, bound, and in the published feed</span></div></div>
+            <div class="lg"><i class="sw w"></i><div><b>Withheld</b><br><span>this service runs off the page — not published</span></div></div>
+            <div class="lg"><i class="sw u"></i><div><b>No coordinate</b><br><span>the gazetteer had no defensible answer</span></div></div>
+          </div>
+        </div>
+        <div class="card" id="detail"><h3>Claim detail</h3>
+          <div class="empty">Hover or click a box on the scan.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="beat">Beat 02 — the run</div>
+    <h2>One model stage. Five deterministic stages.</h2>
+    <p class="sub">Everything downstream of the readers is ordinary Python with no model in
+      it. That asymmetry is why the output can be gated on somebody else's binary.</p>
+    <div class="stages" id="stages"></div>
+    <div class="refusals" id="refusals"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="beat">Beat 03 — the verdict</div>
+    <h2>Two feeds. Both pass. One is false.</h2>
+    <p class="sub">The same page, the same composer, the same geocoder, the same validator.
+      The only difference is where the claims came from — regular expressions over the PDF's
+      text layer, or two vision readers plus geometry.</p>
+    <div class="duel" id="duel"></div>
+    <div class="punch">
+      <p class="pt">Zero errors proves conformance, not correctness.</p>
+      <p>Page 1 carries three services. The third, <code>Guwahati to Bihpuria</code>, runs off
+        the bottom edge — its last visible row still has a <em>departure</em> time, so the bus
+        does not terminate there. The baseline publishes a <b>409 km coach service as though it
+        ends at a village halfway along</b>, and <code>gtfs-validator</code> reports
+        <code>ERROR=0</code> either way. It checks conformance, not whether the bus goes where
+        the feed says. Structure catches what a schema cannot: a completed run ends with an
+        arrival and no departure.</p>
+    </div>
+
+    <div class="live">
+      <div class="lt"><b>Run it now, on this machine</b>
+        <span>Fetches the live PDF from ASTC, renders page 1, calls both Gemini models on
+        Vertex AI, binds, geocodes, composes and re-runs gtfs-validator. Roughly 40 seconds.
+        Nothing below is cached.</span></div>
+      <button class="go" id="gobtn">Execute pipeline</button>
+      <pre id="liveout" hidden></pre>
+    </div>
+
+    <div class="dl">
+      <a href="api/feed/headway" download>↓ headway-gtfs.zip</a>
+      <a href="api/feed/baseline" download>↓ baseline-gtfs.zip</a>
+      <a href="api/run">↓ run ledger (json)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><a href="https://github.com/Munshi-PremChand/headway">github.com/Munshi-PremChand/headway</a>
+      · gemini-3.7-flash + gemini-3.5-flash-lite on Vertex AI · Google ADK 2.8 ·
+      publish gate: MobilityData gtfs-validator 8.0.1</div>
+    <div style="margin-top:14px"><b style="color:var(--text)">Honest limits</b>
+      <ul class="limits">
+        <li>Both artifacts measured so far are <b>rendered</b>, not scanned — this PDF is a Word
+          document printed to PDF. Not a claim about accuracy on a real photocopy.</li>
+        <li>On a page <b>with</b> a clean text layer the baseline ties us on transcription. The
+          advantage here is the refusals, and working where no text layer exists at all.</li>
+        <li>Operating days are <b>assumed daily</b>; the page does not state them. Declared in the
+          operator profile and printed as an assumption on every run.</li>
+        <li>Feeds are labelled unofficial development feeds and none has been submitted anywhere.</li>
+      </ul></div>
+  </div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c;
+  if (h !== undefined) n.innerHTML = h; return n; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+fetch("data/run.json").then(r => r.json()).then(render).catch(e => {
+  document.body.insertAdjacentHTML("afterbegin",
+    `<pre style="color:#ff4d4d;padding:20px">could not load run data: ${esc(e)}</pre>`);
+});
+
+function render(d) {
+  $("#pageimg").src = "data/page.png";
+
+  const withheld = d.claims.filter(c => c.status === "withheld").length;
+  const unplaced = d.claims.filter(c => c.status === "unplaced").length;
+  const cells = [
+    ["Active feeds, India", "9", true],
+    ["One per", "161 M people", true],
+    ["France, one per", "79,359", false],
+    ["Claims read", d.claims.length, false],
+    ["Withheld", withheld, false],
+    ["No coordinate", unplaced, false],
+  ];
+  cells.forEach(([k, v, hot]) => {
+    const c = el("div", "gapcell");
+    c.append(el("div", "k", esc(k)), el("div", "v" + (hot ? " hot" : ""), esc(v)));
+    $("#gapstrip").append(c);
+  });
+
+  // ── boxes on the scan ────────────────────────────────────────────────────
+  const scan = $("#scan");
+  d.claims.forEach((c, i) => {
+    const [x0, y0, x1, y1] = c.bbox;
+    const b = el("div", "bx " + (c.status === "composed" ? "" : c.status));
+    b.style.left = (x0 * 100) + "%"; b.style.top = (y0 * 100) + "%";
+    b.style.width = ((x1 - x0) * 100) + "%"; b.style.height = ((y1 - y0) * 100) + "%";
+    b.style.animationDelay = (i * 7) + "ms";
+    b.title = c.value;
+    const show = () => {
+      document.querySelectorAll(".bx.on").forEach(n => n.classList.remove("on"));
+      b.classList.add("on"); detail(c);
+    };
+    b.addEventListener("mouseenter", show);
+    b.addEventListener("click", show);
+    scan.append(b);
+  });
+
+  function detail(c) {
+    const box = $("#detail");
+    box.innerHTML = "<h3>Claim detail</h3>";
+    box.append(el("p", "val", esc(c.value)));
+    const dl = el("dl", "kv");
+    const rows = [["kind", c.kind], ["field", c.field], ["service", c.trip],
+      ["sequence", c.seq], ["km", c.km ?? "—"],
+      ["bbox", c.bbox.map(n => n.toFixed(3)).join(", ")], ["status", c.status]];
+    rows.forEach(([k, v]) => { dl.append(el("dt", "", esc(k)), el("dd", "", esc(v ?? "—"))); });
+    box.append(dl);
+    if (c.reason) box.append(el("div", "why" + (c.status === "unplaced" ? " amb" : ""),
+      esc(c.reason)));
+  }
+
+  // ── pipeline stages ──────────────────────────────────────────────────────
+  const g = d.geocode, p = d.plausibility, hv = d.headway.validation;
+  const stages = [
+    ["01", "Readers", "gemini-3.7-flash and gemini-3.5-flash-lite read the same page blind to each other. Zero tools, zero write permissions.", `${d.claims.length} claims · 2 models`, false],
+    ["02", "Grid binding", "Row, column and service block recovered by clustering bounding boxes. The block number is read off the page; the geometry is not guessed.", `${d.blocks.length} blocks · ${JSON.stringify(d.columnRoles).replace(/[{}"]/g, "")}`, true],
+    ["03", "Disagreement gate", "Two independent reads compared cell for cell. Disagreement withholds a claim; agreement is never treated as proof.", `${withheld} claims withheld`, true],
+    ["04", "Geocoding", "OpenStreetMap, ranked by category rather than popularity — then audited against the printed km column.", `${Object.keys(g.resolved).length} located · ${Object.keys(g.refused).length} refused`, true],
+    ["05", "Composer", "Claims to eight GTFS files. Schedule arithmetic is not a language task, so no model touches it.", `${d.headway.stats.stop_times} stop_times`, true],
+    ["06", "Publish gate", "MobilityData's gtfs-validator — a binary this project did not write. Zero ERROR notices or nothing ships.", `ERROR ${hv.errors} · WARNING ${hv.warnings}`, true],
+  ];
+  stages.forEach(([n, t, dsc, m, nomodel]) => {
+    const s = el("div", "stage" + (nomodel ? " nomodel" : ""));
+    s.append(el("div", "n", n), el("div", "t", esc(t)), el("div", "d", esc(dsc)),
+      el("div", "m", esc(m)));
+    $("#stages").append(s);
+  });
+
+  // geometry audit + refusals
+  const ref = $("#refusals");
+  const audit = el("div", "ref");
+  audit.style.borderColor = "rgba(61,220,132,.3)";
+  audit.append(el("div", "rn", "Geometry audit — " + esc(p.verdict)));
+  audit.append(el("div", "rr", `Road distance is never shorter than a straight line. `
+    + `${p.segments_checked} consecutive stop pairs checked against the km column printed on `
+    + `the page; tightest margin ${p.tightest_margin_km} km. This is the only check here that `
+    + `catches a stop placed in the wrong town — which no conformance validator can see.`));
+  ref.append(audit);
+  Object.entries(g.refused).forEach(([name, r]) => {
+    const c = el("div", "ref");
+    c.append(el("div", "rn", esc(name) + " — no coordinate"), el("div", "rr", esc(r.reason)));
+    ref.append(c);
+  });
+
+  // ── the duel ─────────────────────────────────────────────────────────────
+  const hwTrips = new Set(d.headway.trips.map(t => t.trip));
+  function feedCard(who, what, how, data, isHW) {
+    const c = el("div", "feed" + (isHW ? " hw" : ""));
+    c.append(el("div", "who", esc(who)), el("div", "what", esc(what)),
+      el("div", "how", esc(how)));
+    const v = data.validation;
+    const st = el("div", "stamp", `<span>✓</span> ERROR ${v.errors} · WARNING ${v.warnings}`);
+    st.style.animationDelay = (isHW ? 620 : 340) + "ms";
+    c.append(st);
+    const figs = el("div", "figs");
+    [["trips", data.stats.trips], ["stops", data.stats.stops],
+     ["stop_times", data.stats.stop_times]].forEach(([k, val]) => {
+      const f = el("div", "fig");
+      f.append(el("div", "fk", k), el("div", "fv", val));
+      figs.append(f);
+    });
+    c.append(figs);
+    const list = el("div", "triplist");
+    data.trips.forEach(t => {
+      const ghost = !isHW && !hwTrips.has(t.trip);
+      const row = el("div", "trip" + (ghost ? " ghost" : ""));
+      row.append(el("span", "tn", esc(t.trip)),
+        el("span", "tt", esc(t.headsign || "—") + (ghost
+          ? " — published as terminating here. It does not." : "")));
+      list.append(row);
+    });
+    if (isHW) list.append(el("div", "missing",
+      "service 3 withheld — the table ran off the page and the run did not end"));
+    c.append(list);
+    return c;
+  }
+  $("#duel").append(
+    feedCard("Baseline", "Text layer + regex", d.baseline.approach, d.baseline, false),
+    feedCard("Headway", "Two readers + geometry", "gemini-3.7-flash · gemini-3.5-flash-lite", d.headway, true));
+}
+
+// ── live execution ─────────────────────────────────────────────────────────
+$("#gobtn").addEventListener("click", async () => {
+  const btn = $("#gobtn"), out = $("#liveout");
+  btn.disabled = true; btn.textContent = "Running…";
+  out.hidden = false;
+  const t0 = Date.now();
+  const tick = setInterval(() => {
+    out.textContent = `▍ executing on the server — ${((Date.now() - t0) / 1000).toFixed(1)}s\n`
+      + `  fetch PDF → render 200dpi → 2× Gemini on Vertex → bind → geocode\n`
+      + `  → compose → gtfs-validator`;
+  }, 100);
+  try {
+    const r = await fetch("api/run", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+    const j = await r.json();
+    clearInterval(tick);
+    out.textContent = (j.pipeline || j.stderr || "no output").trim();
+    out.scrollTop = out.scrollHeight;
+    btn.textContent = j.ok ? `Completed in ${j.seconds}s — reloading` : "Failed";
+    if (j.ok) setTimeout(() => location.reload(), 2200);
+    else btn.disabled = false;
+  } catch (e) {
+    clearInterval(tick);
+    out.textContent = "request failed: " + e;
+    btn.textContent = "Execute pipeline"; btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

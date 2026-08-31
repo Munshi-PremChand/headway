@@ -1,0 +1,2020 @@
+{
+  "source": {
+    "source_uri": "https://st.redbus.in/Images/WL/ASTC/schedules_new/Guwahati_division.pdf",
+    "source_sha256": "ce513365ca520af3edf05ee67ed175a41c48ed6d454f9a6ace4fc83195f7cfa0",
+    "page": 1,
+    "page_count": 10,
+    "dpi": 200,
+    "pixels": "1654x2339",
+    "page_sha256": "1f9d10b4557dbf0eed81ae9767d4b84be79d1e8c1cd134570017cf31dc6515b6",
+    "png_bytes": 327710,
+    "text_layer_chars": 2869
+  },
+  "profile": {
+    "profile_id": "astc_guwahati",
+    "agency_id": "ASTC",
+    "agency_timezone": "Asia/Kolkata",
+    "service_id": "ASTC_DAILY",
+    "service_days": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday"
+    ],
+    "layout": "service_blocks",
+    "geocode_region": "Assam, India",
+    "assumed": [
+      "service_days"
+    ],
+    "stop_aliases": {
+      "Paltanbazar": "Paltan Bazar, Guwahati, Assam, India",
+      "Biswanath Chariali": "Bishwanath Chariali, Assam, India",
+      "Bandordowa": "Banderdewa, Arunachal Pradesh, India",
+      "Balipara": "Balipara, Sonitpur, Assam, India",
+      "Jamugurihat": "Jamugurihat, Sonitpur, Assam, India",
+      "Gohpur": "Gohpur, Biswanath, Assam, India",
+      "Narayanpur": "Narayanpur, Lakhimpur, Assam, India",
+      "Bihpuria": "Bihpuria, Lakhimpur, Assam, India",
+      "Kaliabor": "Kaliabor, Nagaon, Assam, India"
+    }
+  },
+  "blocks": [
+    {
+      "trip": "1",
+      "heading": "Paltanbazar to North Lakhimpur (Day Super)",
+      "rows": 22,
+      "truncated": false,
+      "reason": ""
+    },
+    {
+      "trip": "2",
+      "heading": "North Lakhimpur to Guwahati (Day Super)",
+      "rows": 12,
+      "truncated": false,
+      "reason": ""
+    },
+    {
+      "trip": "3",
+      "heading": "Guwahati to Bihpuria (Day Super)",
+      "rows": 11,
+      "truncated": true,
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    }
+  ],
+  "columnRoles": {
+    "0": "arrival",
+    "1": "departure"
+  },
+  "claims": [
+    {
+      "id": "route_1_1_route-long-name",
+      "kind": "route",
+      "field": "route_long_name",
+      "value": "Paltanbazar to North Lakhimpur (Day Super)",
+      "bbox": [
+        0.237,
+        0.198,
+        0.621,
+        0.211
+      ],
+      "trip": "1",
+      "seq": null,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s1_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Paltanbazar",
+      "bbox": [
+        0.144,
+        0.256,
+        0.237,
+        0.267
+      ],
+      "trip": "1",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s1_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "0",
+      "bbox": [
+        0.388,
+        0.256,
+        0.398,
+        0.267
+      ],
+      "trip": "1",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_paltanbazar_s1_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "7.15 AM",
+      "bbox": [
+        0.629,
+        0.256,
+        0.701,
+        0.267
+      ],
+      "trip": "1",
+      "seq": 1,
+      "km": "0",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s2_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Khanapara",
+      "bbox": [
+        0.144,
+        0.274,
+        0.232,
+        0.287
+      ],
+      "trip": "1",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s2_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "10",
+      "bbox": [
+        0.383,
+        0.274,
+        0.403,
+        0.286
+      ],
+      "trip": "1",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_khanapara_s2_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "7.30 AM",
+      "bbox": [
+        0.501,
+        0.274,
+        0.573,
+        0.286
+      ],
+      "trip": "1",
+      "seq": 2,
+      "km": "10",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_khanapara_s2_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "7.35 AM",
+      "bbox": [
+        0.629,
+        0.274,
+        0.701,
+        0.286
+      ],
+      "trip": "1",
+      "seq": 2,
+      "km": "10",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s3_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Kaliabor",
+      "bbox": [
+        0.144,
+        0.293,
+        0.211,
+        0.304
+      ],
+      "trip": "1",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s3_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "174",
+      "bbox": [
+        0.378,
+        0.293,
+        0.408,
+        0.304
+      ],
+      "trip": "1",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_kaliabor_s3_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "11.00 AM",
+      "bbox": [
+        0.493,
+        0.293,
+        0.579,
+        0.304
+      ],
+      "trip": "1",
+      "seq": 3,
+      "km": "174",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_kaliabor_s3_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "11.05 AM",
+      "bbox": [
+        0.622,
+        0.293,
+        0.707,
+        0.304
+      ],
+      "trip": "1",
+      "seq": 3,
+      "km": "174",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s4_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Tezpur",
+      "bbox": [
+        0.144,
+        0.312,
+        0.199,
+        0.325
+      ],
+      "trip": "1",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s4_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "194",
+      "bbox": [
+        0.379,
+        0.312,
+        0.408,
+        0.323
+      ],
+      "trip": "1",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_tezpur_s4_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "11.55 AM",
+      "bbox": [
+        0.495,
+        0.312,
+        0.579,
+        0.323
+      ],
+      "trip": "1",
+      "seq": 4,
+      "km": "194",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_tezpur_s4_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "12.00 Noon",
+      "bbox": [
+        0.617,
+        0.312,
+        0.713,
+        0.323
+      ],
+      "trip": "1",
+      "seq": 4,
+      "km": "194",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s5_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Balipara",
+      "bbox": [
+        0.144,
+        0.331,
+        0.21,
+        0.344
+      ],
+      "trip": "1",
+      "seq": 5,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s5_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "213",
+      "bbox": [
+        0.379,
+        0.331,
+        0.408,
+        0.342
+      ],
+      "trip": "1",
+      "seq": 5,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_balipara_s5_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "12.25 PM",
+      "bbox": [
+        0.497,
+        0.331,
+        0.576,
+        0.342
+      ],
+      "trip": "1",
+      "seq": 5,
+      "km": "213",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_balipara_s5_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "12.30 PM",
+      "bbox": [
+        0.626,
+        0.331,
+        0.704,
+        0.342
+      ],
+      "trip": "1",
+      "seq": 5,
+      "km": "213",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s6_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Jamugurihat",
+      "bbox": [
+        0.143,
+        0.349,
+        0.245,
+        0.363
+      ],
+      "trip": "1",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s6_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "225",
+      "bbox": [
+        0.379,
+        0.349,
+        0.408,
+        0.36
+      ],
+      "trip": "1",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_jamugurihat_s6_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "12.50 PM",
+      "bbox": [
+        0.497,
+        0.349,
+        0.577,
+        0.361
+      ],
+      "trip": "1",
+      "seq": 6,
+      "km": "225",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_jamugurihat_s6_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "12.55 PM",
+      "bbox": [
+        0.626,
+        0.349,
+        0.705,
+        0.361
+      ],
+      "trip": "1",
+      "seq": 6,
+      "km": "225",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s7_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Biswanath Chariali",
+      "bbox": [
+        0.143,
+        0.368,
+        0.296,
+        0.379
+      ],
+      "trip": "1",
+      "seq": 7,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s7_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "248",
+      "bbox": [
+        0.379,
+        0.368,
+        0.408,
+        0.379
+      ],
+      "trip": "1",
+      "seq": 7,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_biswanath-chariali_s7_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "1.30 PM",
+      "bbox": [
+        0.504,
+        0.368,
+        0.57,
+        0.379
+      ],
+      "trip": "1",
+      "seq": 7,
+      "km": "248",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_biswanath-chariali_s7_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "1.35 PM",
+      "bbox": [
+        0.633,
+        0.368,
+        0.698,
+        0.379
+      ],
+      "trip": "1",
+      "seq": 7,
+      "km": "248",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s8_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Gohpur",
+      "bbox": [
+        0.144,
+        0.387,
+        0.204,
+        0.4
+      ],
+      "trip": "1",
+      "seq": 8,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s8_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "308",
+      "bbox": [
+        0.379,
+        0.387,
+        0.408,
+        0.398
+      ],
+      "trip": "1",
+      "seq": 8,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_gohpur_s8_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "2.05 PM",
+      "bbox": [
+        0.504,
+        0.387,
+        0.57,
+        0.398
+      ],
+      "trip": "1",
+      "seq": 8,
+      "km": "308",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_gohpur_s8_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "2.10 PM",
+      "bbox": [
+        0.633,
+        0.387,
+        0.699,
+        0.398
+      ],
+      "trip": "1",
+      "seq": 8,
+      "km": "308",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s9_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Narayanpur",
+      "bbox": [
+        0.143,
+        0.406,
+        0.245,
+        0.419
+      ],
+      "trip": "1",
+      "seq": 9,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s9_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "354",
+      "bbox": [
+        0.379,
+        0.406,
+        0.408,
+        0.417
+      ],
+      "trip": "1",
+      "seq": 9,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_narayanpur_s9_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "2.45 PM",
+      "bbox": [
+        0.504,
+        0.406,
+        0.57,
+        0.417
+      ],
+      "trip": "1",
+      "seq": 9,
+      "km": "354",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_narayanpur_s9_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "2.50 PM",
+      "bbox": [
+        0.633,
+        0.406,
+        0.698,
+        0.417
+      ],
+      "trip": "1",
+      "seq": 9,
+      "km": "354",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s10_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Bandordowa",
+      "bbox": [
+        0.144,
+        0.425,
+        0.252,
+        0.436
+      ],
+      "trip": "1",
+      "seq": 10,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s10_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "375",
+      "bbox": [
+        0.379,
+        0.425,
+        0.408,
+        0.436
+      ],
+      "trip": "1",
+      "seq": 10,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_bandordowa_s10_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "3.15 PM",
+      "bbox": [
+        0.504,
+        0.425,
+        0.57,
+        0.436
+      ],
+      "trip": "1",
+      "seq": 10,
+      "km": "375",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_bandordowa_s10_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "3.20 PM",
+      "bbox": [
+        0.632,
+        0.425,
+        0.698,
+        0.436
+      ],
+      "trip": "1",
+      "seq": 10,
+      "km": "375",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s11_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Laluk",
+      "bbox": [
+        0.144,
+        0.444,
+        0.186,
+        0.455
+      ],
+      "trip": "1",
+      "seq": 11,
+      "km": null,
+      "status": "unplaced",
+      "reason": "no result is a place or a transport node; the best match is 'highway'/'primary' (Narayanpur-Bihpuria-Laluk Road, Naryanpur, Narayanpur, Lakhi)"
+    },
+    {
+      "id": "stop_1_1_s11_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "387",
+      "bbox": [
+        0.379,
+        0.444,
+        0.408,
+        0.455
+      ],
+      "trip": "1",
+      "seq": 11,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_laluk_s11_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "3.40 PM",
+      "bbox": [
+        0.504,
+        0.444,
+        0.57,
+        0.455
+      ],
+      "trip": "1",
+      "seq": 11,
+      "km": "387",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_laluk_s11_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "3.45 PM",
+      "bbox": [
+        0.633,
+        0.444,
+        0.698,
+        0.455
+      ],
+      "trip": "1",
+      "seq": 11,
+      "km": "387",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s12_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "North Lakhimpur",
+      "bbox": [
+        0.144,
+        0.463,
+        0.282,
+        0.476
+      ],
+      "trip": "1",
+      "seq": 12,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_1_1_s12_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "409",
+      "bbox": [
+        0.378,
+        0.463,
+        0.408,
+        0.473
+      ],
+      "trip": "1",
+      "seq": 12,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_1_1_north-lakhimpur_s12_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "4.15 PM",
+      "bbox": [
+        0.504,
+        0.463,
+        0.57,
+        0.473
+      ],
+      "trip": "1",
+      "seq": 12,
+      "km": "409",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "route_2_2_route-long-name",
+      "kind": "route",
+      "field": "route_long_name",
+      "value": "North Lakhimpur to Guwahati (Day Super)",
+      "bbox": [
+        0.237,
+        0.523,
+        0.602,
+        0.536
+      ],
+      "trip": "2",
+      "seq": null,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s1_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "North Lakhimpur",
+      "bbox": [
+        0.144,
+        0.581,
+        0.282,
+        0.594
+      ],
+      "trip": "2",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s1_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "0",
+      "bbox": [
+        0.389,
+        0.581,
+        0.399,
+        0.592
+      ],
+      "trip": "2",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_north-lakhimpur_s1_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "6.30 AM",
+      "bbox": [
+        0.63,
+        0.581,
+        0.701,
+        0.592
+      ],
+      "trip": "2",
+      "seq": 1,
+      "km": "0",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s2_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Tezpur",
+      "bbox": [
+        0.144,
+        0.599,
+        0.198,
+        0.613
+      ],
+      "trip": "2",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s2_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "215",
+      "bbox": [
+        0.379,
+        0.6,
+        0.408,
+        0.611
+      ],
+      "trip": "2",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_tezpur_s2_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "12.25 PM",
+      "bbox": [
+        0.497,
+        0.6,
+        0.576,
+        0.611
+      ],
+      "trip": "2",
+      "seq": 2,
+      "km": "215",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_tezpur_s2_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "12.30 PM",
+      "bbox": [
+        0.626,
+        0.6,
+        0.704,
+        0.611
+      ],
+      "trip": "2",
+      "seq": 2,
+      "km": "215",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s3_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Kaliabor",
+      "bbox": [
+        0.144,
+        0.619,
+        0.211,
+        0.63
+      ],
+      "trip": "2",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s3_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "235",
+      "bbox": [
+        0.378,
+        0.619,
+        0.408,
+        0.63
+      ],
+      "trip": "2",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_kaliabor_s3_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "1.00 PM",
+      "bbox": [
+        0.504,
+        0.619,
+        0.57,
+        0.63
+      ],
+      "trip": "2",
+      "seq": 3,
+      "km": "235",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_kaliabor_s3_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "1.05 PM",
+      "bbox": [
+        0.633,
+        0.619,
+        0.698,
+        0.63
+      ],
+      "trip": "2",
+      "seq": 3,
+      "km": "235",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s4_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Nagaon",
+      "bbox": [
+        0.144,
+        0.638,
+        0.208,
+        0.651
+      ],
+      "trip": "2",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s4_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "286",
+      "bbox": [
+        0.378,
+        0.638,
+        0.408,
+        0.648
+      ],
+      "trip": "2",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_nagaon_s4_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "1.55 PM",
+      "bbox": [
+        0.504,
+        0.638,
+        0.57,
+        0.648
+      ],
+      "trip": "2",
+      "seq": 4,
+      "km": "286",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_nagaon_s4_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "2.00 PM",
+      "bbox": [
+        0.632,
+        0.638,
+        0.698,
+        0.648
+      ],
+      "trip": "2",
+      "seq": 4,
+      "km": "286",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s5_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Jagiroad",
+      "bbox": [
+        0.144,
+        0.656,
+        0.212,
+        0.67
+      ],
+      "trip": "2",
+      "seq": 5,
+      "km": null,
+      "status": "unplaced",
+      "reason": "no result is a place or a transport node; the best match is 'shop'/'hardware' (Jagiroad Hardware Stores, A T Road, Pan Bazar, Guwahati, Kam)"
+    },
+    {
+      "id": "stop_2_2_s5_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "354",
+      "bbox": [
+        0.379,
+        0.656,
+        0.408,
+        0.667
+      ],
+      "trip": "2",
+      "seq": 5,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_jagiroad_s5_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "2.50 PM",
+      "bbox": [
+        0.504,
+        0.656,
+        0.57,
+        0.667
+      ],
+      "trip": "2",
+      "seq": 5,
+      "km": "354",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_jagiroad_s5_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "2.55 PM",
+      "bbox": [
+        0.633,
+        0.656,
+        0.698,
+        0.667
+      ],
+      "trip": "2",
+      "seq": 5,
+      "km": "354",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s6_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Khanapara",
+      "bbox": [
+        0.144,
+        0.675,
+        0.231,
+        0.689
+      ],
+      "trip": "2",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s6_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "399",
+      "bbox": [
+        0.379,
+        0.675,
+        0.408,
+        0.686
+      ],
+      "trip": "2",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_khanapara_s6_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "4.05 PM",
+      "bbox": [
+        0.504,
+        0.675,
+        0.57,
+        0.686
+      ],
+      "trip": "2",
+      "seq": 6,
+      "km": "399",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_khanapara_s6_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "4.10 PM",
+      "bbox": [
+        0.633,
+        0.675,
+        0.698,
+        0.686
+      ],
+      "trip": "2",
+      "seq": 6,
+      "km": "399",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s7_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Paltanbazar",
+      "bbox": [
+        0.144,
+        0.694,
+        0.237,
+        0.705
+      ],
+      "trip": "2",
+      "seq": 7,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_2_2_s7_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "409",
+      "bbox": [
+        0.379,
+        0.694,
+        0.408,
+        0.705
+      ],
+      "trip": "2",
+      "seq": 7,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_2_2_paltanbazar_s7_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "4.30 PM",
+      "bbox": [
+        0.504,
+        0.694,
+        0.57,
+        0.705
+      ],
+      "trip": "2",
+      "seq": 7,
+      "km": "409",
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "route_3_3_route-long-name",
+      "kind": "route",
+      "field": "route_long_name",
+      "value": "Guwahati to Bihpuria (Day Super)",
+      "bbox": [
+        0.238,
+        0.748,
+        0.528,
+        0.761
+      ],
+      "trip": "3",
+      "seq": null,
+      "km": null,
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s1_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Paltanbazar",
+      "bbox": [
+        0.144,
+        0.806,
+        0.237,
+        0.817
+      ],
+      "trip": "3",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s1_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "0",
+      "bbox": [
+        0.389,
+        0.806,
+        0.399,
+        0.817
+      ],
+      "trip": "3",
+      "seq": 1,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_paltanbazar_s1_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "8.15 AM",
+      "bbox": [
+        0.63,
+        0.806,
+        0.701,
+        0.817
+      ],
+      "trip": "3",
+      "seq": 1,
+      "km": "0",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s2_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Khanapara",
+      "bbox": [
+        0.144,
+        0.825,
+        0.231,
+        0.838
+      ],
+      "trip": "3",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s2_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "10",
+      "bbox": [
+        0.384,
+        0.825,
+        0.403,
+        0.836
+      ],
+      "trip": "3",
+      "seq": 2,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_khanapara_s2_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "8.30 AM",
+      "bbox": [
+        0.502,
+        0.825,
+        0.573,
+        0.836
+      ],
+      "trip": "3",
+      "seq": 2,
+      "km": "10",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_time_3_3_khanapara_s2_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "8.35 AM",
+      "bbox": [
+        0.63,
+        0.825,
+        0.701,
+        0.836
+      ],
+      "trip": "3",
+      "seq": 2,
+      "km": "10",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s3_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Kaliabor",
+      "bbox": [
+        0.144,
+        0.843,
+        0.211,
+        0.855
+      ],
+      "trip": "3",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s3_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "174",
+      "bbox": [
+        0.379,
+        0.843,
+        0.408,
+        0.855
+      ],
+      "trip": "3",
+      "seq": 3,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_kaliabor_s3_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "11.00 AM",
+      "bbox": [
+        0.494,
+        0.843,
+        0.579,
+        0.855
+      ],
+      "trip": "3",
+      "seq": 3,
+      "km": "174",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_time_3_3_kaliabor_s3_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "11.05 AM",
+      "bbox": [
+        0.622,
+        0.843,
+        0.707,
+        0.855
+      ],
+      "trip": "3",
+      "seq": 3,
+      "km": "174",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s4_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Tezpur",
+      "bbox": [
+        0.144,
+        0.862,
+        0.198,
+        0.876
+      ],
+      "trip": "3",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s4_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "194",
+      "bbox": [
+        0.379,
+        0.862,
+        0.408,
+        0.873
+      ],
+      "trip": "3",
+      "seq": 4,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_tezpur_s4_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "11.30 AM",
+      "bbox": [
+        0.495,
+        0.862,
+        0.579,
+        0.873
+      ],
+      "trip": "3",
+      "seq": 4,
+      "km": "194",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_time_3_3_tezpur_s4_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "11.35 AM",
+      "bbox": [
+        0.623,
+        0.862,
+        0.706,
+        0.873
+      ],
+      "trip": "3",
+      "seq": 4,
+      "km": "194",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s5_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Balipara",
+      "bbox": [
+        0.144,
+        0.881,
+        0.21,
+        0.894
+      ],
+      "trip": "3",
+      "seq": 5,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s5_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "213",
+      "bbox": [
+        0.379,
+        0.881,
+        0.408,
+        0.892
+      ],
+      "trip": "3",
+      "seq": 5,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_balipara_s5_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "12.35 PM",
+      "bbox": [
+        0.497,
+        0.881,
+        0.577,
+        0.892
+      ],
+      "trip": "3",
+      "seq": 5,
+      "km": "213",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_time_3_3_balipara_s5_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "12.40 PM",
+      "bbox": [
+        0.626,
+        0.881,
+        0.705,
+        0.892
+      ],
+      "trip": "3",
+      "seq": 5,
+      "km": "213",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_3_3_s6_stop-name",
+      "kind": "stop",
+      "field": "stop_name",
+      "value": "Jamugurihat",
+      "bbox": [
+        0.143,
+        0.913,
+        0.245,
+        0.927
+      ],
+      "trip": "3",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_3_3_s6_km",
+      "kind": "stop",
+      "field": "km",
+      "value": "225",
+      "bbox": [
+        0.379,
+        0.913,
+        0.408,
+        0.925
+      ],
+      "trip": "3",
+      "seq": 6,
+      "km": null,
+      "status": "composed",
+      "reason": ""
+    },
+    {
+      "id": "stop_time_3_3_jamugurihat_s6_arrival",
+      "kind": "stop_time",
+      "field": "arrival",
+      "value": "1.00 PM",
+      "bbox": [
+        0.504,
+        0.913,
+        0.57,
+        0.925
+      ],
+      "trip": "3",
+      "seq": 6,
+      "km": "225",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    },
+    {
+      "id": "stop_time_3_3_jamugurihat_s6_departure",
+      "kind": "stop_time",
+      "field": "departure",
+      "value": "1.05 PM",
+      "bbox": [
+        0.633,
+        0.913,
+        0.698,
+        0.925
+      ],
+      "trip": "3",
+      "seq": 6,
+      "km": "225",
+      "status": "withheld",
+      "reason": "the last bound row (seq 6) has a departure time, so the bus does not terminate there \u2014 this service continues past the bottom of the page and was NOT composed"
+    }
+  ],
+  "geocode": {
+    "resolved": {
+      "Balipara": {
+        "lat": 26.8194446,
+        "lon": 92.7721009,
+        "display_name": "Balipara, NH15, Balipara, Chariduar, Sonitpur, Assam, 784101, India",
+        "osm_type": "node",
+        "osm_id": 831340862,
+        "importance": 4e-05,
+        "precision": "transport-node",
+        "query": "Balipara, Sonitpur, Assam, India"
+      },
+      "Bandordowa": {
+        "lat": 27.0479049,
+        "lon": 93.7102287,
+        "display_name": "Banderdewa Circle, Papum Pare, Arunachal Pradesh, India",
+        "osm_type": "relation",
+        "osm_id": 10061220,
+        "importance": 0.240053,
+        "precision": "administrative-area-centroid",
+        "query": "Banderdewa, Arunachal Pradesh, India"
+      },
+      "Biswanath Chariali": {
+        "lat": 26.7203673,
+        "lon": 93.1428974,
+        "display_name": "Bishwanath Chariali, Biswanath, Assam, India",
+        "osm_type": "way",
+        "osm_id": 121409665,
+        "importance": 0.16004,
+        "precision": "settlement-node",
+        "query": "Bishwanath Chariali, Assam, India"
+      },
+      "Gohpur": {
+        "lat": 26.8814942,
+        "lon": 93.6138414,
+        "display_name": "Gohpur, Helem, Biswanath, Assam, 784168, India",
+        "osm_type": "node",
+        "osm_id": 245753972,
+        "importance": 0.160033,
+        "precision": "settlement-node",
+        "query": "Gohpur, Biswanath, Assam, India"
+      },
+      "Jamugurihat": {
+        "lat": 26.7230372,
+        "lon": 92.930826,
+        "display_name": "Jamugurihat, Na-Duar, Sonitpur, Assam, 784180, India",
+        "osm_type": "node",
+        "osm_id": 245751784,
+        "importance": 0.146704,
+        "precision": "settlement-node",
+        "query": "Jamugurihat, Sonitpur, Assam, India"
+      },
+      "Kaliabor": {
+        "lat": 26.5387146,
+        "lon": 92.9292061,
+        "display_name": "Kaliabor, Nagaon, Assam, 782137, India",
+        "osm_type": "node",
+        "osm_id": 1495483768,
+        "importance": 0.146704,
+        "precision": "settlement-node",
+        "query": "Kaliabor, Nagaon, Assam, India"
+      },
+      "Khanapara": {
+        "lat": 26.125094,
+        "lon": 91.810908,
+        "display_name": "Khanapara, Dispur, Kamrup Metropolitan, Assam, 781005, India",
+        "osm_type": "node",
+        "osm_id": 6163776904,
+        "importance": 0.14672,
+        "precision": "settlement-node",
+        "query": "Khanapara, Assam, India"
+      },
+      "Nagaon": {
+        "lat": 26.3482238,
+        "lon": 92.6858215,
+        "display_name": "Nagaon, Assam, 782001, India",
+        "osm_type": "node",
+        "osm_id": 245747060,
+        "importance": 0.428376,
+        "precision": "settlement-node",
+        "query": "Nagaon, Assam, India"
+      },
+      "Narayanpur": {
+        "lat": 26.9639234,
+        "lon": 93.8255857,
+        "display_name": "Narayanpur, Lakhimpur, Assam, India",
+        "osm_type": "relation",
+        "osm_id": 10054861,
+        "importance": 0.240038,
+        "precision": "administrative-area-centroid",
+        "query": "Narayanpur, Lakhimpur, Assam, India"
+      },
+      "North Lakhimpur": {
+        "lat": 27.254431,
+        "lon": 94.1120339,
+        "display_name": "North Lakhimpur, Station Road, North Lakhimpur, Lakhimpur, Assam, 787001, India",
+        "osm_type": "node",
+        "osm_id": 828999092,
+        "importance": 0.270288,
+        "precision": "transport-node",
+        "query": "North Lakhimpur, Assam, India"
+      },
+      "Paltanbazar": {
+        "lat": 26.1804411,
+        "lon": 91.7461872,
+        "display_name": "Paltan Bazar, A T Road, Pan Bazar, Guwahati, Kamrup Metropolitan, Assam, 781015, India",
+        "osm_type": "node",
+        "osm_id": 11766165292,
+        "importance": 5.3e-05,
+        "precision": "transport-node",
+        "query": "Paltan Bazar, Guwahati, Assam, India"
+      },
+      "Tezpur": {
+        "lat": 26.6229928,
+        "lon": 92.7976082,
+        "display_name": "Tezpur, Sonitpur, Assam, 784001, India",
+        "osm_type": "node",
+        "osm_id": 245750977,
+        "importance": 0.437451,
+        "precision": "settlement-node",
+        "query": "Tezpur, Assam, India"
+      }
+    },
+    "refused": {
+      "Jagiroad": {
+        "reason": "no result is a place or a transport node; the best match is 'shop'/'hardware' (Jagiroad Hardware Stores, A T Road, Pan Bazar, Guwahati, Kam)",
+        "query": "Jagiroad, Assam, India"
+      },
+      "Laluk": {
+        "reason": "no result is a place or a transport node; the best match is 'highway'/'primary' (Narayanpur-Bihpuria-Laluk Road, Naryanpur, Narayanpur, Lakhi)",
+        "query": "Laluk, Assam, India"
+      }
+    }
+  },
+  "plausibility": {
+    "segments_checked": 15,
+    "implausible": 0,
+    "offenders": [],
+    "tightest_margin_km": 6.5,
+    "verdict": "PASS"
+  },
+  "headway": {
+    "stats": {
+      "trips": 2,
+      "stops": 12,
+      "routes": 2,
+      "service_dates": 121,
+      "stop_times": 17
+    },
+    "trips": [
+      {
+        "trip": "1",
+        "headsign": "North Lakhimpur"
+      },
+      {
+        "trip": "2",
+        "headsign": "Paltanbazar"
+      }
+    ],
+    "warnings": [
+      "trip '1': 1 stop(s) omitted for want of coordinates: ['Laluk']",
+      "trip '2': 1 stop(s) omitted for want of coordinates: ['Jagiroad']"
+    ],
+    "validation": {
+      "validator_version": "8.0.1",
+      "validator_sha256": "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2",
+      "feed_sha256": "3270161b7ef3036d67601abb842bb5b31af73b91c91341ab18ec160861b351a2",
+      "feed_bytes": 2118,
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0,
+      "codes": [],
+      "publish_gate": "OPEN",
+      "parsed": {
+        "counts": {
+          "Shapes": 0,
+          "Stops": 12,
+          "Routes": 2,
+          "Trips": 2,
+          "Agencies": 1,
+          "Blocks": 0
+        },
+        "files": [
+          "agency.txt",
+          "calendar.txt",
+          "calendar_dates.txt",
+          "feed_info.txt",
+          "routes.txt",
+          "stop_times.txt",
+          "stops.txt",
+          "trips.txt"
+        ],
+        "agencies": [
+          {
+            "name": "Assam State Transport Corporation",
+            "url": "https://astc.assam.gov.in/",
+            "phone": "",
+            "email": "",
+            "timezone": "Asia/Kolkata"
+          }
+        ],
+        "validation_seconds": 0.528058564
+      }
+    }
+  },
+  "baseline": {
+    "approach": "pdftotext -layout + regular expressions",
+    "parseStats": {
+      "blocks": 3,
+      "rows": 25,
+      "arrivals": 22,
+      "departures": 23,
+      "unparsed_lines": 0
+    },
+    "stats": {
+      "trips": 3,
+      "stops": 12,
+      "routes": 3,
+      "service_dates": 121,
+      "stop_times": 23
+    },
+    "trips": [
+      {
+        "trip": "1",
+        "headsign": "North Lakhimpur"
+      },
+      {
+        "trip": "2",
+        "headsign": "Paltanbazar"
+      },
+      {
+        "trip": "3",
+        "headsign": "Jamugurihat"
+      }
+    ],
+    "warnings": [
+      "trip '1': 1 stop(s) omitted for want of coordinates: ['Laluk']",
+      "trip '2': 1 stop(s) omitted for want of coordinates: ['Jagiroad']"
+    ],
+    "validation": {
+      "validator_version": "8.0.1",
+      "validator_sha256": "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2",
+      "feed_sha256": "ce508dfa7c5f1891315b271600b59665835f75b2ebf7e49e0f12b3860490d2bd",
+      "feed_bytes": 2193,
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0,
+      "codes": [],
+      "publish_gate": "OPEN",
+      "parsed": {
+        "counts": {
+          "Shapes": 0,
+          "Stops": 12,
+          "Routes": 3,
+          "Trips": 3,
+          "Agencies": 1,
+          "Blocks": 0
+        },
+        "files": [
+          "agency.txt",
+          "calendar.txt",
+          "calendar_dates.txt",
+          "feed_info.txt",
+          "routes.txt",
+          "stop_times.txt",
+          "stops.txt",
+          "trips.txt"
+        ],
+        "agencies": [
+          {
+            "name": "Assam State Transport Corporation",
+            "url": "https://astc.assam.gov.in/",
+            "phone": "",
+            "email": "",
+            "timezone": "Asia/Kolkata"
+          }
+        ],
+        "validation_seconds": 0.521937418
+      }
+    }
+  }
+}
