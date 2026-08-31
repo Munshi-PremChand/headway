@@ -135,6 +135,60 @@ def check_trip(
     return out
 
 
+# A generous ceiling for an Indian intercity coach on a national highway.
+# Typical running speed is 50-70 km/h; 100 flags only genuine absurdity, and
+# using a generous bar means a hit is a finding rather than a tuning artifact.
+MAX_PLAUSIBLE_KPH = 100.0
+
+
+def implied_speed(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Check the page against ITSELF: printed distance over printed time.
+
+    This needs no coordinates at all, which is what makes it different from the
+    straight-line audit — it cannot be blamed on an approximate geocode. Both
+    numbers are printed on the page, so an impossible speed between them is an
+    error in the SOURCE.
+
+    MEASURED 2026-08-31 on ASTC Guwahati page 2, service 6: the page prints
+    Balipara at km 36 departing 7.20 AM and Tezpur at km 54 arriving 7.25 AM —
+    eighteen kilometres in five minutes, 216 km/h. HEADWAY transcribed it
+    faithfully; the timetable is wrong. Reporting that is more useful than
+    silently publishing it, and more honest than pretending we caught a mistake
+    of our own.
+
+    These are reported, never corrected. Inventing a plausible time to replace
+    an implausible printed one is exactly the guessing this project refuses.
+    """
+    usable = []
+    for r in rows:
+        km = _km(r.get("km"))
+        dep, arr = r.get("departure_s"), r.get("arrival_s")
+        if km is None:
+            continue
+        usable.append((str(r.get("stop", "")), km, arr, dep))
+
+    out: list[dict[str, Any]] = []
+    for (n1, k1, _a1, d1), (n2, k2, a2, _d2) in zip(usable, usable[1:]):
+        if d1 is None or a2 is None:
+            continue
+        dist, secs = abs(k2 - k1), a2 - d1
+        if dist <= 0:
+            continue
+        if secs <= 0:
+            out.append({"from": n1, "to": n2, "km": dist, "seconds": secs,
+                        "kph": None,
+                        "why": "the printed times do not advance between these "
+                               "stops"})
+            continue
+        kph = dist / (secs / 3600.0)
+        if kph > MAX_PLAUSIBLE_KPH:
+            out.append({"from": n1, "to": n2, "km": round(dist, 1),
+                        "seconds": secs, "kph": round(kph, 1),
+                        "why": f"the page prints {dist:g} km covered in "
+                               f"{secs // 60:g} minutes"})
+    return out
+
+
 def report(segments: list[Segment]) -> dict[str, Any]:
     """Summarise, naming the worst offender rather than only a count."""
     bad = [s for s in segments if s.implausible]

@@ -42,7 +42,9 @@ from google.genai import types
 from headway.composer.compose import UngeocodedStops, compose
 from headway.composer.outcomes import diff_events, enumerate_events
 from headway.geo.geocode import Fix, Geocoder
-from headway.geo.plausibility import check_trip, report as plausibility_report
+from headway.geo.plausibility import (
+    check_trip, implied_speed, report as plausibility_report,
+)
 from headway.profiles import Profile, load as load_profile, merge as merge_profile
 from headway.reader.blocks import (
     bind_blocks, rebind_claim_ids as rebind_block_ids, withhold_truncated,
@@ -311,6 +313,10 @@ class Geocoder(BaseAgent):
         elif checks["tightest_margin_km"] is not None:
             text += (f"\n    tightest margin {checks['tightest_margin_km']} km "
                      f"— every straight line fits inside its road distance")
+        for d in checks.get("source_defects", []):
+            text += (f"\n    SOURCE DEFECT trip {d['trip']} {d['from']} -> "
+                     f"{d['to']}: {d['why']}"
+                     + (f" ({d['kph']} km/h)" if d.get("kph") else ""))
         yield _say(self.name, text, {K_RESOLVED: st[K_RESOLVED],
                                      K_GEOCODE: st[K_GEOCODE],
                                      K_PLAUSIBILITY: checks})
@@ -337,15 +343,27 @@ def _plausibility(cs: ClaimSet, fixes: dict[str, Fix]) -> dict[str, Any]:
         name = str(c.scope.get("stop") or "")
         row["stop"] = name
         row.setdefault("km", c.scope.get("km"))
+        from headway.composer.compose import ComposeError, parse_hhmm
+        try:
+            row[f"{c.field}_s"] = parse_hhmm(c.value)
+        except ComposeError:
+            row[f"{c.field}_s"] = None
         fix = fixes.get(name)
         if fix is not None:
             row["lat"], row["lon"] = fix.lat, fix.lon
 
     segments = []
+    source_defects: list[dict[str, Any]] = []
     for tkey in sorted(trips):
         ordered = [trips[tkey][s] for s in sorted(trips[tkey])]
         segments.extend(check_trip(tkey, ordered))
-    return plausibility_report(segments)
+        for d in implied_speed(ordered):
+            source_defects.append({"trip": tkey, **d})
+    out = plausibility_report(segments)
+    # Not our error and not a reason to refuse — the page itself is wrong, and
+    # saying so is more useful than publishing it quietly.
+    out["source_defects"] = source_defects
+    return out
 
 
 class DisagreementGate(BaseAgent):
@@ -541,6 +559,30 @@ def build_pipeline(
         sub_agents=[
             readers,
             GridBinder(name="grid_binder", layout=layout, profile_id=profile_id),
+            DisagreementGate(name="disagreement_gate"),
+            Geocoder(name="geocoder", profile_id=profile_id,
+                     offline=offline_geocoding),
+            Composer(name="composer", on_ungeocoded=on_ungeocoded),
+            Validator(name="validator"),
+        ],
+    )
+
+
+def build_downstream_pipeline(
+    *, profile_id: str = "", on_ungeocoded: str = "refuse",
+    offline_geocoding: bool = False,
+) -> SequentialAgent:
+    """Everything after the readers, for input that is already bound.
+
+    A multi-page run reads each page separately and stitches the pages together
+    before anything can be composed, so the binding happens outside. The rest of
+    the pipeline is unchanged and still runs as ADK agents — the stitch adds a
+    stage, it does not replace the architecture.
+    """
+    return SequentialAgent(
+        name="headway_downstream",
+        description="Bound claims to a validated GTFS feed.",
+        sub_agents=[
             DisagreementGate(name="disagreement_gate"),
             Geocoder(name="geocoder", profile_id=profile_id,
                      offline=offline_geocoding),

@@ -64,6 +64,9 @@ PAGE_BOTTOM = 0.93
 ARRIVAL = "arrival"
 DEPARTURE = "departure"
 
+# Rows at the top of a page whose heading was on the page before.
+CONTINUATION = "continuation"
+
 
 @dataclass
 class Block:
@@ -253,6 +256,20 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
     routes.sort(key=lambda c: _top_y(c) or 0.0)
 
     blocks: list[Block] = []
+
+    # A page can OPEN with rows whose heading was on the previous page. They
+    # have no route claim of their own, so without a block of their own they
+    # fall above every heading and are silently dropped. They are bound here as
+    # a headless pseudo-block; `reader/stitch.py` decides whether they may be
+    # joined to the service that ran off the previous page, and if no join is
+    # accepted they are retracted rather than composed.
+    has_continuation = any(_trip_key(c) == CONTINUATION for c in cs.active())
+    if has_continuation:
+        first_heading = _top_y(routes[0]) if routes else 1.0
+        blocks.append(Block(key=CONTINUATION,
+                            heading="(continues from the previous page)",
+                            top=0.0, bottom=first_heading or 1.0))
+
     for i, r in enumerate(routes):
         top = _top_y(r) or 0.0
         bottom = (_top_y(routes[i + 1]) or 1.0) if i + 1 < len(routes) else 1.0
@@ -286,8 +303,10 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
 
     stops = [c for c in cs.active()
              if c.kind is ClaimKind.STOP and c.field == "stop_name"]
+    # `km` and `sl_no` are row-aligned data columns, not row labels. They are
+    # bound the same way as a timetable cell.
     kms = [c for c in cs.active()
-           if c.kind is ClaimKind.STOP and c.field == "km"]
+           if c.kind is ClaimKind.STOP and c.field in ("km", "sl_no")]
     cells = [c for c in cs.active() if c.kind is ClaimKind.STOP_TIME]
 
     col_field, _centres, dissent = _assign_columns(cells)
@@ -483,14 +502,18 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
             scope["seq"] = ri + 1
             filled["seq"] += 1
 
-        row_km = None
+        # km and sl_no share a binding path but NOT a meaning. Lumping them
+        # together put the row number into scope["km"], and the geometry audit
+        # immediately reported "printed 1.0 km, straight line 148 km" — the
+        # check catching a corruption introduced three stages upstream.
         for k in info["kms"]:
-            if cell_row.get(k.claim_id, -1) == ri:
-                row_km = k
-                break
-        if row_km is not None and scope.get("km") is None:
-            scope["km"] = str(row_km.value)
-            filled["km"] += 1
+            if cell_row.get(k.claim_id, -1) != ri:
+                continue
+            if k.field == "km" and scope.get("km") is None:
+                scope["km"] = str(k.value)
+                filled["km"] += 1
+            elif k.field == "sl_no" and scope.get("sl_no") is None:
+                scope["sl_no"] = str(k.value)
 
         fld = c.field.strip().lower()
         x = _centre_x(c)
@@ -545,6 +568,14 @@ def _mark_truncation(cs: ClaimSet, blocks: list[Block],
 
         if fields == {ARRIVAL}:
             continue                                   # a proper terminus row
+
+        if b.key == CONTINUATION:
+            # Headless rows are not a truncated block; whether they belong to
+            # anything is `stitch.py`'s decision, not the terminus rule's.
+            b.truncated = True
+            b.truncation_reason = (
+                "rows continued from the previous page; awaiting a join")
+            continue
 
         if last_y >= PAGE_BOTTOM or DEPARTURE in fields:
             b.truncated = True

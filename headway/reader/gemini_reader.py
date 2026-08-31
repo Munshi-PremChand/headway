@@ -240,6 +240,8 @@ For each block emit:
   * one route claim, field "route_long_name", value = the heading text after
     "Service :", with its bbox on the heading line itself;
   * one stop claim per Station cell, field "stop_name", bbox on that cell;
+  * one stop claim per Sl.No cell, field "sl_no", value = the number as
+    printed, bbox on that cell;
   * one stop claim per km cell, field "km", value = the number as printed,
     bbox on that cell;
   * one stop_time claim, field "arrival", for each NON-EMPTY Arrival time cell;
@@ -250,9 +252,15 @@ An empty cell gets NO claim at all. The first row of a block normally has no
 arrival and the last row normally has no departure — that is the shape of a
 route that starts and ends somewhere, not missing data. Do not fill either in.
 
-Do not emit claims for the Sl.No column, the page title or the contact box.
-Row order and column identity are recovered downstream from your bounding
-boxes, so do not describe them."""
+A page may OPEN with table rows that have no heading above them, because the
+service began on the previous page. Transcribe those rows exactly as they are
+printed and set `trip` to "continuation" for every one of them. Do not invent a
+block number for them and do not attach them to the first heading further down
+the page.
+
+Do not emit claims for the page title or the contact box. Row order and column
+identity are recovered downstream from your bounding boxes, so do not describe
+them."""
 
 LAYOUTS = {
     "matrix": LAYOUT_MATRIX,
