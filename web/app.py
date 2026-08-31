@@ -43,8 +43,16 @@ if DATA.exists():
 _run_lock = asyncio.Lock()
 
 
+@app.get("/api/healthz")
 @app.get("/healthz")
 def healthz() -> dict:
+    """Cheap and dependency-free, so a probe never waits on Vertex.
+
+    Served under /api as well: Cloud Run's own frontend answers a bare
+    /healthz with a Google 404 page before the request reaches the container
+    (measured 2026-08-31 — the response body is Google's error page, and no
+    request appears in the container log).
+    """
     return {"ok": True}
 
 

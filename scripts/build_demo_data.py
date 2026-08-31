@@ -114,6 +114,27 @@ def main() -> int:
     hw_report = run_validator(hw_bytes)
     (DATA / "headway.zip").write_bytes(hw_bytes)
 
+    # ------------------------------------------------- what the gate compared
+    # The second read, bound the same way, so the page can report the ACTUAL
+    # cell-for-cell agreement rather than borrowing the truncation count and
+    # calling it a disagreement count.
+    gate = {"compared": 0, "disagreements": 0, "second_read": False}
+    second_path = ROOT / "out" / "reads" / "reader_second.json"
+    if second_path.exists():
+        s_cs = parse_claims(second_path.read_text(), agency_id=profile.agency_id,
+                            source_file="second")
+        s_bound, s_rep = bind_blocks(s_cs)
+        s_bound, _ = withhold_truncated(s_bound, s_rep)
+        s_bound = rebind_claim_ids(s_bound)
+        a = {c.claim_id: str(c.value) for c in bound.active()}
+        b = {c.claim_id: str(c.value) for c in s_bound.active()}
+        shared = set(a) & set(b)
+        gate = {
+            "compared": len(shared),
+            "disagreements": sum(1 for k in shared if a[k] != b[k]),
+            "second_read": True,
+        }
+
     # ---------------------------------------------------------- baseline path
     b_cs, b_stats = parse_text_layer(page.text_layer, profile.agency_id)
     b_fixes, _b_ref = geocode_all(b_cs, profile, offline=True)
@@ -178,6 +199,7 @@ def main() -> int:
         "profile": profile.as_dict(),
         "blocks": binding["blocks"],
         "columnRoles": binding.get("column_roles", {}),
+        "gate": gate,
         "claims": claims,
         "geocode": {
             "resolved": {n: f.as_dict() for n, f in fixes.items()},

@@ -75,6 +75,14 @@ h2{font-family:var(--sign);font-weight:600;font-size:clamp(28px,3.6vw,44px);
 .sub{color:var(--muted);max-width:78ch;line-height:1.6;font-size:15px;margin:0 0 26px}
 
 /* ───────────────────────── the scan + overlay ──────────────────────────── */
+.jump{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.jump button{font-family:var(--mono);font-size:12.5px;color:var(--text);
+  background:#0d0f13;border:1px solid var(--line);padding:8px 14px;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s}
+.jump button:hover{border-color:var(--amber);color:var(--amber)}
+.jump button.cut{border-color:rgba(255,77,77,.5);color:#ff9b9b}
+.jump button.cut:hover{background:rgba(255,77,77,.12);border-color:var(--fail);
+  color:var(--fail)}
 .evidence{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.72fr);
   gap:26px;align-items:start}
 .scanframe{
@@ -233,8 +241,9 @@ footer a{color:var(--amber);text-decoration:none;border-bottom:1px solid var(--a
     <p class="sub">The model is asked two things only: what a cell says, and where it is.
       Row, column and service block are recovered downstream by clustering these boxes —
       arithmetic with one correct answer. Click any box.</p>
+    <div class="jump" id="jump"></div>
     <div class="evidence">
-      <div class="scanframe"><div class="scaninner" id="scan">
+      <div class="scanframe" id="scanframe"><div class="scaninner" id="scan">
         <img id="pageimg" alt="ASTC Guwahati division timetable, page 1">
       </div></div>
       <div class="rail">
@@ -358,6 +367,7 @@ function render(d) {
     b.style.width = ((x1 - x0) * 100) + "%"; b.style.height = ((y1 - y0) * 100) + "%";
     b.style.animationDelay = (i * 7) + "ms";
     b.title = c.value;
+    b.dataset.trip = String(c.trip);
     const show = () => {
       document.querySelectorAll(".bx.on").forEach(n => n.classList.remove("on"));
       b.classList.add("on"); detail(c);
@@ -366,6 +376,33 @@ function render(d) {
     b.addEventListener("click", show);
     scan.append(b);
   });
+
+  // Jump straight to a service inside the scan. The withheld block sits below
+  // the fold of the scroll frame, and it is the one thing a viewer must see.
+  const frame = $("#scanframe");
+  d.blocks.forEach(b => {
+    const first = d.claims.find(c => String(c.trip) === String(b.trip));
+    if (!first) return;
+    const btn = el("button", b.truncated ? "cut" : "",
+      `${b.truncated ? "✕" : "▸"} Service ${esc(b.trip)}`
+      + (b.truncated ? " — withheld" : ""));
+    btn.title = b.heading;
+    btn.addEventListener("click", () => {
+      const img = $("#pageimg");
+      const y = first.bbox[1] * img.clientHeight;
+      frame.scrollTo({ top: Math.max(0, y - 70), behavior: "smooth" });
+      document.querySelectorAll(".bx").forEach(n => {
+        n.style.opacity = String(n.dataset.trip === String(b.trip) ? 1 : .18);
+      });
+    });
+    $("#jump").append(btn);
+  });
+  const all = el("button", "", "◻ Show all");
+  all.addEventListener("click", () => {
+    document.querySelectorAll(".bx").forEach(n => { n.style.opacity = "1"; });
+    frame.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  $("#jump").append(all);
 
   function detail(c) {
     const box = $("#detail");
@@ -385,8 +422,8 @@ function render(d) {
   const g = d.geocode, p = d.plausibility, hv = d.headway.validation;
   const stages = [
     ["01", "Readers", "gemini-3.7-flash and gemini-3.5-flash-lite read the same page blind to each other. Zero tools, zero write permissions.", `${d.claims.length} claims · 2 models`, false],
-    ["02", "Grid binding", "Row, column and service block recovered by clustering bounding boxes. The block number is read off the page; the geometry is not guessed.", `${d.blocks.length} blocks · ${JSON.stringify(d.columnRoles).replace(/[{}"]/g, "")}`, true],
-    ["03", "Disagreement gate", "Two independent reads compared cell for cell. Disagreement withholds a claim; agreement is never treated as proof.", `${withheld} claims withheld`, true],
+    ["02", "Grid binding", "Row, column and service block recovered by clustering bounding boxes. A run that does not end on the page is withheld whole.", `${d.blocks.length} blocks · ${withheld} claims withheld`, true],
+    ["03", "Disagreement gate", "Two independent reads compared cell for cell. Disagreement withholds a claim; agreement is never treated as proof.", d.gate && d.gate.second_read ? `${d.gate.compared} cells compared · ${d.gate.disagreements} escalated` : "single read — no corroboration", true],
     ["04", "Geocoding", "OpenStreetMap, ranked by category rather than popularity — then audited against the printed km column.", `${Object.keys(g.resolved).length} located · ${Object.keys(g.refused).length} refused`, true],
     ["05", "Composer", "Claims to eight GTFS files. Schedule arithmetic is not a language task, so no model touches it.", `${d.headway.stats.stop_times} stop_times`, true],
     ["06", "Publish gate", "MobilityData's gtfs-validator — a binary this project did not write. Zero ERROR notices or nothing ships.", `ERROR ${hv.errors} · WARNING ${hv.warnings}`, true],

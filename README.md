@@ -76,6 +76,14 @@ photo / PDF / voice memo
 
 **One model stage. Five deterministic stages.** That asymmetry is the whole design.
 
+## Live
+
+**https://headway-606499459461.asia-south1.run.app** — deployed on Cloud Run, running as a service
+account that can call Vertex AI and provably cannot write any bucket. The **Execute pipeline** button
+runs the whole thing server-side against the live ASTC PDF in about 60 seconds: fetch, render at 200 dpi,
+two Gemini models on Vertex, bind, geocode, compose, and re-run `gtfs-validator`. Nothing on that page is
+cached when you press it.
+
 ## It has been run, on a real Indian timetable
 
 Not a fixture. Page 1 of Assam State Transport Corporation's Guwahati division timetable — a 2020 Word
@@ -114,6 +122,24 @@ the wrong town is not.
 
 And the arrival/departure distinction survives, which is why this artifact was chosen: Khanapara is
 `07:30 → 07:35`, a real five-minute dwell, not one instant repeated into two columns.
+
+### Measured against the obvious alternative
+
+This PDF has a text layer, so the fair question is why a vision model is needed at all.
+`scripts/baseline_textlayer.py` answers it by running `pdftotext -layout` plus regular expressions
+through the **same** composer, geocoder and validator — the two differ in exactly one place:
+
+| | trips | stop_times | the service that runs off the page | validator |
+|---|---:|---:|---|---|
+| Baseline — text layer + regex | **3** | 23 | **published** | ERROR=0 WARNING=0 |
+| HEADWAY | 2 | 17 | **withheld** | ERROR=0 WARNING=0 |
+
+**Both pass. One is false.** The baseline publishes a 409 km coach service as though it terminates at a
+village halfway along, and the validator reports zero errors either way.
+
+Stated plainly: on a page *with* a clean text layer, the baseline extracts the same 25 rows, 22 arrivals
+and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal — and
+working at all on a photocopy, a board notice or a phone photograph, where no text layer exists.
 
 ## The claims, and the evidence for each
 

@@ -68,6 +68,11 @@
     "0": "arrival",
     "1": "departure"
   },
+  "gate": {
+    "compared": 86,
+    "disagreements": 0,
+    "second_read": true
+  },
   "claims": [
     {
       "id": "route_1_1_route-long-name",
@@ -1937,7 +1942,7 @@
             "timezone": "Asia/Kolkata"
           }
         ],
-        "validation_seconds": 0.528058564
+        "validation_seconds": 0.659895526
       }
     }
   },
@@ -2013,7 +2018,7 @@
             "timezone": "Asia/Kolkata"
           }
         ],
-        "validation_seconds": 0.521937418
+        "validation_seconds": 0.651248866
       }
     }
   }
