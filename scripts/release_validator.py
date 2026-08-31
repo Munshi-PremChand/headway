@@ -65,6 +65,14 @@ def _git(*args: str) -> str:
                           check=True).stdout.strip()
 
 
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def artifact_sha256() -> str:
     """sha256 of `git archive HEAD` — the exact tracked bytes at this commit."""
     proc = subprocess.run(
@@ -105,13 +113,27 @@ def validate(manifest_path: Path) -> tuple[bool, list[str], dict]:
             f"manifest approves commit {declared_commit}, HEAD is {head} — "
             f"the approval has expired, re-freeze and re-approve")
 
-    actual = artifact_sha256()
+    # Hash the artifact FILE the manifest names — the same bytes the ship gate
+    # will re-hash at push time. Hashing a freshly recomputed `git archive`
+    # instead would certify bytes nobody is actually shipping.
+    art_path_str = (m.get("artifact") or {}).get("path") or ""
+    art_path = Path(art_path_str)
+    if not art_path.is_absolute():
+        art_path = REPO / art_path
+    if art_path.is_file():
+        actual = sha256_file(art_path)
+        detail["artifactPath"] = str(art_path)
+    else:
+        actual = artifact_sha256()
+        failures.append(
+            f"artifact file not found at {art_path}; freeze it first with "
+            f"scripts/freeze_release.py")
     detail["artifactSha256"] = actual
     declared = (m.get("artifact") or {}).get("sha256")
     if declared != actual:
         failures.append(
             f"artifact sha256 mismatch: manifest says {declared}, "
-            f"`git archive HEAD` hashes to {actual}")
+            f"the artifact on disk hashes to {actual}")
 
     # 3: nothing uncommitted.
     dirty = _git("status", "--porcelain")
