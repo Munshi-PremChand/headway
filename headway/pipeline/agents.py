@@ -352,12 +352,34 @@ def _plausibility(cs: ClaimSet, fixes: dict[str, Fix]) -> dict[str, Any]:
         if fix is not None:
             row["lat"], row["lon"] = fix.lat, fix.lon
 
+    from headway.composer.compose import normalise_trip_times
+
     segments = []
     source_defects: list[dict[str, Any]] = []
     for tkey in sorted(trips):
         ordered = [trips[tkey][s] for s in sorted(trips[tkey])]
         segments.extend(check_trip(tkey, ordered))
-        for d in implied_speed(ordered):
+
+        # Normalise the times the way the COMPOSER does before judging speed.
+        # MEASURED 2026-08-31: without this, every overnight service was
+        # reported as "the printed times do not advance" — service 17 is
+        # Shillong to Siliguri and legitimately runs past midnight, so its
+        # arrival clock-time is lower than its departure clock-time and nothing
+        # is wrong with it. Judging the published times means judging the
+        # normalised ones.
+        flat: list[tuple[int, str]] = []
+        raw: list[int | None] = []
+        for i, r in enumerate(ordered):
+            for fld in ("arrival", "departure"):
+                if r.get(f"{fld}_s") is not None:
+                    flat.append((i, fld))
+                    raw.append(r[f"{fld}_s"])
+        rolled = normalise_trip_times(raw)
+        adjusted = [dict(r) for r in ordered]
+        for (i, fld), v in zip(flat, rolled):
+            adjusted[i][f"{fld}_s"] = v
+
+        for d in implied_speed(adjusted):
             source_defects.append({"trip": tkey, **d})
     out = plausibility_report(segments)
     # Not our error and not a reason to refuse — the page itself is wrong, and
@@ -434,6 +456,32 @@ class DisagreementGate(BaseAgent):
 
         # An escalated claim is withheld from composition, not guessed at.
         blocked = {e["claim_id"] for e in escalations}
+
+        # WITHHOLDING CASCADES. MEASURED 2026-08-31 across the full ten-page
+        # division: the source itself spells one stop "Kaliabar" once and
+        # "Kaliabor" eleven times. The readers disagreed on that single cell and
+        # the gate correctly withheld the stop NAME — which left the timetable
+        # cells bound to it pointing at a stop that no longer existed, and the
+        # composer refused the whole forty-service feed over one ambiguous
+        # spelling.
+        #
+        # A claim whose binding rests on a withheld claim is not supported
+        # either. Withholding the dependents costs one trip; leaving them
+        # dangling costs the document.
+        orphaned = 0
+        lost_stops = {(str(c.scope.get("trip") or ""), str(c.value))
+                      for c in primary.claims
+                      if c.claim_id in blocked and c.kind is ClaimKind.STOP
+                      and c.field == "stop_name"}
+        if lost_stops:
+            for c in primary.claims:
+                if c.claim_id in blocked or c.kind is not ClaimKind.STOP_TIME:
+                    continue
+                key = (str(c.scope.get("trip") or ""), str(c.scope.get("stop") or ""))
+                if key in lost_stops:
+                    blocked.add(c.claim_id)
+                    orphaned += 1
+
         kept = [c for c in primary.claims if c.claim_id not in blocked]
         resolved = ClaimSet(agency_id=primary.agency_id, claims=kept)
 
@@ -452,6 +500,10 @@ class DisagreementGate(BaseAgent):
             text += (f"\n    {len(unconfirmed)} timetable cell(s) appear in the "
                      f"primary read only — not disagreement, but not "
                      f"corroborated either.")
+        if orphaned:
+            text += (f"\n    {orphaned} timetable cell(s) withheld as well — "
+                     f"their stop name was escalated, so their binding is no "
+                     f"longer supported.")
         for e in escalations[:10]:
             text += (f"\n    ESCALATED {e['claim_id']}: primary said "
                      f"{e['primary']!r}, second said {e['second']!r}")

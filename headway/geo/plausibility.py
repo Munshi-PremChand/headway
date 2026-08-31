@@ -140,6 +140,12 @@ def check_trip(
 # using a generous bar means a hit is a finding rather than a tuning artifact.
 MAX_PLAUSIBLE_KPH = 100.0
 
+# A single leg of an intercity coach route. Longer than this over a short
+# distance means the midnight normaliser rolled a backwards printed time
+# forward a whole day — the leg did not really take fourteen hours.
+MAX_LEG_SECONDS = 12 * 3600
+LONG_LEG_KM = 400.0
+
 
 def implied_speed(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Check the page against ITSELF: printed distance over printed time.
@@ -179,6 +185,16 @@ def implied_speed(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                         "kph": None,
                         "why": "the printed times do not advance between these "
                                "stops"})
+            continue
+        # A leg that the midnight normaliser has rolled a whole day forward
+        # reads as impossibly SLOW, and that is the signature of a printed time
+        # that actually went backwards rather than of a real overnight run.
+        if secs > MAX_LEG_SECONDS and dist < LONG_LEG_KM:
+            out.append({"from": n1, "to": n2, "km": round(dist, 1),
+                        "seconds": secs, "kph": round(dist / (secs / 3600.0), 2),
+                        "why": f"{dist:g} km taking {secs // 3600:g} hours — the "
+                               f"printed times ran backwards and were rolled to "
+                               f"the next day"})
             continue
         kph = dist / (secs / 3600.0)
         if kph > MAX_PLAUSIBLE_KPH:

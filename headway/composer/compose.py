@@ -572,6 +572,28 @@ def compose(
                 f"{max_omitted_fraction:.0%} limit")
             continue
 
+        # A trip whose OWN times are impossible is dropped, not fatal.
+        # MEASURED 2026-08-31 across the full ten-page division: service 39's
+        # printed times run backwards, the dwell guard raised, and one bad trip
+        # took all forty services down with it. A per-trip defect belongs in
+        # `dropped_trips` beside the others — the same place a trip with too few
+        # legible stops goes. Feed-level problems (no stops at all, dangling
+        # references) still raise, because those are not survivable.
+        bad_leg = None
+        for r, t in placed:
+            arrive = t.get("arrival", t.get("departure"))
+            depart = t.get("departure", t.get("arrival"))
+            if depart - arrive > MAX_DWELL_SECONDS:
+                anchor = r.get("departure") or r["arrival"]
+                bad_leg = (f"dwell of {(depart - arrive) // 3600}h at "
+                           f"{anchor.scope.get('stop')!r} — the printed times "
+                           f"are out of order")
+                break
+        if bad_leg is not None:
+            dropped_trips.append(tkey)
+            warnings.append(f"trip {tkey!r} dropped: {bad_leg}")
+            continue
+
         tid = ids.mint("trip", tkey)
         last_anchor = placed[-1][0].get("arrival") or placed[-1][0]["departure"]
         # With no headsign claim, the last stop the trip actually calls at is

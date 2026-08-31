@@ -27,6 +27,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -114,6 +115,8 @@ async def run() -> int:
     ap.add_argument("--pages", default="1-2")
     ap.add_argument("--profile", default="astc_guwahati")
     ap.add_argument("--single-reader", action="store_true")
+    ap.add_argument("--concurrency", type=int, default=4,
+                    help="model calls in flight at once")
     ap.add_argument("--offline-geocoding", action="store_true")
     ap.add_argument("--feed-start", default="2026-08-24")
     ap.add_argument("--out", default="out/astc_multipage.zip")
@@ -137,23 +140,56 @@ async def run() -> int:
     sources: list[dict] = []
     t0 = time.time()
 
-    for pg in pages:
-        page = render_page(args.pdf, page=pg)
-        sources.append(page.as_dict())
-        line = f"  page {pg:>2}  {page.width}x{page.height}  {page.page_sha256[:12]}"
+    rendered = [(pg, render_page(args.pdf, page=pg)) for pg in pages]
+    sources = [p.as_dict() for _pg, p in rendered]
+
+    # Reads are independent, so run them concurrently. A ten-page division is
+    # twenty model calls; sequentially that is a quarter of an hour of waiting
+    # for something with no data dependency in it at all. The semaphore keeps
+    # the burst inside Vertex's per-minute quota — the point is to stop
+    # waiting, not to hammer the endpoint.
+    sem = asyncio.Semaphore(args.concurrency)
+
+    async def one(pg: int, png: bytes, model: str):
+        async with sem:
+            raw = await asyncio.to_thread(read_page, client, png, model, layout)
+        cs = parse_claims(raw, agency_id=profile.agency_id,
+                          source_file=f"{Path(args.pdf).name}#p{pg}")
+        bound, rep = bind_blocks(cs)
+        return pg, model, rebind_claim_ids(bound), cs, rep
+
+    results = await asyncio.gather(*[
+        one(pg, page.png_bytes, m) for pg, page in rendered for m in models],
+        return_exceptions=True)
+
+    failures = [r for r in results if isinstance(r, Exception)]
+    for f in failures:
+        print(f"  READ FAILED: {type(f).__name__}: {str(f)[:150]}")
+    ok = [r for r in results if not isinstance(r, Exception)]
+
+    by_page: dict[int, dict[str, Any]] = {}
+    for pg, model, bound, cs, rep in ok:
+        per_reader[model].append((pg, bound))
+        cont = sum(1 for c in bound.active()
+                   if str(c.scope.get("trip") or "") == CONTINUATION)
+        by_page.setdefault(pg, {})[model] = (len(cs.active()),
+                                             len(rep["blocks"]), cont)
+    for m in models:
+        per_reader[m].sort(key=lambda t: t[0])
+
+    for pg, page in rendered:
+        line = f"  page {pg:>2}  {page.page_sha256[:12]}"
         for m in models:
-            raw = read_page(client, page.png_bytes, m, layout)
-            cs = parse_claims(raw, agency_id=profile.agency_id,
-                              source_file=f"{Path(args.pdf).name}#p{pg}")
-            bound, rep = bind_blocks(cs)
-            bound = rebind_claim_ids(bound)
-            per_reader[m].append((pg, bound))
-            cont = sum(1 for c in bound.active()
-                       if str(c.scope.get("trip") or "") == CONTINUATION)
-            line += (f"   [{m.split('-')[-1]}] {len(cs.active())} claims, "
-                     f"{len(rep['blocks'])} blocks"
-                     + (f", {cont} continuation" if cont else ""))
+            got = by_page.get(pg, {}).get(m)
+            line += (f"   [{m.split('-')[-1]}] "
+                     + (f"{got[0]} claims, {got[1]} blocks"
+                        + (f", {got[2]} continuation" if got[2] else "")
+                        if got else "FAILED"))
         print(line)
+    if failures:
+        print(f"\n  {len(failures)} read(s) failed — pages with a failed read are "
+              f"NOT silently dropped; their claims are simply absent, and any "
+              f"service spanning them will fail its join check.")
 
     hr("STITCHING ACROSS PAGE SEAMS")
     stitched: dict[str, ClaimSet] = {}

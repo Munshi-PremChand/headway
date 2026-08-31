@@ -7,12 +7,23 @@
   "agency_phone": "",
   "service_id": "ASTC_DAILY",
   "service_days": [
-    "monday", "tuesday", "wednesday", "thursday",
-    "friday", "saturday", "sunday"
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday"
   ],
   "layout": "service_blocks",
   "geocode_region": "Assam, India",
-  "geocode_viewbox": [88.5, 22.5, 97.5, 29.0],
+  "geocode_viewbox_note": "ASTC runs beyond Assam \u2014 service 17 is Shillong (Meghalaya) to Siliguri (West Bengal, 88.43E) and later services reach Sadiya and Arunachal. A box drawn tightly around Assam refuses those stops as 'outside the operator's region', which would be a correct rule applied to a wrong premise. Widened to the northeast region the operator actually serves; it is still narrow enough to reject a same-named place elsewhere in India.",
+  "geocode_viewbox": [
+    87.5,
+    21.5,
+    97.5,
+    29.5
+  ],
   "source_note": "Timetable PDFs for the nine ASTC divisions are published at st.redbus.in/Images/WL/ASTC/schedules_new/. Guwahati_division.pdf is 10 A4 pages of numbered service blocks, each a single intercity coach run with per-stop arrival AND departure times. agency_timezone and agency_url are declared here because the page prints neither.",
   "assumed": [
     "service_days"
@@ -20,7 +31,7 @@
   "assumption_notes": {
     "service_days": "The PDF does not state operating days. Daily operation is ASSUMED for these intercity Day Super services and is printed as an assumption in the run ledger. An operator must confirm it before this feed is published anywhere."
   },
-  "stop_aliases_note": "A printed name to a GAZETTEER QUERY — never to a coordinate. Each line is a spelling claim any Assamese reader can check by eye; the latitude still comes from OpenStreetMap and carries its OSM id. Every query here was verified against the live gazetteer on 2026-08-27 and returns a settlement or transport node rather than a shop or a hospital that merely shares the name.",
+  "stop_aliases_note": "A printed name to a GAZETTEER QUERY \u2014 never to a coordinate. Each line is a spelling claim any Assamese reader can check by eye; the latitude still comes from OpenStreetMap and carries its OSM id. Every query here was verified against the live gazetteer on 2026-08-27 and returns a settlement or transport node rather than a shop or a hospital that merely shares the name.",
   "stop_aliases": {
     "Paltanbazar": "Paltan Bazar, Guwahati, Assam, India",
     "Biswanath Chariali": "Bishwanath Chariali, Assam, India",
@@ -30,6 +41,9 @@
     "Gohpur": "Gohpur, Biswanath, Assam, India",
     "Narayanpur": "Narayanpur, Lakhimpur, Assam, India",
     "Bihpuria": "Bihpuria, Lakhimpur, Assam, India",
-    "Kaliabor": "Kaliabor, Nagaon, Assam, India"
-  }
+    "Kaliabor": "Kaliabor, Nagaon, Assam, India",
+    "Doomduma": "Doom Dooma, Tinsukia, Assam, India",
+    "Saikhowa": "Saikhoaghat, Assam, India"
+  },
+  "stop_aliases_unresolved_note": "Ghilamara, Janji, Demow, Jagiroad, Laluk, ISBT and the two Nagaon Bypass spellings have NO defensible gazetteer answer and are deliberately left unaliased. OpenStreetMap has no place node for most of them; 'ISBT' matches two different terminals in Assam and is genuinely ambiguous; a bypass is a stretch of road, not a settlement, and pointing it at the town centre would be a small lie of exactly the kind this project refuses. They stay refused and named."
 }

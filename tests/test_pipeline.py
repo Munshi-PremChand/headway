@@ -24,7 +24,9 @@ from headway.reader.gemini_reader import (  # noqa: E402
     LAYOUTS, UnknownLayout, XYXY, YXYX, build_system_prompt,
     detect_bbox_convention, parse_claims,
 )
-from headway.schema.claims import ClaimKind, ClaimSet  # noqa: E402
+from headway.schema.claims import (  # noqa: E402
+    ClaimKind, ClaimSet, SourceClaim,
+)
 
 START = date(2026, 8, 24)
 
@@ -337,8 +339,36 @@ def test_a_departure_transcribed_before_its_arrival_is_refused():
     for c in cs.claims:
         if c.claim_id == "d2":
             c.value = "07:00"                  # earlier than the 07:30 arrival
-    with pytest.raises(ComposeError, match="implausible"):
+    # It was the only trip, so nothing survives and the feed is refused.
+    with pytest.raises(ComposeError, match="no trips survived"):
         compose(cs, feed_start=START, horizon_days=120)
+
+
+def test_one_impossible_trip_does_not_take_the_whole_feed_down():
+    """MEASURED on the full ten-page division: it did.
+
+    Service 39's printed times run backwards, the dwell guard raised, and one
+    bad trip took all forty services with it. A per-trip defect belongs in
+    dropped_trips beside a trip with too few legible stops.
+    """
+    cs = _astc_claims()
+    good = []
+    for c in cs.claims:
+        if c.claim_id == "d2":
+            c.value = "07:00"
+        if c.kind is ClaimKind.STOP_TIME:
+            scope = dict(c.scope)
+            scope["trip"] = "2"
+            good.append(SourceClaim(
+                claim_id=c.claim_id + "_t2", kind=c.kind, field=c.field,
+                value=("07:35" if c.claim_id == "d2" else c.value),
+                confidence=1.0, provenance=c.provenance, scope=scope))
+    cs.claims.extend(good)
+
+    feed = compose(cs, feed_start=START, horizon_days=120)
+    assert feed.dropped_trips == ["1"], "the bad trip is dropped by name"
+    assert [r["trip_id"] for r in feed.tables["trips.txt"]] == ["2"]
+    assert any("printed times are out of order" in w for w in feed.warnings)
 
 
 def test_a_genuine_midnight_rollover_is_still_allowed():

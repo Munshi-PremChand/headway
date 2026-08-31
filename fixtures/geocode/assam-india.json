@@ -39,6 +39,101 @@
     "precision": "settlement-node",
     "query": "Bishwanath Chariali, Assam, India"
   },
+  "Bokakhat": {
+    "display_name": "Bokakhat, Golaghat, Assam, 785612, India",
+    "importance": 0.146704,
+    "lat": 26.6401815,
+    "lon": 93.6005065,
+    "osm_id": 342100373,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Bokakhat, Assam, India"
+  },
+  "Chabua": {
+    "display_name": "Chabua, Dibrugarh, Assam, 786184, India",
+    "importance": 0.160038,
+    "lat": 27.4826767,
+    "lon": 95.1730318,
+    "osm_id": 299448217,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Chabua, Assam, India"
+  },
+  "Demow": {
+    "query": "Demow",
+    "reason": "no result is a place or a transport node; the best match is 'amenity'/'hospital' (CHC, Demow, SH-013, Dimaugaon, Dimow, Sibsagar, Sivasagar, A)",
+    "rules_version": 2
+  },
+  "Dergaon": {
+    "display_name": "Dergaon, Golaghat, Assam, 785614, India",
+    "importance": 0.160033,
+    "lat": 26.71463,
+    "lon": 93.97019,
+    "osm_id": 342100483,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Dergaon, Assam, India"
+  },
+  "Dhakuakhana": {
+    "display_name": "Dhakuakhana, Dhakuakhana (Pt-I), Lakhimpur, Assam, India",
+    "importance": 0.146704,
+    "lat": 27.2033548,
+    "lon": 94.4434033,
+    "osm_id": 7160147292,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Dhakuakhana, Assam, India"
+  },
+  "Dhemaji": {
+    "display_name": "Dhemaji, Assam, India",
+    "importance": 0.420235,
+    "lat": 27.5945155,
+    "lon": 94.7192098,
+    "osm_id": 2026407,
+    "osm_type": "relation",
+    "precision": "administrative-area-centroid",
+    "query": "Dhemaji, Assam, India"
+  },
+  "Dibrugarh": {
+    "display_name": "Dibrugarh, Dibrugarh East, Dibrugarh, Assam, 786001, India",
+    "importance": 0.483946,
+    "lat": 27.4844597,
+    "lon": 94.9019447,
+    "osm_id": 299448214,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Dibrugarh, Assam, India"
+  },
+  "Doboka": {
+    "display_name": "Daboka, Doboka, Hojai, Assam, 782440, India",
+    "importance": 0.160032,
+    "lat": 26.1129473,
+    "lon": 92.8658755,
+    "osm_id": 2468833075,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Doboka, Assam, India"
+  },
+  "Doomduma": {
+    "query": "Doomduma",
+    "reason": "no Nominatim match",
+    "rules_version": 2
+  },
+  "Ghilamara": {
+    "query": "Ghilamara",
+    "reason": "no Nominatim match",
+    "rules_version": 2
+  },
+  "Gogamukh": {
+    "display_name": "Gogamukh, Dhemaji, Assam, 787034, India",
+    "importance": 0.16004,
+    "lat": 27.4348123,
+    "lon": 94.3160033,
+    "osm_id": 2913304438,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Gogamukh, Assam, India"
+  },
   "Gohpur": {
     "display_name": "Gohpur, Helem, Biswanath, Assam, 784168, India",
     "importance": 0.160033,
@@ -49,9 +144,66 @@
     "precision": "settlement-node",
     "query": "Gohpur, Biswanath, Assam, India"
   },
+  "Guwahati": {
+    "display_name": "Guwahati, Kamrup Metropolitan, Assam, 781015, India",
+    "importance": 0.562556,
+    "lat": 26.1805978,
+    "lon": 91.753943,
+    "osm_id": 566672802,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Guwahati, Assam, India"
+  },
+  "Guwahati- ISBT": {
+    "display_name": "Inter State Bus Terminal, NH27, Lokhra, Dispur, Kamrup Metropolitan, Assam, 781040, India",
+    "importance": 5.3e-05,
+    "lat": 26.1163561,
+    "lon": 91.7218831,
+    "osm_id": 222979992,
+    "osm_type": "way",
+    "precision": "transport-node",
+    "query": "Guwahati- ISBT, Assam, India"
+  },
+  "Hojai": {
+    "display_name": "Hojai, Assam, 782435, India",
+    "importance": 0.290177,
+    "lat": 26.0031945,
+    "lon": 92.8522896,
+    "osm_id": 3964170398,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Hojai, Assam, India"
+  },
+  "ISBT": {
+    "query": "ISBT",
+    "reason": "ambiguous: 'ISBT, NH6, Shillong, Mawlai, East Khasi Hills, Meg' and 'ISBT, NH29, Hospital Colony, Kohima, Sechu-Zubza, ' rank equally in different places",
+    "rules_version": 2
+  },
   "Jagiroad": {
-    "query": "Jagiroad, Assam, India",
-    "reason": "no result is a place or a transport node; the best match is 'shop'/'hardware' (Jagiroad Hardware Stores, A T Road, Pan Bazar, Guwahati, Kam)"
+    "query": "Jagiroad",
+    "reason": "no result is a place or a transport node; the best match is 'shop'/'hardware' (Jagiroad Hardware Stores, A T Road, Pan Bazar, Guwahati, Kam)",
+    "rules_version": 2
+  },
+  "Jakhalabandha": {
+    "display_name": "Jakhalabandha, NH715, Kaliabor, Nagaon, Assam, India",
+    "importance": 1e-05,
+    "lat": 26.5804062,
+    "lon": 92.9906325,
+    "osm_id": 3684357943,
+    "osm_type": "node",
+    "precision": "transport-node",
+    "query": "Jakhalabandha, Assam, India"
+  },
+  "Jalpaiguri": {
+    "display_name": "Jalpaiguri, West Bengal, 735101, India",
+    "importance": 0.466691,
+    "lat": 26.5241586,
+    "lon": 88.7197513,
+    "osm_id": 5914126159,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Jalpaiguri, India",
+    "rules_version": 2
   },
   "Jamugurihat": {
     "display_name": "Jamugurihat, Na-Duar, Sonitpur, Assam, 784180, India",
@@ -63,6 +215,21 @@
     "precision": "settlement-node",
     "query": "Jamugurihat, Sonitpur, Assam, India"
   },
+  "Janji": {
+    "query": "Janji",
+    "reason": "no Nominatim match",
+    "rules_version": 2
+  },
+  "Jorhat": {
+    "display_name": "Jorhat, Jorhat East, Jorhat, Assam, 785001, India",
+    "importance": 0.4799,
+    "lat": 26.7577925,
+    "lon": 94.2079645,
+    "osm_id": 2138091867,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Jorhat, Assam, India"
+  },
   "Kaliabor": {
     "display_name": "Kaliabor, Nagaon, Assam, 782137, India",
     "importance": 0.146704,
@@ -72,6 +239,16 @@
     "osm_type": "node",
     "precision": "settlement-node",
     "query": "Kaliabor, Nagaon, Assam, India"
+  },
+  "Kaziranga": {
+    "display_name": "K\u0101ziranga, Kohora, Bokakhat, Golaghat, Assam, 785609, India",
+    "importance": 0.133371,
+    "lat": 26.5892533,
+    "lon": 93.4084741,
+    "osm_id": 12164093511,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Kaziranga, Assam, India"
   },
   "Khanapara": {
     "display_name": "Khanapara, Dispur, Kamrup Metropolitan, Assam, 781005, India",
@@ -83,9 +260,50 @@
     "precision": "settlement-node",
     "query": "Khanapara, Assam, India"
   },
+  "Kohora": {
+    "display_name": "Kohora, Bokakhat, Golaghat, Assam, 785609, India",
+    "importance": 0.146704,
+    "lat": 26.5869979,
+    "lon": 93.4105813,
+    "osm_id": 1681545138,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Kohora, Assam, India"
+  },
+  "Lakhimpur": {
+    "display_name": "Lakhimpur, Assam, India",
+    "importance": 0.472722,
+    "lat": 27.1763356,
+    "lon": 94.1992932,
+    "osm_id": 2026356,
+    "osm_type": "relation",
+    "precision": "administrative-area-centroid",
+    "query": "Lakhimpur, Assam, India"
+  },
   "Laluk": {
-    "query": "Laluk, Assam, India",
-    "reason": "no result is a place or a transport node; the best match is 'highway'/'primary' (Narayanpur-Bihpuria-Laluk Road, Naryanpur, Narayanpur, Lakhi)"
+    "query": "Laluk",
+    "reason": "no result is a place or a transport node; the best match is 'highway'/'primary' (Narayanpur-Bihpuria-Laluk Road, Naryanpur, Narayanpur, Lakhi)",
+    "rules_version": 2
+  },
+  "Majuli": {
+    "display_name": "Majuli, Assam, India",
+    "importance": 0.392874,
+    "lat": 27.0219529,
+    "lon": 94.327423,
+    "osm_id": 9521299,
+    "osm_type": "relation",
+    "precision": "administrative-area-centroid",
+    "query": "Majuli, Assam, India"
+  },
+  "Moran": {
+    "display_name": "Mor\u0101n, Moran, Assam, Dibrugarh, Assam, 785670, India",
+    "importance": 0.16003,
+    "lat": 27.1857364,
+    "lon": 94.9104273,
+    "osm_id": 12102473417,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Moran, Assam, India"
   },
   "Nagaon": {
     "display_name": "Nagaon, Assam, 782001, India",
@@ -97,6 +315,16 @@
     "precision": "settlement-node",
     "query": "Nagaon, Assam, India"
   },
+  "Nagaon By Pass": {
+    "query": "Nagaon By Pass",
+    "reason": "no Nominatim match",
+    "rules_version": 2
+  },
+  "Nagaon Bypass": {
+    "query": "Nagaon Bypass",
+    "reason": "no result is a place or a transport node; the best match is 'highway'/'trunk' (Nagaon Bypass, Borghat, Nagaon, Assam, 782001, India)",
+    "rules_version": 2
+  },
   "Narayanpur": {
     "display_name": "Narayanpur, Lakhimpur, Assam, India",
     "importance": 0.240038,
@@ -106,6 +334,16 @@
     "osm_type": "relation",
     "precision": "administrative-area-centroid",
     "query": "Narayanpur, Lakhimpur, Assam, India"
+  },
+  "Nazira": {
+    "display_name": "Nazira, Sivasagar, Assam, 785685, India",
+    "importance": 0.160038,
+    "lat": 26.9164974,
+    "lon": 94.736043,
+    "osm_id": 245754553,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Nazira, Assam, India"
   },
   "North Lakhimpur": {
     "display_name": "North Lakhimpur, Station Road, North Lakhimpur, Lakhimpur, Assam, 787001, India",
@@ -127,6 +365,63 @@
     "precision": "transport-node",
     "query": "Paltan Bazar, Guwahati, Assam, India"
   },
+  "Sadiya": {
+    "display_name": "Sadiya, Tinsukia, Assam, India",
+    "importance": 0.146704,
+    "lat": 27.8434781,
+    "lon": 95.6731939,
+    "osm_id": 7160154171,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Sadiya, Assam, India"
+  },
+  "Saikhowa": {
+    "query": "Saikhowa",
+    "reason": "no result is a place or a transport node; the best match is 'boundary'/'national_park' (Dibru-Saikhowa National Park, Tinsukia, Assam, India)",
+    "rules_version": 2
+  },
+  "Shillong": {
+    "display_name": "Shillong, Mylliem, East Khasi Hills, Meghalaya, 793001, India",
+    "importance": 0.516783,
+    "lat": 25.5759931,
+    "lon": 91.8827872,
+    "osm_id": 245735780,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Shillong, India",
+    "rules_version": 2
+  },
+  "Siliguri": {
+    "display_name": "Siliguri, Matigara block, Darjeeling, West Bengal, India",
+    "importance": 0.487105,
+    "lat": 26.7164127,
+    "lon": 88.4309916,
+    "osm_id": 22826546,
+    "osm_type": "way",
+    "precision": "settlement-node",
+    "query": "Siliguri, India",
+    "rules_version": 2
+  },
+  "Sivasagar": {
+    "display_name": "Sivasagar, Sibsagar, Sivasagar, Assam, 785600, India",
+    "importance": 0.464333,
+    "lat": 26.9834936,
+    "lon": 94.6394226,
+    "osm_id": 245755348,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Sivasagar, Assam, India"
+  },
+  "Teok": {
+    "display_name": "Teok, Jorhat, Assam, 785112, India",
+    "importance": 0.146704,
+    "lat": 26.8349054,
+    "lon": 94.4179545,
+    "osm_id": 245753634,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Teok, Assam, India"
+  },
   "Tezpur": {
     "display_name": "Tezpur, Sonitpur, Assam, 784001, India",
     "importance": 0.437451,
@@ -136,5 +431,25 @@
     "osm_type": "node",
     "precision": "settlement-node",
     "query": "Tezpur, Assam, India"
+  },
+  "Tinsukia": {
+    "display_name": "Tinsukia, Assam, 786100, India",
+    "importance": 0.465308,
+    "lat": 27.4879722,
+    "lon": 95.3601855,
+    "osm_id": 4323994882,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Tinsukia, Assam, India"
+  },
+  "Titabor": {
+    "display_name": "Titabor, Jorhat, Assam, 785630, India",
+    "importance": 0.160038,
+    "lat": 26.5924877,
+    "lon": 94.1951629,
+    "osm_id": 245750088,
+    "osm_type": "node",
+    "precision": "settlement-node",
+    "query": "Titabor, Assam, India"
   }
 }

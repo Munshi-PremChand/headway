@@ -51,6 +51,14 @@ NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "headway-gtfs/0.1 (open transit feed builder; contact via repository)"
 MIN_INTERVAL_SECONDS = 1.1          # Nominatim usage policy: max 1 req/sec
 
+# Bump when the judging rules or the query ladder change. A cached REFUSAL is
+# only valid under the rules that produced it — MEASURED 2026-08-31: after the
+# query ladder was added so out-of-state stops could resolve, Shillong and
+# Siliguri stayed refused because the cache answered first with a refusal from
+# the previous rules. A stale success is still a real gazetteer answer and is
+# kept; a stale refusal is re-asked.
+RULES_VERSION = 2
+
 # Ranking by Nominatim's own `importance` alone is WRONG here, and measurably
 # so. MEASURED 2026-08-27 against the live gazetteer:
 #
@@ -234,11 +242,33 @@ class Geocoder:
         self._last_call = time.monotonic()
 
     # ----------------------------------------------------------------- lookup
-    def _query_for(self, name: str) -> str:
+    def _queries_for(self, name: str) -> list[str]:
+        """The queries to try, narrowest first.
+
+        MEASURED 2026-08-31 on the full ten-page division: appending the
+        operator's region to every query refused Shillong, Siliguri and
+        Jalpaiguri — all real places this operator genuinely serves, and none of
+        them in Assam. "Shillong, Assam, India" matched a residential street
+        called Shillong Patty in Silchar; the correct answer sits in Meghalaya
+        and was never asked for.
+
+        The region is a DISAMBIGUATION HINT, not the constraint. The constraint
+        is the viewbox, which still bounds every candidate geographically, so
+        widening the query cannot pull in a same-named place on another
+        continent. An alias, where one exists, is authoritative and is tried
+        alone.
+        """
         alias = self.aliases.get(name)
         if alias:
-            return alias
-        return f"{name}, {self.region}" if self.region else name
+            return [alias]
+        if not self.region:
+            return [name]
+        tail = self.region.split(",")[-1].strip()          # usually "India"
+        out = [f"{name}, {self.region}"]
+        if tail and tail.lower() != self.region.lower():
+            out.append(f"{name}, {tail}")
+        out.append(name)
+        return out
 
     def _judge(self, name: str, results: list[dict], query: str) -> Fix | Refusal:
         """Decide whether a result set contains exactly one defensible answer."""
@@ -296,9 +326,13 @@ class Geocoder:
     def resolve(self, name: str) -> Fix | Refusal:
         """Resolve one stop name. Cached answers, including refusals, are reused."""
         key = name.strip()
-        query = self._query_for(key)
+        queries = self._queries_for(key)
+        query = queries[0]
 
         hit = self._cache.get(key)
+        if hit is not None and hit.get("reason") and \
+                int(hit.get("rules_version") or 0) < RULES_VERSION:
+            hit = None                       # re-ask under the current rules
         if hit is not None:
             if hit.get("reason"):
                 return Refusal(key, hit["reason"], hit.get("query", query))
@@ -320,19 +354,23 @@ class Geocoder:
             return Refusal(key, "not in the committed geocode cache and this "
                                 "run is offline", query)
 
-        self._throttle()
-        try:
-            results = self._fetch(query, self.viewbox, self._timeout)
-            self.requests_made += 1
-        except Exception as exc:                                # noqa: BLE001
-            # A lookup failure is NOT a refusal to cache — the answer is
-            # unknown, not "no such place", and caching it would poison every
-            # later run.
-            return Refusal(key, f"geocoder unreachable: {type(exc).__name__}",
-                           query)
+        verdict: Fix | Refusal = Refusal(key, "no query was attempted", query)
+        for q in queries:
+            self._throttle()
+            try:
+                results = self._fetch(q, self.viewbox, self._timeout)
+                self.requests_made += 1
+            except Exception as exc:                            # noqa: BLE001
+                # A lookup failure is NOT a refusal to cache — the answer is
+                # unknown, not "no such place", and caching it would poison
+                # every later run.
+                return Refusal(key, f"geocoder unreachable: {type(exc).__name__}",
+                               q)
+            verdict = self._judge(key, results, q)
+            if isinstance(verdict, Fix):
+                break
 
-        verdict = self._judge(key, results, query)
-        self._cache[key] = verdict.as_dict()
+        self._cache[key] = {**verdict.as_dict(), "rules_version": RULES_VERSION}
         self._save()
         return verdict
 
