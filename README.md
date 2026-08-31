@@ -149,6 +149,29 @@ Stated plainly: on a page *with* a clean text layer, the baseline extracts the s
 and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal — and
 working at all on a photocopy, a board notice or a phone photograph, where no text layer exists.
 
+### And that second half is measured too
+
+`scripts/photocopy_test.py` degrades the same page the way a copier does — skew, blur, toner speckle,
+contrast loss, JPEG artifacts — and runs both approaches on the result:
+
+| degradation | baseline rows | HEADWAY fidelity | confident-wrong |
+|---|---:|---|---:|
+| photocopy of a photocopy | **0** | **70/70 (100%)** | **0** |
+| phone photo of a bad copy | **0** | 65/70 (93%) | 4 → service **withheld**, not published |
+
+The baseline scores zero for a structural reason: a JPEG has no text layer, so `pdftotext` has nothing
+to read.
+
+**The failure at the harsher level is the interesting part.** It produced 18 confidently wrong departure
+times — every value read *correctly* and then bound to the wrong row, because 2° of page skew displaces
+the rightmost column by nearly a full row height. Fixing it took three passes (monotonic alignment, then
+skew calibrated off the `km` column, then noticing the calibrator had been silently disabled by a
+column-clustering bug); `docs/CHANGELOG.md` has the sequence.
+
+At the point it still mis-binds, the mis-binding puts a departure on the terminus row — and a completed
+run ends with an arrival and no departure. The structural rule fires and withholds the whole service.
+**Where the geometry fails, the system loses coverage, not correctness.**
+
 ## The claims, and the evidence for each
 
 ### 1. It refuses rather than guesses
@@ -205,7 +228,7 @@ shows nothing landed. See [`docs/INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md).
 
 ```bash
 make setup        # venv, pytest, and the gtfs-validator jar (sha256-pinned)
-make test         # 167 tests
+make test         # 175 tests
 make pipeline     # the whole thing, live, on a real ASTC page
 make build        # claims -> 8 GTFS files -> zip
 make validate     # runs the real validator; exits non-zero on any ERROR

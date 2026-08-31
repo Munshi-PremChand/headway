@@ -1942,7 +1942,7 @@
             "timezone": "Asia/Kolkata"
           }
         ],
-        "validation_seconds": 0.659895526
+        "validation_seconds": 0.605660387
       }
     }
   },
@@ -2018,7 +2018,7 @@
             "timezone": "Asia/Kolkata"
           }
         ],
-        "validation_seconds": 0.651248866
+        "validation_seconds": 0.584860254
       }
     }
   }

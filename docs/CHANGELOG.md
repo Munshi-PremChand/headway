@@ -2,6 +2,94 @@
 
 Every entry records what was **measured**, not what was intended.
 
+## 2026-08-31 — THE CLAIM THE PROJECT RESTS ON, FINALLY TESTED
+
+HEADWAY exists because most Indian timetables are photocopies and phone
+photographs, where the naive `pdftotext` approach scores exactly zero. Every
+number measured until now was on a **clean render**, so that claim was untested
+and the README said so. `scripts/photocopy_test.py` tests it: degrade the same
+ASTC page the way a copier does — skew, blur, toner speckle, contrast loss,
+JPEG artifacts — and run both approaches on the result. The clean page's text
+layer is the ground truth and is never shown to the reader.
+
+### Result
+
+| level | artifact | baseline rows | HEADWAY fidelity | confident-wrong | published |
+|---|---|---:|---|---:|---|
+| 2 | photocopy of a photocopy | **0** | **70/70 (100%)** | **0** | 2 services |
+| 3 | phone photo of a bad copy | **0** | 65/70 (93%) | 4 → **withheld** | 1 service |
+
+The baseline scores zero at every level for a structural reason: a JPEG has no
+text layer, so `pdftotext` has nothing to read. That is the situation the
+project was built for, and it is now measured rather than asserted.
+
+### The defect this found, which is the important part
+
+At level 3 the run produced **18 confidently wrong departure times with zero
+abstentions** — the exact failure class this project claims to prevent, and a
+feed that would have validated clean.
+
+Every value had been read **correctly**. The binder put them on the wrong rows.
+Page skew displaces a column vertically in proportion to how far across the page
+it sits, so at 2° the departure column — furthest from the centre of rotation —
+was displaced by nearly a full row height. Matching each cell to its nearest row
+shifted the entire column up by one. The arrival column, nearer the centre, was
+untouched, which is why the corruption was invisible in aggregate: stop names
+100%, arrivals 100%, departures wrong at almost every row.
+
+Three fixes, in the order they were tried, because the first two were not enough:
+
+1. **Monotonic alignment** (18 → 15 wrong). Nearest-match has no memory and will
+   map two cells to one row while skipping another. A column of times is ordered
+   and so are the rows, so the assignment must be order-preserving — a small
+   dynamic program over `|cell y − row y|`. This removed crossings and
+   duplicates but **not** the off-by-one: shifting a whole column down by one row
+   is *also* monotonic, and under skew it is cheaper.
+2. **Skew calibration from the km column** (15 → 4). Removing a systematic
+   offset needs something with a known row correspondence. The km column has
+   exactly one cell per row and no gaps, so its kth cell *is* row k with no
+   inference. The vertical gap between it and the stop column, over the
+   horizontal distance between them, measures the page skew — which then
+   predicts every other column's offset from its x position.
+3. **Clustering columns over every cell, not just the time cells** (4 → 0 on the
+   saved read). The calibration silently did nothing at first: column centres
+   were computed from time cells only, so the km column (x≈0.39) was bucketed
+   into the nearest time column (arrival, x≈0.53). The calibrator saw a mixed
+   bucket, never matched the row count, and the skew stayed 0.00.
+
+Measured skew now tracks the applied skew: 0.004–0.011 at level 2, 0.018–0.023
+at level 3.
+
+### What happens at the point it still fails
+
+A **fresh** level-3 run — different model output, different boxes — still
+mis-binds 4 departures. It does not publish them.
+
+The mis-binding puts a departure on the terminus row, and a completed run ends
+with an arrival and **no** departure. The truncation rule sees a last row that
+still departs, concludes the service did not end on this page, and withholds the
+entire block. Verified: `truncated_trips: ['1', '3']`, and the composed feed
+contains only service 2 — the one that was bound correctly.
+
+**So at the point where the geometry fails, the system loses coverage, not
+correctness.** A structural invariant caught a geometric failure that no
+conformance validator could see. That is the behaviour the architecture was
+built for, and this is the first time it has been demonstrated on a failure that
+was not planted.
+
+### Honest limits on this result
+
+* The degradation is **synthetic**. It is a fair test of the no-text-layer claim
+  and of skew robustness, and it is *not* a real photocopy or a real phone
+  photograph. Those remain untested.
+* Level 3 loses a service it should have kept. Withholding a correct service is
+  a real cost, not a free win — it is simply a much smaller cost than publishing
+  wrong departure times.
+* One page, one operator, one layout.
+
+Tests: **170 → 175**, including a synthetic-skew regression that fails against
+the old binder.
+
 ## 2026-08-27 (later) — FIRST END-TO-END RUN ON A REAL INDIAN ARTIFACT
 
 Everything upstream had been verified in isolation. The pipeline had never executed as a whole against a

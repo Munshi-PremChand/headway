@@ -213,3 +213,80 @@ def test_a_claim_with_no_bbox_is_reported_not_placed(kind):
         scope={"trip": "1"}))
     _bound, rep = bind_blocks(ClaimSet(agency_id="X", claims=claims))
     assert "ghost" in rep["claims_without_geometry"]
+
+
+# ------------------------------------------------------------ page skew
+
+def skewed(trip, heading_y, stops, slope):
+    """A block where each column is displaced vertically by its x position.
+
+    That is what page skew does: rotate a page and a column's apparent row
+    height shifts in proportion to how far across the page it sits.
+    """
+    out = block(trip, heading_y, stops)
+    shifted = []
+    for c in out:
+        bb = c.provenance.bbox
+        x = (bb[0] + bb[2]) / 2
+        dy = slope * (x - 0.19)          # 0.19 is the stop column
+        shifted.append(SourceClaim(
+            claim_id=c.claim_id, kind=c.kind, field=c.field, value=c.value,
+            confidence=c.confidence,
+            provenance=Provenance(source_file="p.pdf", page=1,
+                                  bbox=(bb[0], bb[1] + dy, bb[2], bb[3] + dy)),
+            scope=dict(c.scope)))
+    return shifted
+
+
+LONG = [(f"Stop{i}", i * 30, None if i == 1 else f"{6+i}.10 AM",
+         None if i == 8 else f"{6+i}.15 AM") for i in range(1, 9)]
+
+
+def test_a_skewed_page_does_not_shift_a_whole_column_by_one_row():
+    """The failure this caught on a real degraded scan.
+
+    At 2 degrees of skew the departure column — furthest from the centre of
+    rotation — was displaced by nearly a full row height. Nearest-row matching
+    put every departure one row too high, producing 18 confidently wrong
+    departure times with ZERO abstentions: a feed that validates clean and
+    tells riders the wrong time at every stop.
+    """
+    clean, _ = bind_blocks(cs(block("1", 0.05, LONG)))
+    skew, rep = bind_blocks(ClaimSet(agency_id="X",
+                                     claims=skewed("1", 0.05, LONG, 0.045)))
+
+    def pairs(b):
+        return {(c.scope["seq"], c.field): str(c.value) for c in b.active()
+                if c.kind is ClaimKind.STOP_TIME}
+
+    assert pairs(skew) == pairs(clean), "skew must not re-index a column"
+    assert rep["skew_per_block"]["1"] > 0, "the skew should be measured, not ignored"
+
+
+def test_the_measured_skew_grows_with_the_actual_skew():
+    _b, mild = bind_blocks(ClaimSet(agency_id="X",
+                                    claims=skewed("1", 0.05, LONG, 0.02)))
+    _b2, harsh = bind_blocks(ClaimSet(agency_id="X",
+                                      claims=skewed("1", 0.05, LONG, 0.06)))
+    assert harsh["skew_per_block"]["1"] > mild["skew_per_block"]["1"]
+
+
+def test_an_unskewed_page_measures_no_meaningful_skew():
+    _b, rep = bind_blocks(cs(block("1", 0.05, LONG)))
+    assert abs(rep["skew_per_block"]["1"]) < 0.005
+
+
+def test_monotonic_alignment_never_maps_two_cells_to_one_row():
+    from headway.reader.blocks import align_monotonic
+    rows = [0.10, 0.12, 0.14, 0.16, 0.18]
+    got = align_monotonic([0.101, 0.121, 0.141], rows)
+    assert got == [0, 1, 2]
+    assert len(set(got)) == len(got)
+
+
+def test_monotonic_alignment_keeps_order_when_cells_are_offset():
+    from headway.reader.blocks import align_monotonic
+    rows = [0.10, 0.12, 0.14, 0.16]
+    # every cell nudged toward the next row; order must still be preserved
+    got = align_monotonic([0.109, 0.129, 0.149], rows)
+    assert got == sorted(got) and len(set(got)) == 3

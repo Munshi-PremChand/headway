@@ -135,6 +135,64 @@ def _nearest(centres: list[float], value: float) -> int:
     return min(range(len(centres)), key=lambda i: abs(centres[i] - value))
 
 
+def align_monotonic(cell_ys: list[float], row_ys: list[float]) -> list[int]:
+    """Assign cells to rows in STRICTLY INCREASING order, cheapest overall.
+
+    MEASURED 2026-08-31 on a skewed photocopy (2 degrees): matching each cell to
+    its nearest row independently put every departure time one row too high, and
+    only in the departure column. The arrival column, nearer the centre of
+    rotation, was untouched. Page skew displaces a column vertically in
+    proportion to its distance across the page, so by the rightmost column the
+    displacement approached a full row height.
+
+    The damage was the worst kind this project recognises: 18 confidently wrong
+    departure times, zero abstentions, and a feed that would have validated
+    clean. Every value had been read CORRECTLY; the binder put them on the wrong
+    rows.
+
+    Nearest-match has no memory, so it will happily map two cells to one row and
+    skip another. A column of times is ordered — cell k is below cell k-1 — and
+    so are the rows, so the assignment must be monotonic. Enforcing that is a
+    small dynamic program over |cell y - row y|, and it absorbs any constant or
+    gradual offset between a column and the stop column without having to
+    estimate the skew angle at all.
+
+    Returns one row index per cell, in the cells' own order.
+    """
+    m, n = len(cell_ys), len(row_ys)
+    if m == 0 or n == 0:
+        return []
+    if m > n:
+        # More cells than rows: monotonic assignment is impossible, so fall back
+        # rather than silently dropping some. The caller reports the anomaly.
+        return [_nearest(row_ys, y) for y in cell_ys]
+
+    INF = float("inf")
+    # best[i][j] = cheapest way to place cells 0..i with cell i on row j.
+    best = [[INF] * n for _ in range(m)]
+    back = [[-1] * n for _ in range(m)]
+    for j in range(n):
+        best[0][j] = abs(cell_ys[0] - row_ys[j])
+    for i in range(1, m):
+        run, run_j = INF, -1
+        for j in range(n):
+            if j - 1 >= 0 and best[i - 1][j - 1] < run:
+                run, run_j = best[i - 1][j - 1], j - 1
+            if run < INF:
+                best[i][j] = run + abs(cell_ys[i] - row_ys[j])
+                back[i][j] = run_j
+
+    end = min(range(n), key=lambda j: best[m - 1][j])
+    if best[m - 1][end] == INF:
+        return [_nearest(row_ys, y) for y in cell_ys]
+    out = [0] * m
+    j = end
+    for i in range(m - 1, -1, -1):
+        out[i] = j
+        j = back[i][j]
+    return out
+
+
 def _trip_key(c: SourceClaim) -> str:
     return str(c.scope.get("trip") or "").strip()
 
@@ -282,6 +340,74 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
             "rows": [y for y, _c in ordered_stops],
         }
 
+    # Row assignment is solved PER COLUMN, monotonically, before anything is
+    # bound. A column of times is ordered and so are the rows, so the mapping
+    # between them must be order-preserving — which absorbs the vertical offset
+    # that page skew gives a column without having to measure the skew.
+    cell_row: dict[str, int] = {}
+    skews: dict[str, float] = {}
+    for key, info in per_block.items():
+        row_ys: list[float] = info["rows"]
+        if not row_ys:
+            continue
+        row_stops_b: list[SourceClaim] = info["row_stops"]
+        stop_xs = [x for x in (_centre_x(s) for s in row_stops_b) if x is not None]
+        stop_x = sum(stop_xs) / len(stop_xs) if stop_xs else 0.0
+
+        # Cluster columns over EVERY cell on the row, not just the time cells.
+        # `col_centres` holds only arrival and departure, because that is what
+        # the role vote needs — but bucketing with it put the km column (x≈0.39)
+        # into the nearest time column (arrival, x≈0.53). The calibrator then saw
+        # a mixed bucket, never matched the row count, and the skew stayed 0.
+        layout = _cluster(
+            [x for x in (_centre_x(c) for c in info["cells"] + info["kms"])
+             if x is not None], COL_TOLERANCE)
+        columns: dict[int, list[tuple[float, SourceClaim]]] = {}
+        for c in info["cells"] + info["kms"]:
+            y, x = _centre_y(c), _centre_x(c)
+            if y is None or x is None:
+                continue
+            ci = _nearest(layout, x) if layout else 0
+            columns.setdefault(ci, []).append((y, c))
+        for items in columns.values():
+            items.sort(key=lambda p: p[0])
+
+        # CALIBRATE THE SKEW, do not guess at it.
+        #
+        # Monotonic alignment alone did not fix the skewed page: shifting a
+        # whole column down by one row is still monotonic, and under skew it is
+        # also CHEAPER, so the off-by-one survived (18 wrong -> 15). The
+        # remaining error is a systematic vertical OFFSET per column, and to
+        # remove it something with a known row correspondence is needed.
+        #
+        # The km column supplies exactly that: one cell per row, no gaps, so its
+        # kth cell IS row k with no inference. The vertical gap between it and
+        # the stop column, over the horizontal distance between them, is the
+        # page's skew — which then predicts the offset of every other column
+        # from its own x position.
+        slope = 0.0
+        for items in columns.values():
+            if len(items) != len(row_ys) or len(items) < 3:
+                continue
+            xs = [x for x in (_centre_x(c) for _, c in items) if x is not None]
+            if not xs:
+                continue
+            col_x = sum(xs) / len(xs)
+            if abs(col_x - stop_x) < 0.02:
+                continue
+            dy = sum(y - row_ys[k] for k, (y, _) in enumerate(items)) / len(items)
+            slope = dy / (col_x - stop_x)
+            break
+        skews[key] = slope
+
+        for items in columns.values():
+            xs = [x for x in (_centre_x(c) for _, c in items) if x is not None]
+            col_x = sum(xs) / len(xs) if xs else stop_x
+            offset = slope * (col_x - stop_x)
+            rows_for = align_monotonic([y - offset for y, _ in items], row_ys)
+            for (_, c), ri in zip(items, rows_for):
+                cell_row[c.claim_id] = ri
+
     bound: list[SourceClaim] = []
     unplaced: list[str] = []
     filled = {"trip": 0, "stop": 0, "seq": 0, "field": 0, "km": 0}
@@ -339,10 +465,10 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
             bound.append(rebuild(c, scope))
             continue
 
-        # Everything else on the row — a km cell or a timetable cell — is
-        # matched to the nearest stop row IN THIS SAME READ, so the reader's
-        # own coordinate drift cancels instead of being compared across models.
-        ri = _nearest(rows, y) if rows else 0
+        # Everything else on the row — a km cell or a timetable cell — takes the
+        # row its COLUMN's monotonic alignment gave it, falling back to nearest
+        # only when the claim was not in any column group.
+        ri = cell_row.get(c.claim_id, _nearest(rows, y) if rows else 0)
         scope.setdefault("_row", ri)
 
         if c.kind is ClaimKind.STOP:                       # a km cell
@@ -359,8 +485,7 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
 
         row_km = None
         for k in info["kms"]:
-            ky = _centre_y(k)
-            if ky is not None and rows and _nearest(rows, ky) == ri:
+            if cell_row.get(k.claim_id, -1) == ri:
                 row_km = k
                 break
         if row_km is not None and scope.get("km") is None:
@@ -387,6 +512,7 @@ def bind_blocks(cs: ClaimSet) -> tuple[ClaimSet, dict[str, Any]]:
         "filled": filled,
         "claims_without_geometry": unplaced,
         "truncated_trips": [b.key for b in blocks if b.truncated],
+        "skew_per_block": {k: round(v, 5) for k, v in skews.items()},
     }
     return result, report
 
