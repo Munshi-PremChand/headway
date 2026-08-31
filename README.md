@@ -38,6 +38,14 @@ reason attached.
 
 ---
 
+## Architecture
+
+![HEADWAY architecture](docs/architecture.png)
+
+*Live at [`/architecture`](https://headway-606499459461.asia-south1.run.app/architecture); re-shoot with
+`scripts/shoot_architecture.sh`. It is HTML rather than a drawing so its numbers come from the same place
+everything else does, instead of drifting from the code the moment either changes.*
+
 ## What it actually does
 
 ```

@@ -64,6 +64,20 @@ def index() -> HTMLResponse:
     return HTMLResponse(page.read_text())
 
 
+@app.get("/architecture", response_class=HTMLResponse)
+def architecture() -> HTMLResponse:
+    """The diagram the rules ask for, as a page rather than a flat image.
+
+    Kept in the same design language as the demo so a judge moving between them
+    does not have to re-orient, and rendered to `docs/architecture.png` for
+    Devpost by `scripts/shoot_architecture.sh`.
+    """
+    page = WEB / "templates" / "architecture.html"
+    if not page.exists():
+        raise HTTPException(500, "template missing")
+    return HTMLResponse(page.read_text())
+
+
 @app.get("/api/run")
 def latest() -> JSONResponse:
     f = DATA / "run.json"

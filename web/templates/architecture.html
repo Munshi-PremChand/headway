@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEADWAY — architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07080a; --panel:#0e1014; --line:#22262e; --amber:#ffb400;
+  --amber-dim:#7a5600; --pass:#3ddc84; --fail:#ff4d4d; --cool:#5ac8fa;
+  --text:#d9dce3; --muted:#767d8a;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --sign:"Barlow Condensed",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
+  background-image:radial-gradient(1200px 700px at 20% -10%,#16191f 0,transparent 60%),
+    radial-gradient(900px 500px at 92% 0%,#14120c 0,transparent 55%);}
+.sheet{width:1600px;margin:0 auto;padding:44px 52px 52px}
+.hdr{display:flex;align-items:baseline;gap:20px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:30px}
+.hdr h1{font-family:var(--sign);font-weight:700;font-size:52px;letter-spacing:.055em;
+  margin:0;color:var(--amber);text-transform:uppercase;line-height:.9}
+.hdr .s{font-family:var(--sign);text-transform:uppercase;letter-spacing:.17em;
+  font-size:13px;color:var(--muted)}
+.hdr .claim{margin-left:auto;font-family:var(--sign);font-size:21px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--text);font-weight:600}
+.hdr .claim b{color:var(--amber)}
+
+.grid{display:grid;grid-template-columns:200px 1fr 300px;gap:26px;align-items:start}
+.axis{position:sticky;top:20px}
+.axislbl{font-family:var(--sign);text-transform:uppercase;letter-spacing:.15em;
+  font-size:11px;color:var(--muted);margin-bottom:8px}
+
+/* spine */
+.spine{display:flex;flex-direction:column;gap:0}
+.node{border:1px solid var(--line);background:var(--panel);padding:15px 18px;
+  position:relative}
+.node .row{display:flex;align-items:center;gap:14px}
+.node .idx{font-family:var(--mono);font-size:11px;color:var(--amber-dim);
+  width:22px;flex:0 0 22px}
+.node .nm{font-family:var(--sign);text-transform:uppercase;letter-spacing:.1em;
+  font-size:19px;font-weight:600;color:var(--text)}
+.node .tech{font-family:var(--mono);font-size:11.5px;color:var(--muted);
+  margin-left:auto;text-align:right}
+.node .d{font-size:13px;line-height:1.5;color:var(--muted);margin:8px 0 0 36px;
+  max-width:74ch}
+.node.model{border-color:rgba(255,180,0,.55);
+  background:linear-gradient(180deg,rgba(255,180,0,.09),rgba(255,180,0,.02))}
+.node.model .nm{color:var(--amber)}
+.node.gate{border-color:rgba(61,220,132,.45);
+  background:linear-gradient(180deg,rgba(61,220,132,.07),transparent)}
+.node.gate .nm{color:var(--pass)}
+.badge{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;padding:3px 7px;
+  border-radius:2px;white-space:nowrap}
+.badge.nomodel{color:var(--pass);border:1px solid rgba(61,220,132,.4)}
+.badge.hasmodel{color:#0a0b0d;background:var(--amber);font-weight:600}
+.badge.third{color:var(--cool);border:1px solid rgba(90,200,250,.4)}
+
+.arrow{height:34px;display:flex;align-items:center;padding-left:29px;position:relative}
+.arrow::before{content:"";position:absolute;left:33px;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--line),var(--amber-dim),var(--line))}
+.arrow span{font-family:var(--mono);font-size:11px;color:var(--cool);
+  margin-left:46px;background:var(--ink);padding:2px 9px;border:1px solid var(--line)}
+
+/* trust boundary around the model stage */
+.fence{border:1.5px dashed rgba(255,180,0,.42);padding:13px;margin:0 -13px;
+  position:relative;border-radius:3px}
+.fence::before{content:"UNTRUSTED ZONE · zero tools · zero write permissions";
+  position:absolute;top:-9px;left:16px;background:var(--ink);padding:0 9px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--amber)}
+.parallel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.reader{border:1px solid rgba(255,180,0,.32);background:rgba(255,180,0,.05);
+  padding:11px 13px}
+.reader .rn{font-family:var(--mono);font-size:12.5px;color:var(--amber);font-weight:600}
+.reader .rr{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* outcomes */
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.out{border:1px solid var(--line);padding:14px 16px;background:#0a0c0f}
+.out.ok{border-color:rgba(61,220,132,.4)}
+.out.no{border-color:rgba(255,77,77,.4)}
+.out .ot{font-family:var(--sign);text-transform:uppercase;letter-spacing:.1em;
+  font-size:16px;font-weight:600}
+.out.ok .ot{color:var(--pass)} .out.no .ot{color:var(--fail)}
+.out .od{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* right rail */
+.rail{display:flex;flex-direction:column;gap:16px}
+.card{border:1px solid var(--line);background:var(--panel);padding:15px 17px}
+.card h3{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:11.5px;color:var(--muted);margin:0 0 11px;font-weight:600}
+.iam{display:flex;flex-direction:column;gap:9px}
+.sa{border:1px solid var(--line);padding:9px 11px;background:#0a0c0f}
+.sa .san{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:600}
+.sa .can{font-size:11.5px;color:var(--pass);margin-top:4px}
+.sa .cant{font-size:11.5px;color:var(--fail);margin-top:2px}
+.nums{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:12.5px}
+.nums dt{color:var(--muted)}
+.nums dd{margin:0;font-family:var(--mono);color:var(--text);font-weight:600;
+  text-align:right;font-variant-numeric:tabular-nums}
+.nums dd.hot{color:var(--amber)}
+.note{font-size:11.5px;line-height:1.5;color:var(--muted)}
+.note b{color:var(--text);font-weight:500}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;
+  justify-content:space-between;gap:20px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="hdr">
+    <h1>Headway</h1>
+    <div class="s">Architecture · messy transit artifact → validated GTFS, or a refusal</div>
+    <div class="claim">One model stage. <b>Five deterministic stages.</b></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- left axis -->
+    <div class="axis">
+      <div class="axislbl">Deployment</div>
+      <div class="card" style="padding:13px 15px">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--cool)">Cloud Run</div>
+        <div class="note" style="margin-top:6px">
+          <b>asia-south1</b>, scale-to-zero, 2 vCPU / 2 GiB.<br>
+          Container carries a JRE for the validator and poppler for rasterising.
+          The validator jar is sha256-checked at build time — a different binary
+          fails the build.
+        </div>
+      </div>
+      <div class="axislbl" style="margin-top:20px">Identity</div>
+      <div class="card" style="padding:13px 15px">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--amber)">sa-reader</div>
+        <div class="note" style="margin-top:6px">
+          The service runs as the reader identity. Application Default Credentials
+          arrive from the <b>metadata server</b> — no key file exists anywhere.
+        </div>
+      </div>
+    </div>
+
+    <!-- spine -->
+    <div class="spine">
+
+      <div class="node">
+        <div class="row"><span class="idx">00</span><span class="nm">Source</span>
+          <span class="tech">poppler · pdftoppm · 200 dpi</span></div>
+        <div class="d">A PDF, photo or scan is fetched and rasterised. Source and page are
+          hashed into the run ledger, so “the model read page 1” is checkable rather than
+          asserted. A text layer, if any, is extracted and <b>never shown to the reader</b> —
+          it exists only to score the read afterwards.</div>
+      </div>
+      <div class="arrow"><span>image/png + sha256</span></div>
+
+      <div class="fence">
+        <div class="node model">
+          <div class="row"><span class="idx">01</span><span class="nm">Readers</span>
+            <span class="badge hasmodel">MODEL STAGE</span></div>
+          <div class="d" style="margin-bottom:12px">Two models read the same pixels
+            independently, blind to each other. Agreement is never treated as proof — two
+            models can be wrong the same way. <b>Disagreement is treated as proof of doubt.</b>
+            The signal is trusted in one direction only.</div>
+          <div class="parallel">
+            <div class="reader"><div class="rn">gemini-3.7-flash</div>
+              <div class="rr">primary · thinking level low, measured identical to high</div></div>
+            <div class="reader"><div class="rn">gemini-3.5-flash-lite</div>
+              <div class="rr">second opinion · a read under 60% coverage is a failed read,
+                not a disagreement</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow"><span>SourceClaim[] — value, confidence, bbox. never CSV.</span></div>
+
+      <div class="node">
+        <div class="row"><span class="idx">02</span><span class="nm">Grid binding</span>
+          <span class="badge nomodel">NO MODEL</span>
+          <span class="tech">geometry</span></div>
+        <div class="d">Row, column and service block recovered by clustering bounding boxes —
+          arithmetic with one correct answer. Rows are the stop column in <b>rank order</b>,
+          because the two readers disagree about absolute coordinates by up to two row heights.
+          A run that does not end on the page is <b>withheld whole</b>.</div>
+      </div>
+      <div class="arrow"><span>claims bound to (trip, stop, seq, field)</span></div>
+
+      <div class="node">
+        <div class="row"><span class="idx">03</span><span class="nm">Disagreement gate</span>
+          <span class="badge nomodel">NO MODEL</span></div>
+        <div class="d">The two reads are compared cell for cell. A claim the readers disagree on
+          is withheld from composition, never resolved by preferring the “better” model —
+          that would reintroduce exactly the failure the gate exists to catch.</div>
+      </div>
+      <div class="arrow"><span>admitted claims</span></div>
+
+      <div class="node">
+        <div class="row"><span class="idx">04</span><span class="nm">Geocoding</span>
+          <span class="badge nomodel">NO MODEL</span>
+          <span class="tech">OpenStreetMap · Nominatim</span></div>
+        <div class="d">Ranked by OSM category, not by popularity — raw importance puts a hardware
+          shop above the town it is named after. Refuses on no match, on a non-place, on ambiguity,
+          and outside the operator’s region. <b>Then the timetable audits the geocoder:</b> road
+          distance is never shorter than a straight line, so a straight line longer than the
+          printed km <i>proves</i> a coordinate is wrong.</div>
+      </div>
+      <div class="arrow"><span>claims + coordinates + precision label</span></div>
+
+      <div class="node">
+        <div class="row"><span class="idx">05</span><span class="nm">Composer</span>
+          <span class="badge nomodel">NO MODEL</span>
+          <span class="tech">8 GTFS files</span></div>
+        <div class="d">Claims to GTFS. Referential integrity and id uniqueness hold by
+          construction. Schedule arithmetic is not a language task, so no model touches it.
+          Identical claims produce byte-identical bytes.</div>
+      </div>
+      <div class="arrow"><span>gtfs.zip</span></div>
+
+      <div class="node gate">
+        <div class="row"><span class="idx">06</span><span class="nm">Publish gate</span>
+          <span class="badge third">THIRD-PARTY BINARY</span>
+          <span class="tech">gtfs-validator 8.0.1</span></div>
+        <div class="d">MobilityData’s validator, run on the exact bytes, with the feed’s sha256
+          bound into the report. Fails closed: a validator that did not actually parse the feed
+          must never read as a pass.</div>
+      </div>
+
+      <div class="outs">
+        <div class="out ok"><div class="ot">Feed</div>
+          <div class="od">Zero ERROR notices. Labelled an unofficial development feed in
+            <code>feed_info.txt</code> until an operator adopts it.</div></div>
+        <div class="out no"><div class="ot">Refusal, with the reason</div>
+          <div class="od">A withheld service, a stop with no defensible coordinate, a dwell that
+            implies the bus parks overnight. Named on screen, never silently dropped.</div></div>
+      </div>
+    </div>
+
+    <!-- right rail -->
+    <div class="rail">
+      <div class="card">
+        <h3>The security boundary is IAM, not a prompt</h3>
+        <div class="iam">
+          <div class="sa"><div class="san">sa-reader</div>
+            <div class="can">✓ call Gemini on Vertex</div>
+            <div class="cant">✕ write any bucket — proven with a real 403</div></div>
+          <div class="sa"><div class="san">sa-publisher</div>
+            <div class="can">✓ write the feed bucket</div>
+            <div class="cant">✕ call Vertex at all</div></div>
+        </div>
+        <div class="note" style="margin-top:10px">A successful prompt injection in a scanned
+          document has <b>no reachable action</b>. The worst it can do is propose a claim, which
+          the deterministic stages then refuse.</div>
+      </div>
+
+      <div class="card">
+        <h3>Measured — ASTC Guwahati p1</h3>
+        <dl class="nums">
+          <dt>claims read, per model</dt><dd>98</dd>
+          <dt>cells compared</dt><dd>86</dd>
+          <dt>escalated</dt><dd>0</dd>
+          <dt>rows exact vs text layer</dt><dd class="hot">25 / 25</dd>
+          <dt>services withheld</dt><dd class="hot">1 of 3</dd>
+          <dt>stops located / refused</dt><dd>12 / 2</dd>
+          <dt>km-vs-straight-line</dt><dd>15 seg · PASS</dd>
+          <dt>validator</dt><dd>ERROR 0</dd>
+          <dt>live run on Cloud Run</dt><dd>62.6 s</dd>
+          <dt>tests</dt><dd>170</dd>
+        </dl>
+      </div>
+
+      <div class="card" style="border-color:rgba(255,77,77,.35)">
+        <h3 style="color:#ff9b9b">Why the gate is not enough</h3>
+        <div class="note">The naive baseline — <code>pdftotext</code> plus regex through the
+          <b>same</b> composer, geocoder and validator — also reaches <b>ERROR=0</b>. It publishes
+          three services where HEADWAY publishes two, because the third runs off the page and it
+          cannot tell. <b>Zero errors proves conformance, not correctness.</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Google ADK 2.8 · SequentialAgent[ ParallelAgent[LlmAgent × 2] → BaseAgent × 4 ] · Vertex AI</span>
+    <span>github.com/Munshi-PremChand/headway</span>
+  </div>
+</div>
+</body>
+</html>
