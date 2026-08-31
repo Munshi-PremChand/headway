@@ -1,0 +1,43 @@
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+   The full license text is available at the URL above.
+
+   Copyright 2026 HEADWAY contributors
+
+   ---------------------------------------------------------------------
+
+   THIRD-PARTY AND DATA NOTICES
+
+   * MobilityData/gtfs-validator (Apache-2.0) is vendored as a binary at
+     vendor/gtfs-validator-8.0.1-cli.jar and is pinned by sha256. It is not
+     modified. https://github.com/MobilityData/gtfs-validator
+
+   * Timetable source documents from Assam State Transport Corporation are
+     public government publications retrieved from their published URLs. They
+     are neither redistributed nor modified by this repository; only their
+     URLs and content hashes are recorded. See docs/INTEL_INDIA.md for the
+     licensing basis under the Government Open Data Licence - India.
+
+   * Geocoding results are derived from OpenStreetMap via the Nominatim
+     service and are (c) OpenStreetMap contributors, available under the Open
+     Database License (ODbL). https://www.openstreetmap.org/copyright
+     Cached results in fixtures/geocode/ carry their OSM object ids so each
+     one is attributable to its source object.
+
+   * Feeds produced by this software are UNOFFICIAL development feeds and are
+     labelled as such in feed_info.txt. They are not endorsed by any transit
+     operator and must not be presented as an operator's official data.
