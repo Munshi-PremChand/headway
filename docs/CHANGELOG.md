@@ -304,8 +304,8 @@ inside the repo, which is under `$HOME` and therefore shared.
 
 ## 2026-08-27 — viability gate verified live
 
-- Created GCP project `headway-atah-2026` under organisation `anshulmalik3024-org`, linked billing
-  account `01CE9A-4C8786-A3E22E` → `billingEnabled: true`. Enabled 12 APIs.
+- Created GCP project `headway-atah-2026` under organisation `<organisation>`, linked billing
+  account `<billing-account-id>` → `billingEnabled: true`. Enabled 12 APIs.
 - **Live call:** `gemini-3.7-flash` on Vertex at `locations/global` returned HTTP 200, `modelVersion:
   gemini-3.7-flash`, `thinkingLevel: "low"` accepted. The location is `global`, not `us-central1`.
 - Installed `google-genai` 2.20.0 and `google-adk` 2.8.0.

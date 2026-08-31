@@ -287,7 +287,7 @@ def compose(
     feed_start: date,
     horizon_days: int = 120,
     publisher_name: str = "HEADWAY (unofficial development feed)",
-    publisher_url: str = "https://github.com/anshulmalik/headway",
+    publisher_url: str = "https://github.com/Munshi-PremChand/headway",
     feed_version: str = "",
     require_coordinates: bool = True,
     on_ungeocoded: str = "refuse",

@@ -137,8 +137,8 @@ Viability gate status:
 
 ### Project `headway-atah-2026` — provisioned 2026-08-27
 
-Created under organization `anshulmalik3024-org` (id `520136476995`), linked to billing account
-`01CE9A-4C8786-A3E22E` → **`billingEnabled: true`**.
+Created under organization `<organisation>` (id `520136476995`), linked to billing account
+`<billing-account-id>` → **`billingEnabled: true`**.
 
 APIs enabled: `aiplatform` · `run` · `firestore` · `pubsub` · `storage` · `secretmanager` · `cloudbuild` ·
 `artifactregistry` · `cloudtrace` · `logging` · `generativelanguage` · `bigquerystorage`.
@@ -154,7 +154,7 @@ is how the live call above was made — but the SDKs will not.
 
 ### Earlier state (superseded)
 
-`gcloud` authed as `anshulmalik3024@gmail.com`. SDK 569.0.0.
+`gcloud` authed as `<operator-account>`. SDK 569.0.0.
 
 | Project | Billing |
 |---|---|
@@ -162,13 +162,13 @@ is how the live call above was made — but the SDKs will not.
 | `waywise-484204` | ❌ disabled |
 | `project-160e48dc-9dd4-41fe-a2c` (active) | ❌ disabled |
 
-**An OPEN billing account exists: `01CE9A-4C8786-A3E22E` ("My Billing Account").** It is not linked to any
+**An OPEN billing account exists: `<billing-account-id>` ("My Billing Account").** It is not linked to any
 project. Cloud Run, Vertex AI, Firestore and Pub/Sub all require a linked billing account.
 
 **Action required (~2 minutes, do before any GCP work):**
 
 ```bash
-gcloud billing projects link <PROJECT_ID> --billing-account=01CE9A-4C8786-A3E22E
+gcloud billing projects link <PROJECT_ID> --billing-account=<billing-account-id>
 gcloud services enable aiplatform.googleapis.com run.googleapis.com \
     firestore.googleapis.com pubsub.googleapis.com --project=<PROJECT_ID>
 ```

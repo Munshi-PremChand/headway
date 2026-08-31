@@ -1,6 +1,6 @@
 # Infrastructure — provisioned and proven
 
-Project `headway-atah-2026`, organisation `anshulmalik3024-org`, billing `01CE9A-4C8786-A3E22E`
+Project `headway-atah-2026`, organisation `<organisation>`, billing `<billing-account-id>`
 (`billingEnabled: true`). Provisioned 2026-08-27.
 
 ## The security claim, and its proof
@@ -44,8 +44,8 @@ the deny and must not be mistaken for it. Budget for propagation before filming.
 | Resource | Value |
 |---|---|
 | Project | `headway-atah-2026` |
-| Organisation | `anshulmalik3024-org` (`520136476995`) |
-| Billing | `01CE9A-4C8786-A3E22E` |
+| Organisation | `<organisation>` (`520136476995`) |
+| Billing | `<billing-account-id>` |
 | Feed bucket | `gs://headway-atah-2026-feeds` (asia-south1, uniform access) |
 | Vertex location | **`global`** — host `aiplatform.googleapis.com`, path `locations/global` |
 
