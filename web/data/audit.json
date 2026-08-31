@@ -1,0 +1,727 @@
+{
+ "source": {
+  "label": "Specimen purchase bill \u2014 synthetic, defects planted",
+  "note": "The document is synthetic and clearly marked SPECIMEN; the defects are planted so the checks are measurable. The read, the geometry binding, the web price check and every finding below are real, produced at build time by the same stack that reads the timetables.",
+  "model": "gemini-3.7-flash",
+  "price_check": "Google Search grounding via Gemini \u00b7 "
+ },
+ "claims": [
+  {
+   "field": "bill_no",
+   "value": "DSS/PB/2026/0147",
+   "confidence": 1.0,
+   "bbox": [
+    0.111,
+    0.228,
+    0.208,
+    0.244
+   ],
+   "status": "clean"
+  },
+  {
+   "field": "date",
+   "value": "12-06-2026",
+   "confidence": 1.0,
+   "bbox": [
+    0.485,
+    0.228,
+    0.54,
+    0.244
+   ],
+   "status": "clean"
+  },
+  {
+   "field": "supplier",
+   "value": "M/s Barak Traders",
+   "confidence": 1.0,
+   "bbox": [
+    0.835,
+    0.228,
+    0.935,
+    0.244
+   ],
+   "status": "clean"
+  },
+  {
+   "field": "sl_no",
+   "value": "1",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.328,
+    0.107,
+    0.344
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "description",
+   "value": "Toner cartridge, laser (black)",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.328,
+    0.294,
+    0.347
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "qty",
+   "value": "6",
+   "confidence": 1.0,
+   "bbox": [
+    0.567,
+    0.328,
+    0.574,
+    0.344
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.328,
+    0.635,
+    0.344
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "rate",
+   "value": "3,150.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.328,
+    0.778,
+    0.345
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "amount",
+   "value": "18,900.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.878,
+    0.328,
+    0.927,
+    0.345
+   ],
+   "row": 0,
+   "status": "clean"
+  },
+  {
+   "field": "sl_no",
+   "value": "2",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.378,
+    0.107,
+    0.394
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "description",
+   "value": "A4 copier paper, 75 GSM, 500 sheets",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.378,
+    0.336,
+    0.397
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "qty",
+   "value": "40",
+   "confidence": 1.0,
+   "bbox": [
+    0.56,
+    0.378,
+    0.573,
+    0.394
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "unit",
+   "value": "Ream",
+   "confidence": 1.0,
+   "bbox": [
+    0.61,
+    0.378,
+    0.64,
+    0.394
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "rate",
+   "value": "1,240.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.378,
+    0.777,
+    0.395
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "amount",
+   "value": "49,600.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.877,
+    0.378,
+    0.927,
+    0.395
+   ],
+   "row": 1,
+   "status": "flagged"
+  },
+  {
+   "field": "sl_no",
+   "value": "3",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.428,
+    0.107,
+    0.444
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "description",
+   "value": "Executive office chair, high back",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.428,
+    0.313,
+    0.447
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "qty",
+   "value": "4",
+   "confidence": 1.0,
+   "bbox": [
+    0.567,
+    0.428,
+    0.573,
+    0.444
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.428,
+    0.635,
+    0.444
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "rate",
+   "value": "8,400.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.428,
+    0.778,
+    0.445
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "amount",
+   "value": "33,600.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.877,
+    0.428,
+    0.927,
+    0.445
+   ],
+   "row": 2,
+   "status": "clean"
+  },
+  {
+   "field": "sl_no",
+   "value": "4",
+   "confidence": 1.0,
+   "bbox": [
+    0.1,
+    0.478,
+    0.107,
+    0.494
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "description",
+   "value": "Steel filing cabinet, 4 drawer",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.478,
+    0.293,
+    0.497
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "qty",
+   "value": "12",
+   "confidence": 1.0,
+   "bbox": [
+    0.561,
+    0.478,
+    0.573,
+    0.494
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.478,
+    0.635,
+    0.494
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "rate",
+   "value": "1,850.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.478,
+    0.777,
+    0.495
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "amount",
+   "value": "32,200.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.877,
+    0.478,
+    0.927,
+    0.495
+   ],
+   "row": 3,
+   "status": "flagged"
+  },
+  {
+   "field": "sl_no",
+   "value": "5",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.528,
+    0.107,
+    0.544
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "description",
+   "value": "Whiteboard, magnetic, 4 x 3 ft",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.528,
+    0.302,
+    0.547
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "qty",
+   "value": "3",
+   "confidence": 1.0,
+   "bbox": [
+    0.567,
+    0.528,
+    0.573,
+    0.544
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.528,
+    0.635,
+    0.544
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "rate",
+   "value": "2,650.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.528,
+    0.777,
+    0.545
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "amount",
+   "value": "7,950.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.884,
+    0.528,
+    0.927,
+    0.545
+   ],
+   "row": 4,
+   "status": "clean"
+  },
+  {
+   "field": "sl_no",
+   "value": "6",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.578,
+    0.107,
+    0.594
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "description",
+   "value": "Executive office chair, high back",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.578,
+    0.313,
+    0.597
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "qty",
+   "value": "4",
+   "confidence": 1.0,
+   "bbox": [
+    0.567,
+    0.578,
+    0.573,
+    0.594
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.578,
+    0.635,
+    0.594
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "rate",
+   "value": "8,400.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.735,
+    0.578,
+    0.778,
+    0.595
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "amount",
+   "value": "33,600.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.877,
+    0.578,
+    0.927,
+    0.595
+   ],
+   "row": 5,
+   "status": "flagged"
+  },
+  {
+   "field": "sl_no",
+   "value": "7",
+   "confidence": 1.0,
+   "bbox": [
+    0.101,
+    0.628,
+    0.106,
+    0.644
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "description",
+   "value": "Stapler, heavy duty",
+   "confidence": 1.0,
+   "bbox": [
+    0.152,
+    0.628,
+    0.246,
+    0.647
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "qty",
+   "value": "10",
+   "confidence": 1.0,
+   "bbox": [
+    0.56,
+    0.628,
+    0.573,
+    0.644
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "unit",
+   "value": "Nos",
+   "confidence": 1.0,
+   "bbox": [
+    0.615,
+    0.628,
+    0.635,
+    0.644
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "rate",
+   "value": "460.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.744,
+    0.628,
+    0.778,
+    0.644
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "amount",
+   "value": "4,600.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.883,
+    0.628,
+    0.927,
+    0.645
+   ],
+   "row": 6,
+   "status": "clean"
+  },
+  {
+   "field": "grand_total",
+   "value": "180,450.00",
+   "confidence": 1.0,
+   "bbox": [
+    0.871,
+    0.68,
+    0.927,
+    0.697
+   ],
+   "status": "clean"
+  }
+ ],
+ "rows": [
+  {
+   "row": 0,
+   "sl_no": "1",
+   "qty": "6",
+   "unit": "Nos",
+   "rate": "3,150.00",
+   "amount": "18,900.00",
+   "description": "Toner cartridge, laser (black)"
+  },
+  {
+   "row": 1,
+   "sl_no": "2",
+   "qty": "40",
+   "unit": "Ream",
+   "rate": "1,240.00",
+   "amount": "49,600.00",
+   "description": "A4 copier paper, 75 GSM, 500 sheets"
+  },
+  {
+   "row": 2,
+   "sl_no": "3",
+   "qty": "4",
+   "unit": "Nos",
+   "rate": "8,400.00",
+   "amount": "33,600.00",
+   "description": "Executive office chair, high back"
+  },
+  {
+   "row": 3,
+   "sl_no": "4",
+   "qty": "12",
+   "unit": "Nos",
+   "rate": "1,850.00",
+   "amount": "32,200.00",
+   "description": "Steel filing cabinet, 4 drawer"
+  },
+  {
+   "row": 4,
+   "sl_no": "5",
+   "qty": "3",
+   "unit": "Nos",
+   "rate": "2,650.00",
+   "amount": "7,950.00",
+   "description": "Whiteboard, magnetic, 4 x 3 ft"
+  },
+  {
+   "row": 5,
+   "sl_no": "6",
+   "qty": "4",
+   "unit": "Nos",
+   "rate": "8,400.00",
+   "amount": "33,600.00",
+   "description": "Executive office chair, high back"
+  },
+  {
+   "row": 6,
+   "sl_no": "7",
+   "qty": "10",
+   "unit": "Nos",
+   "rate": "460.00",
+   "amount": "4,600.00",
+   "description": "Stapler, heavy duty"
+  }
+ ],
+ "findings": [
+  {
+   "code": "PRICE",
+   "row": 1,
+   "severity": "high",
+   "title": "Rate 1,240 vs market ceiling 350 (3.5x)",
+   "detail": "'A4 copier paper, 75 GSM, 500 sheets' billed at Rs. 1,240 per unit against a checked ceiling of Rs. 350 (a4 copier paper, 75 gsm, 500 sheets (per ream)). Excess exposure Rs. 35,600.",
+   "at_risk": 35600.0
+  },
+  {
+   "code": "ARITHMETIC",
+   "row": 3,
+   "severity": "high",
+   "title": "Line does not multiply: 12 x 1,850 = 22,200, billed 32,200",
+   "detail": "Overbilled by Rs. 10,000 on 'Steel filing cabinet, 4 drawer'. The grand total is consistent with the PRINTED amounts, so a totals check passes \u2014 conformance is not correctness.",
+   "at_risk": 10000.0
+  },
+  {
+   "code": "DUPLICATE",
+   "row": 5,
+   "severity": "high",
+   "title": "Duplicate line: 'Executive office chair, high back' billed twice",
+   "detail": "Rows 3 and 6 are identical in item, quantity, rate and amount \u2014 Rs. 33,600 billed twice.",
+   "at_risk": 33600.0
+  }
+ ],
+ "prices": {
+  "a4 copier paper, 75 gsm, 500 sheets (per ream)": {
+   "low": 210.0,
+   "high": 350.0
+  },
+  "executive office chair, high back (per nos)": {
+   "low": 5500.0,
+   "high": 16000.0
+  },
+  "stapler, heavy duty (per nos)": {
+   "low": 650.0,
+   "high": 2200.0
+  },
+  "steel filing cabinet, 4 drawer (per nos)": {
+   "low": 9500.0,
+   "high": 22000.0
+  },
+  "toner cartridge, laser (black) (per nos)": {
+   "low": 600.0,
+   "high": 5500.0
+  },
+  "whiteboard, magnetic, 4 x 3 ft (per nos)": {
+   "low": 1200.0,
+   "high": 3000.0
+  }
+ },
+ "totals": {
+  "billed": 180450.0,
+  "sum_of_lines": 180450.0,
+  "consistent": true,
+  "at_risk": 79200.0
+ }
+}

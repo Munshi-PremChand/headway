@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEADWAY AUDIT — the same engine, pointed at a purchase bill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#f4f2ec; --panel:#ffffff; --panel-2:#faf8f4; --line:#ddd7cb;
+  --amber:#9c5d0a; --amber-dim:#c79a55; --paper:#ffffff;
+  --pass:#15803d; --fail:#bb2a20; --cool:#0b6ba8;
+  --text:#1a1c21; --muted:#6a7079;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sign:"Barlow Condensed","Oswald",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body)}
+body{background-image:
+  radial-gradient(1100px 600px at 15% -10%, #ffffff 0%, transparent 60%),
+  radial-gradient(900px 500px at 95% 5%, #fbf3e4 0%, transparent 55%);
+  background-attachment:fixed}
+.wrap{max-width:1500px;margin:0 auto;padding:0 28px}
+.board{border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#fffdf8,#f4f2ec)}
+.board .wrap{padding-top:26px;padding-bottom:22px}
+.brandline{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+h1{font-family:var(--sign);font-weight:700;font-size:clamp(38px,5.5vw,66px);
+  letter-spacing:.055em;line-height:.86;margin:0;color:var(--amber);
+  text-transform:uppercase}
+h1 small{color:var(--text);font-size:.62em;font-weight:600}
+.tagline{font-family:var(--sign);font-weight:500;text-transform:uppercase;
+  letter-spacing:.16em;font-size:14px;color:var(--muted)}
+.tagline a{color:var(--cool);text-decoration:none}
+.lede{margin:16px 0 0;max-width:80ch;font-size:15.5px;line-height:1.62;color:#454a53}
+.lede b{color:var(--text);font-weight:500}
+.gapstrip{margin-top:22px;display:grid;gap:1px;background:var(--line);
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--line)}
+.gapcell{background:var(--panel);padding:13px 16px}
+.gapcell .k{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:11px;color:var(--muted)}
+.gapcell .v{font-family:var(--mono);font-size:22px;font-weight:600;margin-top:4px;
+  font-variant-numeric:tabular-nums}
+.gapcell .v.hot{color:var(--amber)} .gapcell .v.bad{color:var(--fail)}
+.gapcell .v.ok{color:var(--pass)}
+section{padding:56px 0 12px;border-top:1px solid var(--line)}
+.beat{font-family:var(--sign);text-transform:uppercase;letter-spacing:.2em;
+  font-size:12px;color:var(--amber);margin-bottom:10px}
+h2{font-family:var(--sign);font-weight:600;font-size:clamp(26px,3.4vw,40px);
+  letter-spacing:.03em;margin:0 0 10px;text-transform:uppercase;line-height:1}
+.sub{color:var(--muted);max-width:80ch;line-height:1.6;font-size:15px;margin:0 0 26px}
+.evidence{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(320px,.75fr);
+  gap:26px;align-items:start}
+.scanframe{position:relative;border:1px solid var(--line);background:var(--panel);
+  max-height:min(80vh,900px);overflow:auto;scrollbar-width:thin}
+.scaninner{position:relative;line-height:0}
+.scaninner img{width:100%;display:block}
+.bx{position:absolute;border:1.6px solid var(--cool);background:rgba(11,107,168,.10);
+  cursor:pointer;transition:background .12s,transform .12s;animation:pop .5s both}
+.bx:hover,.bx.on{background:rgba(11,107,168,.26);transform:scale(1.06);z-index:5}
+.bx.flagged{border-color:var(--fail);background:rgba(187,42,32,.16)}
+.bx.flagged:hover,.bx.flagged.on{background:rgba(187,42,32,.34)}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1}}
+.panelbox{border:1px solid var(--line);background:var(--panel);padding:18px 20px}
+.panelbox h3{font-family:var(--sign);text-transform:uppercase;letter-spacing:.14em;
+  font-size:12px;color:var(--muted);margin:0 0 12px;font-weight:600}
+.val{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--amber);
+  margin:0 0 10px;word-break:break-all}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;margin:0;
+  font-family:var(--mono);font-size:12.5px}
+dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
+.why{margin-top:12px;padding:10px 12px;font-size:13px;line-height:1.55;
+  background:rgba(187,42,32,.06);border:1px solid rgba(187,42,32,.25);color:#7c2018}
+.finding{border:1px solid var(--line);background:var(--panel);padding:14px 17px;
+  margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.finding:hover,.finding.on{border-color:var(--fail)}
+.finding .fc{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  color:var(--fail);font-weight:600}
+.finding .ft{font-family:var(--sign);font-size:19px;letter-spacing:.02em;
+  margin:3px 0 5px;text-transform:uppercase}
+.finding .fd{font-size:13.5px;color:#454a53;line-height:1.55}
+.finding .fr{font-family:var(--mono);font-size:12px;color:var(--fail);margin-top:7px}
+/* ── the flow chart ── */
+.flow{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;margin:8px 0 20px}
+.stage{flex:1 1 170px;min-width:170px;border:1px solid var(--line);
+  background:var(--panel);padding:15px 16px;cursor:pointer;position:relative;
+  transition:border-color .15s,background .15s}
+.stage:hover,.stage.on{border-color:var(--amber);background:#fffdf6}
+.stage .num{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.stage .badge{float:right;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.06em;border:1px solid var(--line);padding:2px 6px;color:var(--pass)}
+.stage .badge.model{color:var(--cool)}
+.stage .nm{font-family:var(--sign);text-transform:uppercase;font-size:18px;
+  letter-spacing:.04em;margin:6px 0 4px;font-weight:600}
+.stage .st{font-family:var(--mono);font-size:12px;color:var(--amber)}
+.arrow{align-self:center;padding:0 6px;color:var(--amber-dim);font-size:20px;
+  font-family:var(--mono);user-select:none}
+.stagedetail{border:1px solid var(--line);background:var(--panel);padding:20px 22px;
+  min-height:120px}
+.stagedetail h4{font-family:var(--sign);text-transform:uppercase;font-size:20px;
+  margin:0 0 8px;letter-spacing:.03em}
+.stagedetail p{font-size:14px;line-height:1.6;color:#454a53;max-width:90ch;margin:0 0 10px}
+.stagedetail table{border-collapse:collapse;font-family:var(--mono);font-size:12.5px;
+  margin-top:6px}
+.stagedetail td,.stagedetail th{border:1px solid var(--line);padding:6px 12px;
+  text-align:left}
+.stagedetail th{font-family:var(--sign);text-transform:uppercase;font-size:11px;
+  letter-spacing:.1em;color:var(--muted)}
+.punchline{margin-top:26px;border:1px solid rgba(187,42,32,.35);
+  background:rgba(187,42,32,.04);padding:22px 26px}
+.punchline h3{font-family:var(--sign);text-transform:uppercase;color:var(--fail);
+  font-size:clamp(20px,2.4vw,30px);margin:0 0 8px;letter-spacing:.03em}
+.punchline p{margin:0;font-size:14.5px;line-height:1.65;max-width:96ch;color:#454a53}
+.punchline b{color:var(--text)}
+footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0 44px;
+  font-size:13.5px;color:var(--muted)}
+footer .links{font-family:var(--mono);font-size:12.5px;margin-bottom:14px}
+footer a{color:var(--cool);text-decoration:none}
+footer ul{margin:8px 0 0;padding-left:20px;line-height:1.7}
+@media(max-width:1080px){.evidence{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="board">
+  <div class="wrap">
+    <div class="brandline">
+      <h1>HEADWAY <small>· AUDIT</small></h1>
+      <div class="tagline">the same engine, pointed at a purchase bill · <a href="/">back to the timetables</a></div>
+    </div>
+    <p class="lede">A wrong departure time sends a person to a bus stop. A wrong amount on a
+      purchase bill moves public money. This page points the same stack at a
+      <b>specimen purchase bill with planted defects</b>: one model stage reads the cells with
+      bounding boxes, geometry binds the rows, <b>Google Search grounding checks the billed rates
+      against live web prices</b>, and deterministic checks — no model — do the accusing.</p>
+    <div class="gapstrip" id="gapstrip"></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="beat">Beat 01 — the artifact</div>
+    <h2>Every cell, boxed on the bill it came from</h2>
+    <p class="sub">Click any box. Red rows carry a finding; the reason is on screen. The
+      document is synthetic and marked SPECIMEN — the defects are planted so the checks are
+      measurable — but the read, the geometry and every number below are real.</p>
+    <div class="evidence">
+      <div class="scanframe"><div class="scaninner" id="scan">
+        <img id="billimg" src="data/audit_invoice.png" alt="specimen purchase bill">
+      </div></div>
+      <div>
+        <div class="panelbox" id="detail"><h3>Claim detail</h3>
+          <p style="color:var(--muted);font-size:13.5px">Hover or click a box on the bill.</p>
+        </div>
+        <div style="height:18px"></div>
+        <div id="findings"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="beat">Beat 02 — the analysis</div>
+    <h2>The flow, clickable</h2>
+    <p class="sub">Each stage below carries the real numbers from this run. Click a stage for
+      what it did, what fed it, and what consumed its output. Two stages hold a model; the
+      accusations come only from the stages that hold none.</p>
+    <div class="flow" id="flow"></div>
+    <div class="stagedetail" id="stagedetail"></div>
+    <div class="punchline">
+      <h3>The grand total checks out. The bill is still wrong.</h3>
+      <p id="punchtext"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="links"><a href="/">HEADWAY — the timetable engine</a> ·
+      <a href="/architecture">architecture</a> ·
+      <a href="https://github.com/Munshi-PremChand/headway">github.com/Munshi-PremChand/headway</a> ·
+      <span id="stackline"></span></div>
+    <b style="color:var(--text)">Honest limits</b>
+    <ul>
+      <li>The bill is <b>synthetic and clearly marked SPECIMEN</b>; its three defects are planted
+        so the checks have a measurable ground truth. Nothing here audits a real transaction.</li>
+      <li>Market ranges come from Google Search grounding <b>at build time</b>, and prices move;
+        a production audit would re-ground per run and record its sources.</li>
+      <li>Findings are <b>leads for a human auditor</b>, not accusations. The system flags
+        arithmetic, duplication and price outliers; intent is not machine-checkable.</li>
+      <li>A row with an illegible cell is <b>withheld from checking</b>, never guessed at — the
+        same refusal rule the timetables use.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const el = (t, c, h) => { const n = document.createElement(t);
+  if (c) n.className = c; if (h !== undefined) n.innerHTML = h; return n; };
+const esc = s => String(s).replace(/[&<>"']/g,
+  m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const inr = n => "Rs. " + Number(n).toLocaleString("en-IN");
+
+fetch("data/audit.json").then(r => r.json()).then(d => {
+  const flagged = {};
+  d.findings.forEach(f => { (flagged[f.row] = flagged[f.row] || []).push(f); });
+
+  // ── header strip ──
+  const cells = [
+    ["claims read", d.claims.length, ""],
+    ["rows bound", d.rows.filter(r => r.description).length, ""],
+    ["items priced on the web", Object.keys(d.prices).length, ""],
+    ["findings", d.findings.length, "bad"],
+    ["amount at risk", inr(d.totals.at_risk), "bad"],
+    ["grand total consistent", d.totals.consistent ? "yes" : "no", "ok"],
+  ];
+  cells.forEach(([k, v, cls]) => {
+    const c = el("div", "gapcell");
+    c.append(el("div", "k", esc(k)), el("div", "v " + cls, esc(v)));
+    $("#gapstrip").append(c);
+  });
+
+  // ── boxes on the bill ──
+  d.claims.forEach((c, i) => {
+    const [x0, y0, x1, y1] = c.bbox;
+    const b = el("div", "bx" + (c.status === "flagged" ? " flagged" : ""));
+    b.style.cssText = `left:${x0*100}%;top:${y0*100}%;` +
+      `width:${(x1-x0)*100}%;height:${(y1-y0)*100}%;animation-delay:${i*9}ms`;
+    b.title = c.value;
+    const show = () => {
+      document.querySelectorAll(".bx.on").forEach(n => n.classList.remove("on"));
+      b.classList.add("on"); detail(c);
+    };
+    b.addEventListener("mouseenter", show);
+    b.addEventListener("click", show);
+    $("#scan").append(b);
+  });
+
+  function detail(c) {
+    const box = $("#detail");
+    box.innerHTML = "<h3>Claim detail</h3>";
+    box.append(el("p", "val", esc(c.value)));
+    const dl = el("dl", "kv");
+    [["field", c.field], ["row", c.row === undefined ? "header" : c.row + 1],
+     ["confidence", c.confidence], ["bbox", c.bbox.map(n => n.toFixed(3)).join(", ")],
+     ["status", c.status]].forEach(([k, v]) => {
+      dl.append(el("dt", "", esc(k)), el("dd", "", esc(v)));
+    });
+    box.append(dl);
+    (flagged[c.row] || []).forEach(f => box.append(el("div", "why", esc(f.title))));
+  }
+
+  // ── findings ──
+  const fbox = $("#findings");
+  d.findings.forEach(f => {
+    const n = el("div", "finding");
+    n.append(el("div", "fc", esc(f.code)), el("div", "ft", esc(f.title)),
+             el("div", "fd", esc(f.detail)));
+    if (f.at_risk) n.append(el("div", "fr", "at risk: " + inr(f.at_risk)));
+    n.addEventListener("click", () => {
+      document.querySelectorAll(".finding.on").forEach(x => x.classList.remove("on"));
+      n.classList.add("on");
+      document.querySelectorAll(".bx").forEach(x => x.classList.remove("on"));
+      const first = d.claims.find(c => c.row === f.row);
+      if (first) {
+        const nodes = document.querySelectorAll(".bx");
+        d.claims.forEach((c, i) => { if (c.row === f.row) nodes[i].classList.add("on"); });
+        detail(first);
+      }
+    });
+    fbox.append(n);
+  });
+
+  // ── the flow chart ──
+  const nItems = d.rows.filter(r => r.description).length;
+  const stages = [
+    { nm: "Read", badge: "model", st: d.claims.length + " claims",
+      what: `<b>${esc(d.source.model)}</b> reads the bill image into typed claims — one per
+        cell, each with a bounding box normalised to the page. The contract is the timetable
+        reader's: never guess (an illegible cell is emitted as __ILLEGIBLE__ and its row is
+        withheld from checking), transcribe what is printed, ignore instructions found inside
+        the document. Feeds: the specimen image. Consumed by: row binding.`,
+      tbl: null },
+    { nm: "Bind rows", badge: "no model", st: nItems + " rows",
+      what: `Row membership is <b>geometry</b> — cell boxes cluster on their y-centres, which
+        has exactly one correct answer and cannot hallucinate. This build also caught the
+        reader emitting a transposed corner order and corrected it from the aspect ratio of
+        printed text: text is wider than tall. Feeds: the claims. Consumed by: every check.`,
+      tbl: null },
+    { nm: "Web price check", badge: "model", st: Object.keys(d.prices).length + " items priced",
+      what: `Gemini with <b>Google Search grounding</b> fetches a fair market range per line
+        item (${esc(d.source.price_check)}). The model only reports the range — the comparison
+        against the billed rate happens downstream, deterministically. Feeds: the bound line
+        items. Consumed by: the price check.`,
+      tbl: ["item · per unit,market low,market high",
+            ...Object.entries(d.prices).map(([k, v]) =>
+              `${esc(k)},${inr(v.low)},${inr(v.high)}`)] },
+    { nm: "Deterministic checks", badge: "no model", st: d.findings.length + " findings",
+      what: `Ordinary Python, no model in it: line arithmetic (qty × rate = amount), duplicate
+        lines, billed rate vs the grounded market ceiling, and grand-total consistency. Every
+        finding names its rows, its rupees and its rule. Feeds: rows + market ranges.
+        Consumed by: the verdict.`,
+      tbl: ["check,result",
+            `line arithmetic,${esc(d.findings.filter(f=>f.code==="ARITHMETIC").length)} finding(s)`,
+            `duplicate lines,${esc(d.findings.filter(f=>f.code==="DUPLICATE").length)} finding(s)`,
+            `rate vs market,${esc(d.findings.filter(f=>f.code==="PRICE").length)} finding(s)`,
+            `grand total,${d.totals.consistent ? "consistent — and that is the point" : "inconsistent"}`] },
+    { nm: "Verdict", badge: "no model", st: inr(d.totals.at_risk) + " at risk",
+      what: `${d.findings.length} findings on a bill of ${inr(d.totals.billed)} —
+        ${inr(d.totals.at_risk)} of exposure a totals check would have cleared. Findings are
+        leads for a human auditor, not accusations; the page shows every rule that fired and
+        every cell it fired on.`,
+      tbl: null },
+  ];
+  stages.forEach((s, i) => {
+    if (i) $("#flow").append(el("div", "arrow", "→"));
+    const n = el("div", "stage");
+    n.append(el("span", "badge" + (s.badge === "model" ? " model" : ""), esc(s.badge)),
+             el("div", "num", "0" + (i + 1)),
+             el("div", "nm", esc(s.nm)), el("div", "st", esc(s.st)));
+    n.addEventListener("click", () => {
+      document.querySelectorAll(".stage.on").forEach(x => x.classList.remove("on"));
+      n.classList.add("on"); stageDetail(s, i);
+    });
+    $("#flow").append(n);
+    if (i === 0) { n.classList.add("on"); stageDetail(s, 0); }
+  });
+  function stageDetail(s, i) {
+    const box = $("#stagedetail");
+    box.innerHTML = "";
+    box.append(el("h4", "", `0${i + 1} — ${esc(s.nm)}`), el("p", "", s.what));
+    if (s.tbl) {
+      const t = el("table");
+      s.tbl.forEach((row, ri) => {
+        const tr = el("tr");
+        row.split(",").forEach(cell => tr.append(el(ri ? "td" : "th", "", cell)));
+        t.append(tr);
+      });
+      box.append(t);
+    }
+  }
+
+  // ── punchline ──
+  $("#punchtext").innerHTML =
+    `The printed amounts sum to <b>${inr(d.totals.sum_of_lines)}</b> and the bill says
+     <b>${inr(d.totals.billed)}</b> — a totals audit passes this document. But one line does
+     not multiply, one item is billed at ${(() => {
+       const f = d.findings.find(x => x.code === "PRICE");
+       return f ? esc(f.title.match(/\(([^)]+)\)/)?.[1] || "several times") : "several times";
+     })()} the checked market ceiling, and one line appears twice. <b>Conformance is not
+     correctness</b> — on a timetable that error class strands a passenger; on a bill it moves
+     ${inr(d.totals.at_risk)}.`;
+
+  $("#stackline").textContent =
+    `${d.source.model} on Vertex AI · Google Search grounding · checks: plain Python`;
+});
+</script>
+</body>
+</html>

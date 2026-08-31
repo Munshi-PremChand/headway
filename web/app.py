@@ -87,6 +87,20 @@ def index() -> HTMLResponse:
     return HTMLResponse(page.read_text())
 
 
+@app.get("/audit", response_class=HTMLResponse)
+def audit() -> HTMLResponse:
+    """The same engine pointed at a purchase bill — the generalization demo.
+
+    Prebuilt like the photocopy section: `scripts/build_audit_data.py` runs
+    the read, the web price grounding and the checks at build time; the page
+    only renders `web/data/audit.json`. No live runtime, nothing to poison.
+    """
+    page = WEB / "templates" / "audit.html"
+    if not page.exists():
+        raise HTTPException(500, "template missing")
+    return HTMLResponse(page.read_text())
+
+
 @app.get("/architecture", response_class=HTMLResponse)
 def architecture() -> HTMLResponse:
     """The diagram the rules ask for, as a page rather than a flat image.
