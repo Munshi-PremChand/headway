@@ -149,6 +149,26 @@ Stated plainly: on a page *with* a clean text layer, the baseline extracts the s
 and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal — and
 working at all on a photocopy, a board notice or a phone photograph, where no text layer exists.
 
+### The whole division
+
+```bash
+python3 scripts/run_multipage.py --pages 1-10
+```
+
+```
+1,185 claims read across 10 pages by two models, independently
+ → 4 of 5 page-seam joins accepted · the fifth refused and named
+ → 40 of 50 stop names located · 10 REFUSED rather than guessed
+ → 34 trips · 40 stops · 38 routes · 188 stop_times
+ → gtfs-validator 8.0.1: ERROR=0
+```
+
+A complete operator division — an entire published timetable, from a ten-page PDF, as a feed that
+passes MobilityData's validator. Ten stops are still missing coordinates and are named on screen;
+OpenStreetMap has no place node for most of them, `ISBT` matches two different terminals in Assam, and
+a bypass is a stretch of road rather than a settlement. Those stay refused, because pointing them at
+the nearest town centre would be exactly the small lie this project exists to avoid.
+
 ### Services that span a page break
 
 A 369 km coach service does not fit on one sheet of A4. Page 1 ends mid-service and page 2 opens with the
