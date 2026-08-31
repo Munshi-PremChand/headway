@@ -42,6 +42,29 @@ if DATA.exists():
 
 _run_lock = asyncio.Lock()
 
+# The photocopy measurements are a separate experiment shipped in the image.
+# A live run rebuilds run.json WITHOUT them — losing the "take the text layer
+# away" section for every later viewer of this instance (this is how one
+# filmed take gutted the next). Snapshot the shipped copy at startup and
+# carry it across rebuilds; the live run never re-measures it.
+try:
+    _PHOTOCOPY = json.loads((DATA / "run.json").read_text()).get("photocopy")
+except Exception:                                               # noqa: BLE001
+    _PHOTOCOPY = None
+
+
+def _restore_photocopy() -> None:
+    if not _PHOTOCOPY:
+        return
+    f = DATA / "run.json"
+    try:
+        bundle = json.loads(f.read_text())
+        if not bundle.get("photocopy"):
+            bundle["photocopy"] = _PHOTOCOPY
+            f.write_text(json.dumps(bundle))
+    except Exception:                                           # noqa: BLE001
+        pass
+
 
 @app.get("/api/healthz")
 @app.get("/healthz")
@@ -127,6 +150,8 @@ async def run_live(req: RunRequest) -> JSONResponse:
              "--page", str(req.page), "--profile", req.profile],
             capture_output=True, text=True, cwd=str(ROOT), timeout=600)
         ok = proc.returncode == 0 and build.returncode == 0
+        if ok:
+            _restore_photocopy()
         return JSONResponse({
             "ok": ok,
             "seconds": round(time.time() - started, 1),

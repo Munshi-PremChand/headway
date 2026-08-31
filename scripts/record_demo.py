@@ -148,11 +148,13 @@ SCENES: list[tuple[float, str, str]] = [
     (5.0, "It is withheld, and the reason is on screen.",
      "document.querySelectorAll('.bx.withheld')[3]"
      ".dispatchEvent(new MouseEvent('mouseenter'))"),
+    # unplaced[1] is Jagiroad (unplaced[0] is Laluk, whose story is weaker) —
+    # the caption names Jagiroad, so the detail panel must show Jagiroad.
     (5.0, "Two stops got no coordinates. The best match for Jagiroad is a "
           "hardware shop 60 km away.",
      "[...document.querySelectorAll('#jump button')].find(b=>b.textContent"
      ".includes('Show all')).click();"
-     "document.querySelectorAll('.bx.unplaced')[0]"
+     "document.querySelectorAll('.bx.unplaced')[1]"
      ".dispatchEvent(new MouseEvent('mouseenter'))"),
     (6.0, "One model stage. Five deterministic stages.",
      "document.querySelector('#stages').scrollIntoView({behavior:'smooth',block:'center'})"),
@@ -246,7 +248,27 @@ async def record(args) -> int:
                 await br.js(script)
             except Exception as exc:                            # noqa: BLE001
                 print(f"     (scene script failed: {exc})")
-            await asyncio.sleep(hold)
+            if i == len(SCENES):
+                # The live run finishes in 62-76s but the hold is a 95s cap.
+                # End 1.2s after the button reads "Completed" — still inside
+                # the 2.2s window before the page reloads and wipes the log —
+                # so the video closes on the open publish gate, not a freeze.
+                t0 = time.time()
+                while time.time() - t0 < hold:
+                    try:
+                        txt = await br.js(
+                            "(document.querySelector('#gobtn')||{})"
+                            ".textContent || ''")
+                    except Exception:                           # noqa: BLE001
+                        txt = ""
+                    if str(txt).lower().startswith(("completed", "failed")):
+                        print(f"     live run done in {time.time() - t0:.0f}s"
+                              f" — {txt}")
+                        await asyncio.sleep(1.2)
+                        break
+                    await asyncio.sleep(0.5)
+            else:
+                await asyncio.sleep(hold)
 
         grabbing.clear()
         await asyncio.sleep(0.2)
@@ -274,24 +296,34 @@ async def record(args) -> int:
         (frames_dir / f"f{k:06d}.jpg").write_bytes(collected[idx][1])
         out_n += 1
 
-    out = ROOT / args.out
-    out.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [ffmpeg, "-y", "-framerate", str(args.fps),
-           "-i", str(frames_dir / "f%06d.jpg")]
-    if args.captions:
-        cmd += ["-vf", _caption_filter(args.fps)]
-    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
-            "-movflags", "+faststart", str(out)]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        print(proc.stderr[-1500:])
-        return 1
-
-    size = out.stat().st_size
-    print(f"\n  wrote {out.relative_to(ROOT)}  "
-          f"{size / 1_000_000:.1f} MB  {out_n / args.fps:.1f}s  "
-          f"{WIDTH}x{HEIGHT} @ {args.fps}fps")
-    print("  NO AUDIO — narrate over it, or pass --captions to burn the beats in.")
+    # Every recording triggers the live run, and the live run REWRITES the
+    # server's demo data — so a second take films a poisoned page (that is how
+    # the first captioned cut got zero-width claim boxes). Encoding both cuts
+    # from the one set of frames means there is never a second take.
+    plain = ROOT / args.out
+    outputs = [(plain, args.captions)]
+    if args.both:
+        outputs = [(plain, False),
+                   (plain.with_name(plain.stem + "_captioned" + plain.suffix),
+                    True)]
+    for out, cap in outputs:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        cmd = [ffmpeg, "-y", "-framerate", str(args.fps),
+               "-i", str(frames_dir / "f%06d.jpg")]
+        if cap:
+            cmd += ["-vf", _caption_filter(args.fps)]
+        cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
+                "-movflags", "+faststart", str(out)]
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode != 0:
+            print(proc.stderr[-1500:])
+            return 1
+        size = out.stat().st_size
+        print(f"\n  wrote {out.relative_to(ROOT)}  "
+              f"{size / 1_000_000:.1f} MB  {out_n / args.fps:.1f}s  "
+              f"{WIDTH}x{HEIGHT} @ {args.fps}fps"
+              + ("  [captions burned in]" if cap else "  [no captions]"))
+    print("  NO AUDIO — narrate over the plain cut, or ship the captioned one.")
     return 0
 
 
@@ -335,6 +367,8 @@ def main() -> int:
                     help="seconds to let the page load and animate before recording")
     ap.add_argument("--captions", action="store_true",
                     help="burn the beat text in (for a silent upload)")
+    ap.add_argument("--both", action="store_true",
+                    help="write the plain AND captioned cut from one take")
     args = ap.parse_args()
     if not Path(CHROME).exists():
         print(f"Chrome not found at {CHROME}")
