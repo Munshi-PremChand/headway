@@ -3,7 +3,7 @@
 **A bus timetable is not data until someone types it in. This agent does the typing, and refuses when it
 cannot read.**
 
-India has **20 transit feeds** in the Mobility Database — the catalogue Google Maps, Transit and
+India has **20 transit feeds** in the Mobility Database the catalogue Google Maps, Transit and
 OpenTripPlanner draw from. **Nine of them are still active.** France has 1,127, of which 859 are active.
 
 > **One active catalogued transit feed per 161 million Indians.
@@ -25,7 +25,7 @@ print(len(r), collections.Counter(x['status'] for x in r))"
 
 *(Measured 2026-08-27, 6,496 feeds total. Population: World Bank `SP.POP.TOTL`, 2024.)*
 
-**India's feeds are not merely missing — they are lapsing.** A liveness check of all 20 download URLs on
+**India's feeds are not merely missing they are lapsing.** A liveness check of all 20 download URLs on
 2026-08-27 found **8 working**. Kochi Metro, India's *first* GTFS agency, is deprecated with a dead DNS
 name. Delhi's DTC and Maharashtra's MSRTC both 404. Hyderabad Metro Rail the only official active metro
 feed — returns an HTML interstitial instead of a ZIP. India has **zero** GTFS-Realtime feeds catalogued.
@@ -344,7 +344,7 @@ readings and compares what a *rider* would experience. That is why the agent is 
 
 ## Prior art, named because hiding it would be worse
 
-**National RTAP GTFS Builder** — the US incumbent, federally funded, and by its own published figures
+**National RTAP GTFS Builder** the US incumbent, federally funded, and by its own published figures
 *"Initial Data Input average 4 hours per route."* It is macro-enabled Excel plus Google Earth: a human
 types the schedule in. It reads no documents. HEADWAY removes the transcription, not the tool.
 
