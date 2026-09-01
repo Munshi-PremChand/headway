@@ -27,13 +27,13 @@ print(len(r), collections.Counter(x['status'] for x in r))"
 
 **India's feeds are not merely missing — they are lapsing.** A liveness check of all 20 download URLs on
 2026-08-27 found **8 working**. Kochi Metro, India's *first* GTFS agency, is deprecated with a dead DNS
-name. Delhi's DTC and Maharashtra's MSRTC both 404. Hyderabad Metro Rail — the only official active metro
+name. Delhi's DTC and Maharashtra's MSRTC both 404. Hyderabad Metro Rail the only official active metro
 feed — returns an HTML interstitial instead of a ZIP. India has **zero** GTFS-Realtime feeds catalogued.
 
 That is the thesis in one sentence: *a feed is not a one-time artifact, it is a build that has to keep
 passing.*
 
-HEADWAY reads those artifacts and produces a standards-valid GTFS feed — or refuses, loudly, with the
+HEADWAY reads those artifacts and produces a standards-valid GTFS feed or refuses, loudly, with the
 reason attached.
 
 ---
@@ -77,7 +77,7 @@ photo / PDF / voice memo
 └───────────────────┘
         │
         ▼
-┌───────────────────┐   MobilityData gtfs-validator 8.0.1 — a binary we did
+┌───────────────────┐   MobilityData gtfs-validator 8.0.1 a binary we did
 │   Publish gate    │   not write. Zero ERROR notices or nothing ships.
 └───────────────────┘
 ```
@@ -86,7 +86,7 @@ photo / PDF / voice memo
 
 ## Live
 
-**https://headway-606499459461.asia-south1.run.app** — deployed on Cloud Run, running as a service
+**https://headway-606499459461.asia-south1.run.app** deployed on Cloud Run, running as a service
 account that can call Vertex AI and provably cannot write any bucket. The **Execute pipeline** button
 runs the whole thing server-side against the live ASTC PDF in about 60 seconds: fetch, render at 200 dpi,
 two Gemini models on Vertex, bind, geocode, compose, and re-run `gtfs-validator`. Nothing on that page is
@@ -94,7 +94,7 @@ cached when you press it.
 
 ## It has been run, on a real Indian timetable
 
-Not a fixture. Page 1 of Assam State Transport Corporation's Guwahati division timetable — a 2020 Word
+Not a fixture. Page 1 of Assam State Transport Corporation's Guwahati division timetable a 2020 Word
 document printed to PDF, ten A4 pages of numbered service blocks:
 
 ```bash
@@ -112,14 +112,14 @@ python3 scripts/run_pipeline.py \
  → gtfs-validator 8.0.1: ERROR=0 WARNING=0
 ```
 
-**25 of 25 rows transcribed exactly**, scored against the PDF's embedded text layer — extracted but never
+**25 of 25 rows transcribed exactly**, scored against the PDF's embedded text layer extracted but never
 shown to the reader, so it is an independent oracle rather than a hint. Three consecutive live runs
 produced the byte-identical feed `70224a64…`.
 
 **The two things it refused to do are the point.**
 
 *Service 3 was withheld.* "Guwahati to Bihpuria" runs off the bottom of page 1, and its last visible row
-still carries a departure time — so the bus does not terminate there. Publishing it would have asserted
+still carries a departure time so the bus does not terminate there. Publishing it would have asserted
 that a 409 km coach service ends at a village halfway along. A completed run ends with an arrival and no
 departure; that is structure, not a guess.
 
@@ -146,7 +146,7 @@ through the **same** composer, geocoder and validator — the two differ in exac
 village halfway along, and the validator reports zero errors either way.
 
 Stated plainly: on a page *with* a clean text layer, the baseline extracts the same 25 rows, 22 arrivals
-and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal — and
+and 23 departures. HEADWAY's transcription advantage here is **zero**. What it adds is the refusal and
 working at all on a photocopy, a board notice or a phone photograph, where no text layer exists.
 
 ### The whole division
@@ -163,7 +163,7 @@ python3 scripts/run_multipage.py --pages 1-10
  → gtfs-validator 8.0.1: ERROR=0
 ```
 
-A complete operator division — an entire published timetable, from a ten-page PDF, as a feed that
+A complete operator division an entire published timetable, from a ten-page PDF, as a feed that
 passes MobilityData's validator. Ten stops are still missing coordinates and are named on screen;
 OpenStreetMap has no place node for most of them, `ISBT` matches two different terminals in Assam, and
 a bypass is a stretch of road rather than a settlement. Those stay refused, because pointing them at
@@ -172,7 +172,7 @@ the nearest town centre would be exactly the small lie this project exists to av
 ### Services that span a page break
 
 A 369 km coach service does not fit on one sheet of A4. Page 1 ends mid-service and page 2 opens with the
-rest of it under no heading at all. Read per-page, that service is correctly withheld — correct, but lossy.
+rest of it under no heading at all. Read per-page, that service is correctly withheld correct, but lossy.
 
 ```bash
 python3 scripts/run_multipage.py --pages 1-2
@@ -195,7 +195,7 @@ That is why the reader is asked for the `Sl.No` column at all: *within* a page t
 ### The page checked against itself
 
 Printed distance over printed time needs no coordinates, so an impossible speed cannot be blamed on a
-geocode — it is an error in the source. Three are present in ASTC's own published timetable:
+geocode, it is an error in the source. Three are present in ASTC's own published timetable:
 
 | service | leg | what the page prints |
 |---|---|---|
@@ -208,7 +208,7 @@ exactly the guessing this project refuses.
 
 ### And that second half is measured too
 
-`scripts/photocopy_test.py` degrades the same page the way a copier does — skew, blur, toner speckle,
+`scripts/photocopy_test.py` degrades the same page the way a copier does skew, blur, toner speckle,
 contrast loss, JPEG artifacts — and runs both approaches on the result:
 
 | degradation | baseline rows | HEADWAY fidelity | confident-wrong |
@@ -220,12 +220,12 @@ The baseline scores zero for a structural reason: a JPEG has no text layer, so `
 to read.
 
 **The failure at the harsher level is the interesting part.** It produced 18 confidently wrong departure
-times — every value read *correctly* and then bound to the wrong row, because 2° of page skew displaces
+times every value read *correctly* and then bound to the wrong row, because 2° of page skew displaces
 the rightmost column by nearly a full row height. Fixing it took three passes (monotonic alignment, then
 skew calibrated off the `km` column, then noticing the calibrator had been silently disabled by a
 column-clustering bug); `docs/CHANGELOG.md` has the sequence.
 
-At the point it still mis-binds, the mis-binding puts a departure on the terminus row — and a completed
+At the point it still mis-binds, the mis-binding puts a departure on the terminus row and a completed
 run ends with an arrival and no departure. The structural rule fires and withholds the whole service.
 **Where the geometry fails, the system loses coverage, not correctness.**
 
@@ -233,7 +233,7 @@ run ends with an arrival and no departure. The structural rule fires and withhol
 
 ### 1. It refuses rather than guesses
 
-A wrong departure time is the one error class **no validator on earth catches** — a plausible time passes
+A wrong departure time is the one error class **no validator on earth catches** a plausible time passes
 every conformance check and still sends someone to a stop for a bus that is not coming.
 
 Measured on a 20-cell fixture with one genuinely destroyed cell, n=3 per thinking level:
@@ -257,7 +257,7 @@ A wrong coordinate is the one error the publish gate cannot see: `gtfs-validator
 **has** a latitude, never that it is the right one. A stop placed in the wrong town passes every
 conformance check and sends a rider 200 km astray.
 
-The ASTC page prints a `km` column — distance along the road from the origin — and road distance is never
+The ASTC page prints a `km` column distance along the road from the origin and road distance is never
 shorter than a straight line. So if the crow-flies distance between two consecutively geocoded stops
 exceeds the road distance printed between them, a coordinate is wrong by arithmetic rather than by
 suspicion.
@@ -265,7 +265,7 @@ suspicion.
 On the real page: **15 segments checked, all pass, tightest margin 6.5 km.**
 
 And it catches the case it was built for. Accepting the hardware store as "Jagiroad" puts it 95.5 km in a
-straight line from Nagaon, on a leg the timetable prints as **68 km of road** — 27.5 km further than the
+straight line from Nagaon, on a leg the timetable prints as **68 km of road** 27.5 km further than the
 road itself, which no route between two points can be. The check fails it with 5.7 km to spare after the
 slack allowed for coordinate imprecision.
 
@@ -311,7 +311,7 @@ Two ambiguous cells, near-identical confidence, opposite handling:
 
 | cell | confidence | rider outcome if wrong | decision |
 |---|---:|---|---|
-| smudged digit at a **depot** (no boarding) | 0.68 | none — nobody boards there | **resolved silently** |
+| smudged digit at a **depot** (no boarding) | 0.68 | none nobody boards there | **resolved silently** |
 | smudged digit at a **dialysis centre** | 0.71 | 21 journeys retimed | **one question asked** |
 
 **A confidence threshold cannot separate those two.** The outcome differ can, because it compiles both
@@ -327,7 +327,7 @@ readings and compares what a *rider* would experience. That is why the agent is 
 
 ## Honest limits
 
-* The calibration fixture is **rendered**, not a real photocopy — and so is the ASTC PDF, which is a Word
+* The calibration fixture is **rendered**, not a real photocopy and so is the ASTC PDF, which is a Word
   document printed to PDF rather than a scan. Neither set of numbers is a claim about performance on a
   genuine photocopy or a phone photo. That is the next test, not a solved one.
 * Two of the fourteen stops on the demonstrated page have **no coordinates at all**, because
@@ -345,7 +345,7 @@ readings and compares what a *rider* would experience. That is why the agent is 
 ## Prior art, named because hiding it would be worse
 
 **National RTAP GTFS Builder** — the US incumbent, federally funded, and by its own published figures
-*"Initial Data Input — average 4 hours per route."* It is macro-enabled Excel plus Google Earth: a human
+*"Initial Data Input average 4 hours per route."* It is macro-enabled Excel plus Google Earth: a human
 types the schedule in. It reads no documents. HEADWAY removes the transcription, not the tool.
 
 Also: `MobilityData/gtfs-validator` (the publish gate here), `gtfs-diff`, `heijul/pdf2gtfs` (dormant since
